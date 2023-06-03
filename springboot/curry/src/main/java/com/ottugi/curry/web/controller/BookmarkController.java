@@ -48,7 +48,7 @@ public class BookmarkController {
     @ApiOperation(value = "북마크 레시피 리스트 중 옵션으로 검색", notes = "북마크 레시피 리스트에서 옵션(시간/난이도/구성)으로 검색하여 리턴합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
-            @ApiImplicitParam(name = "time", value = "레시피 시간", example = "15분"),
+            @ApiImplicitParam(name = "time", value = "레시피 시간", example = "15분 이내"),
             @ApiImplicitParam(name = "difficulty", value = "레시피 난이도", example = "초급"),
             @ApiImplicitParam(name = "composition", value = "레시피 구성", example = "든든하게")
     })
