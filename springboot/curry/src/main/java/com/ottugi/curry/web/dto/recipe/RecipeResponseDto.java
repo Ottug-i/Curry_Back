@@ -28,8 +28,8 @@ public class RecipeResponseDto {
     @ApiModelProperty(notes = "레시피 재료", example = "유부초밥###밥###연어")
     private String ingredients;
 
-    @ApiModelProperty(notes = "레시피 양념", example = "다진 양파###마요네즈###레몬즙###꿀###소금###후추")
-    private String seasoning;
+    @ApiModelProperty(notes = "레시피 인분", example = "1인분")
+    private String servings;
 
     @ApiModelProperty(notes = "레시피 조리 순서", example = "1. 연어는 작게 썬다.###2. 볼에 소스를 만든다.###3. 밥에 배합초를 넣고 버무린다.###4. 유부의 물기를 짜고 밥>소스>연어를 올려 완성한다.")
     private String orders;
@@ -48,7 +48,7 @@ public class RecipeResponseDto {
         this.difficulty = recipe.getDifficulty();
         this.composition = recipe.getComposition();
         this.ingredients = recipe.getIngredients();
-        this.seasoning = recipe.getSeasoning();
+        this.servings = recipe.getServings();
         this.orders = recipe.getOrders();
         this.photo = recipe.getPhoto();
         this.isBookmark = isBookmark;
