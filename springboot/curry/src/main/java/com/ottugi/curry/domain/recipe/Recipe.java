@@ -36,7 +36,7 @@ public class Recipe {
     private String ingredients;
 
     @Column(nullable = false)
-    private String seasoning;
+    private String servings;
 
     @Column(length = 1000, nullable = false)
     private String orders;
@@ -45,7 +45,7 @@ public class Recipe {
     private String photo;
 
     @Builder
-    public Recipe(Long id, String name, String thumbnail, String time, String difficulty, String composition, String ingredients, String seasoning, String orders, String photo) {
+    public Recipe(Long id, String name, String thumbnail, String time, String difficulty, String composition, String ingredients, String servings, String orders, String photo) {
         this.id = id;
         this.name = name;
         this.thumbnail = thumbnail;
@@ -53,7 +53,7 @@ public class Recipe {
         this.difficulty = difficulty;
         this.composition = composition;
         this.ingredients = ingredients;
-        this.seasoning = seasoning;
+        this.servings = servings;
         this.orders = orders;
         this.photo = photo;
     }
