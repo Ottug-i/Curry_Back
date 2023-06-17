@@ -14,7 +14,7 @@ public class RecipeRequestDto {
     @ApiModelProperty(notes = "회원 기본키", example = "1", required = true)
     private Long userId;
 
-    @ApiModelProperty(notes = "레시피 기본키", example = "[6909678, 6916853]", required = true)
+    @ApiModelProperty(notes = "레시피 기본키", example = "[6842324, 6845721]", required = true)
     private List<Long> recipeId;
 
     @Builder

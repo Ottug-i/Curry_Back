@@ -39,6 +39,9 @@ dependencies {
 
 	// jwt token
 	implementation 'com.auth0:java-jwt:4.2.1'
+
+	// batch
+	implementation 'org.springframework.boot:spring-boot-starter-batch'
 }
 
 tasks.named('test') {
