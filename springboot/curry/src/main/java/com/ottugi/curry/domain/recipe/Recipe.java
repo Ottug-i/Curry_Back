@@ -3,12 +3,14 @@ package com.ottugi.curry.domain.recipe;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 public class Recipe {
@@ -32,16 +34,16 @@ public class Recipe {
     @Column(length = 100, nullable = false)
     private String composition;
 
-    @Column(nullable = false)
+    @Column(length = 1000, nullable = false)
     private String ingredients;
 
     @Column(nullable = false)
     private String servings;
 
-    @Column(length = 1000, nullable = false)
+    @Column(length = 10000, nullable = false)
     private String orders;
 
-    @Column(length = 1000)
+    @Column(length = 10000)
     private String photo;
 
     @Builder
