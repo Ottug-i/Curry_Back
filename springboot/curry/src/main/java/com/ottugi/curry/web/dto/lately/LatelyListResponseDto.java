@@ -7,13 +7,13 @@ import lombok.Getter;
 @Getter
 public class LatelyListResponseDto {
 
-    @ApiModelProperty(notes = "레시피 기본키", example = "6909678")
+    @ApiModelProperty(notes = "레시피 기본키", example = "6842324")
     private Long id;
 
-    @ApiModelProperty(notes = "레시피 이름", example = "연어유부초밥")
+    @ApiModelProperty(notes = "레시피 이름", example = "고구마맛탕")
     private String name;
 
-    @ApiModelProperty(notes = "레시피 썸네일", example = "https://recipe1.ezmember.co.kr/cache/recipe/2019/04/02/f8e2bac1e4e5387b34ef9dfa04f343b41.jpg")
+    @ApiModelProperty(notes = "레시피 썸네일", example = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png")
     private String thumbnail;
 
     public LatelyListResponseDto(Recipe recipe) {

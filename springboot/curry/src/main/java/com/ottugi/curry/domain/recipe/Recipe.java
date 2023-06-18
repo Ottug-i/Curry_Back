@@ -35,17 +35,17 @@ public class Recipe {
     @Column(nullable = false)
     private Composition composition;
 
-    @Column(length = 1000, nullable = false)
+    @Column(columnDefinition="TEXT", nullable = false)
     private String ingredients;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Servings servings;
 
-    @Column(length = 10000, nullable = false)
+    @Column(columnDefinition="TEXT", nullable = false)
     private String orders;
 
-    @Column(length = 10000)
+    @Column(columnDefinition="TEXT")
     private String photo;
 
     @Builder
