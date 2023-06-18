@@ -4,6 +4,7 @@ import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.bookmark.BookmarkRepository;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeRepository;
+import com.ottugi.curry.domain.recipe.Time;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
@@ -81,7 +82,10 @@ public class BookmarkServiceImpl implements BookmarkService {
         List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
         for (Bookmark bookmark : bookmarkList) {
             Recipe recipe = bookmark.getRecipeId();
-            if (recipe.getTime().contains(time) && recipe.getDifficulty().contains(difficulty) && recipe.getComposition().contains(composition)) {
+            if (time.isEmpty()) {
+                time = "2시간 이상";
+            }
+            if (recipe.getTime().getTime() <= Time.ofTime(time).getTime() && recipe.getDifficulty().contains(difficulty) && recipe.getComposition().contains(composition)) {
                 bookmarkListResponseDtoList.add(new BookmarkListResponseDto(recipe, true));
             }
         }

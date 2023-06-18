@@ -5,9 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -25,8 +23,9 @@ public class Recipe {
     @Column(nullable = false)
     private String thumbnail;
 
-    @Column(length = 100, nullable = false)
-    private String time;
+    @Convert(converter = TimeConverter.class)
+    @Column(nullable = false)
+    private Time time;
 
     @Column(length = 100, nullable = false)
     private String difficulty;
@@ -47,7 +46,7 @@ public class Recipe {
     private String photo;
 
     @Builder
-    public Recipe(Long id, String name, String thumbnail, String time, String difficulty, String composition, String ingredients, String servings, String orders, String photo) {
+    public Recipe(Long id, String name, String thumbnail, Time time, String difficulty, String composition, String ingredients, String servings, String orders, String photo) {
         this.id = id;
         this.name = name;
         this.thumbnail = thumbnail;

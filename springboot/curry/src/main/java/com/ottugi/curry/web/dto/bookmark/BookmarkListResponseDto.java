@@ -1,6 +1,7 @@
 package com.ottugi.curry.web.dto.bookmark;
 
 import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.Time;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
@@ -35,7 +36,7 @@ public class BookmarkListResponseDto {
         this.id = recipe.getId();
         this.name = recipe.getName();
         this.thumbnail = recipe.getThumbnail();
-        this.time = recipe.getTime();
+        this.time = recipe.getTime().getTimeName();
         this.difficulty = recipe.getDifficulty();
         this.composition = recipe.getComposition();
         this.ingredients = recipe.getIngredients();
