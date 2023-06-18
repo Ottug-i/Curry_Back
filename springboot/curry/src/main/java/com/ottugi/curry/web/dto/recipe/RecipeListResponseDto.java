@@ -37,8 +37,8 @@ public class RecipeListResponseDto {
         this.name = recipe.getName();
         this.thumbnail = recipe.getThumbnail();
         this.time = recipe.getTime().getTimeName();
-        this.difficulty = recipe.getDifficulty();
-        this.composition = recipe.getComposition();
+        this.difficulty = recipe.getDifficulty().getDifficulty();
+        this.composition = recipe.getComposition().getComposition();
         this.ingredients = recipe.getIngredients();
         this.isBookmark = isBookmark;
     }

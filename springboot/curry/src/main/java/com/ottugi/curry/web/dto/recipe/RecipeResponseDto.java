@@ -46,10 +46,10 @@ public class RecipeResponseDto {
         this.name = recipe.getName();
         this.thumbnail = recipe.getThumbnail();
         this.time = recipe.getTime().getTimeName();
-        this.difficulty = recipe.getDifficulty();
-        this.composition = recipe.getComposition();
+        this.difficulty = recipe.getDifficulty().getDifficulty();
+        this.composition = recipe.getComposition().getComposition();
         this.ingredients = recipe.getIngredients();
-        this.servings = recipe.getServings();
+        this.servings = recipe.getServings().getServings();
         this.orders = recipe.getOrders();
         this.photo = recipe.getPhoto();
         this.isBookmark = isBookmark;
