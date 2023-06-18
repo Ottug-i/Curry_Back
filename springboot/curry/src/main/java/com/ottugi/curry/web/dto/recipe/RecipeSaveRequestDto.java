@@ -1,6 +1,5 @@
 package com.ottugi.curry.web.dto.recipe;
 
-import com.ottugi.curry.domain.recipe.Time;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
