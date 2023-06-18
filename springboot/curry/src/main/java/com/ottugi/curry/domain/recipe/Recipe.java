@@ -27,17 +27,20 @@ public class Recipe {
     @Column(nullable = false)
     private Time time;
 
-    @Column(length = 100, nullable = false)
-    private String difficulty;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Difficulty difficulty;
 
-    @Column(length = 100, nullable = false)
-    private String composition;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Composition composition;
 
     @Column(length = 1000, nullable = false)
     private String ingredients;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String servings;
+    private Servings servings;
 
     @Column(length = 10000, nullable = false)
     private String orders;
@@ -46,7 +49,7 @@ public class Recipe {
     private String photo;
 
     @Builder
-    public Recipe(Long id, String name, String thumbnail, Time time, String difficulty, String composition, String ingredients, String servings, String orders, String photo) {
+    public Recipe(Long id, String name, String thumbnail, Time time, Difficulty difficulty, Composition composition, String ingredients, Servings servings, String orders, String photo) {
         this.id = id;
         this.name = name;
         this.thumbnail = thumbnail;

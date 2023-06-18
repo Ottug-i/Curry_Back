@@ -85,7 +85,7 @@ public class BookmarkServiceImpl implements BookmarkService {
             if (time.isEmpty()) {
                 time = "2시간 이상";
             }
-            if (recipe.getTime().getTime() <= Time.ofTime(time).getTime() && recipe.getDifficulty().contains(difficulty) && recipe.getComposition().contains(composition)) {
+            if (recipe.getTime().getTime() <= Time.ofTime(time).getTime() && recipe.getDifficulty().getDifficulty().contains(difficulty) && recipe.getComposition().getComposition().contains(composition)) {
                 bookmarkListResponseDtoList.add(new BookmarkListResponseDto(recipe, true));
             }
         }

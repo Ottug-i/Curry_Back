@@ -1,16 +1,16 @@
 package com.ottugi.curry.service.recipe;
 
-import com.ottugi.curry.domain.recipe.Recipe;
-import com.ottugi.curry.domain.recipe.RecipeRepository;
-import com.ottugi.curry.domain.recipe.Time;
+import com.ottugi.curry.domain.recipe.*;
 import com.ottugi.curry.web.dto.recipe.RecipeSaveRequestDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class RecipeCsvWriter implements ItemWriter<RecipeSaveRequestDto> {
@@ -23,13 +23,14 @@ public class RecipeCsvWriter implements ItemWriter<RecipeSaveRequestDto> {
         List<Recipe> recipeList = new ArrayList<>();
 
         list.forEach(getRecipe -> {
+
             Recipe recipe = new Recipe();
             recipe.setId(getRecipe.getId());
             recipe.setName(getRecipe.getName());
-            recipe.setComposition(getRecipe.getComposition());
+            recipe.setComposition(Composition.ofComposition(getRecipe.getComposition()));
             recipe.setIngredients(getRecipe.getIngredients());
-            recipe.setServings(getRecipe.getServings());
-            recipe.setDifficulty(getRecipe.getDifficulty());
+            recipe.setServings(Servings.ofServings(getRecipe.getServings()));
+            recipe.setDifficulty(Difficulty.ofDifficulty(getRecipe.getDifficulty()));
             recipe.setThumbnail(getRecipe.getThumbnail());
             recipe.setTime(Time.ofTime(getRecipe.getTime()));
             recipe.setOrders(getRecipe.getOrders());
