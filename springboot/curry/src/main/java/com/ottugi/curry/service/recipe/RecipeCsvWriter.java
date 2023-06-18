@@ -2,6 +2,7 @@ package com.ottugi.curry.service.recipe;
 
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeRepository;
+import com.ottugi.curry.domain.recipe.Time;
 import com.ottugi.curry.web.dto.recipe.RecipeSaveRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.ItemWriter;
@@ -30,7 +31,7 @@ public class RecipeCsvWriter implements ItemWriter<RecipeSaveRequestDto> {
             recipe.setServings(getRecipe.getServings());
             recipe.setDifficulty(getRecipe.getDifficulty());
             recipe.setThumbnail(getRecipe.getThumbnail());
-            recipe.setTime(getRecipe.getTime());
+            recipe.setTime(Time.ofTime(getRecipe.getTime()));
             recipe.setOrders(getRecipe.getOrders());
             recipe.setPhoto(getRecipe.getPhoto());
 
