@@ -10,4 +10,5 @@ public interface RecipeService {
 
     List<RecipeListResponseDto> getRecipeList(RecipeRequestDto recipeRequestDto);
     RecipeResponseDto getRecipeDetail(Long userId, Long recipeId);
+    List<RecipeListResponseDto> searchByBox(Long userId, String name, String time, String difficulty, String composition);
 }

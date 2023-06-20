@@ -37,4 +37,17 @@ public class RecipeController {
     public ResponseEntity<RecipeResponseDto> getRecipeDetail(@RequestParam Long userId, Long recipeId) {
         return ResponseEntity.ok().body(recipeService.getRecipeDetail(userId, recipeId));
     }
+
+    @GetMapping("/api/recipe/searchByBox")
+    @ApiOperation(value = "레시피 텍스트 검색", notes = "레시피 리스트에서 텍스트 및 옵션(시간/난이도/구성)으로 검색하여 리턴합니다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
+            @ApiImplicitParam(name = "time", value = "레시피 이름", example = "달걀빵"),
+            @ApiImplicitParam(name = "time", value = "레시피 시간", example = "10분 이내"),
+            @ApiImplicitParam(name = "difficulty", value = "레시피 난이도", example = "아무나"),
+            @ApiImplicitParam(name = "composition", value = "레시피 구성", example = "가볍게")
+    })
+    public ResponseEntity<List<RecipeListResponseDto>> searchByBox(@RequestParam Long userId, String name, String time, String difficulty, String composition) {
+        return ResponseEntity.ok().body(recipeService.searchByBox(userId, name, time, difficulty, composition));
+    }
 }
