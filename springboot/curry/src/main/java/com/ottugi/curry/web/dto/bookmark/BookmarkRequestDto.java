@@ -12,7 +12,7 @@ public class BookmarkRequestDto {
     @ApiModelProperty(notes = "회원 기본키", example = "1", required = true)
     Long userId;
 
-    @ApiModelProperty(notes = "레시피 기본키", example = "6909678", required = true)
+    @ApiModelProperty(notes = "레시피 아이디", example = "6909678", required = true)
     Long recipeId;
 
     @Builder

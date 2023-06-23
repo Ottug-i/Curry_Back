@@ -29,7 +29,7 @@ public class RecipeCsvReader {
         DefaultLineMapper<RecipeSaveRequestDto> defaultLineMapper = new DefaultLineMapper<>();
 
         DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer("@");
-        delimitedLineTokenizer.setNames("id", "name", "composition", "ingredients", "servings", "difficulty", "thumbnail", "time", "orders", "photo");
+        delimitedLineTokenizer.setNames("recipeId", "name", "composition", "ingredients", "servings", "difficulty", "thumbnail", "time", "orders", "photo");
         delimitedLineTokenizer.setStrict(false);
 
         defaultLineMapper.setLineTokenizer(delimitedLineTokenizer);

@@ -11,8 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RecipeSaveRequestDto {
 
-    @ApiModelProperty(notes = "레시피 기본키", example = "6842324")
-    private Long id;
+    @ApiModelProperty(notes = "레시피 아이디", example = "6842324")
+    private Long recipeId;
 
     @ApiModelProperty(notes = "레시피 이름", example = "고구마맛탕")
     private String name;
@@ -42,8 +42,8 @@ public class RecipeSaveRequestDto {
     private String photo;
 
     @Builder
-    public RecipeSaveRequestDto(Long id, String name, String composition, String ingredients, String servings, String difficulty, String thumbnail, String time, String orders, String photo) {
-        this.id = id;
+    public RecipeSaveRequestDto(Long recipeId, String name, String composition, String ingredients, String servings, String difficulty, String thumbnail, String time, String orders, String photo) {
+        this.recipeId = recipeId;
         this.name = name;
         this.composition = composition;
         this.ingredients = ingredients;

@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 public class BookmarkListResponseDto {
 
-    @ApiModelProperty(notes = "레시피 기본키", example = "6842324")
-    private Long id;
+    @ApiModelProperty(notes = "레시피 아이디", example = "6842324")
+    private Long recipeId;
 
     @ApiModelProperty(notes = "레시피 이름", example = "고구마맛탕")
     private String name;
@@ -32,7 +32,7 @@ public class BookmarkListResponseDto {
     private Boolean isBookmark;
 
     public BookmarkListResponseDto(Recipe recipe, Boolean isBookmark) {
-        this.id = recipe.getId();
+        this.recipeId = recipe.getRecipeId();
         this.name = recipe.getName();
         this.thumbnail = recipe.getThumbnail();
         this.time = recipe.getTime().getTimeName();
