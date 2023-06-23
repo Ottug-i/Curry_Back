@@ -33,7 +33,7 @@ public class RecipeController {
     @ApiOperation(value = "레시피 상세 조회", notes = "레시피를 상세 조회하여 레시피 북마크 유무와 함께 리턴합니다. 이후 최근 본 레시피에 추가됩니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
-            @ApiImplicitParam(name = "recipeId", value = "레시피 기본키", example = "6909678", required = true),
+            @ApiImplicitParam(name = "recipeId", value = "레시피 아이디", example = "6909678", required = true),
     })
     public ResponseEntity<RecipeResponseDto> getRecipeDetail(@RequestParam Long userId, Long recipeId) {
         return ResponseEntity.ok().body(recipeService.getRecipeDetail(userId, recipeId));
