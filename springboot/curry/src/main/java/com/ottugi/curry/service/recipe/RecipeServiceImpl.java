@@ -93,10 +93,10 @@ public class RecipeServiceImpl implements RecipeService {
         }
     }
 
-    public Boolean checkBookmark(Long userId, Long recipeId) {
+    public Boolean checkBookmark(Long userId, Long id) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다."));
-        Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() -> new IllegalArgumentException("해당 레시피가 없습니다."));
+        Recipe recipe = recipeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 레시피가 없습니다."));
         return bookmarkRepository.findByUserIdAndRecipeId(user, recipe) != null;
     }
 
