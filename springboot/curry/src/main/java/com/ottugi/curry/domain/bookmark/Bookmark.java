@@ -23,13 +23,8 @@ public class Bookmark {
     private User userId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Recipe_Id")
+    @JoinColumn(name = "Recipe_Id", referencedColumnName = "Recipe_Id")
     private Recipe recipeId;
-
-    @Builder
-    public Bookmark(Long id) {
-        this.id = id;
-    }
 
     public void setUser(User user) {
         this.userId = user;

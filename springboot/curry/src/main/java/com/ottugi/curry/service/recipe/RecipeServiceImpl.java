@@ -64,7 +64,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public RecipeResponseDto getRecipeDetail(Long userId, Long recipeId) {
 
-        Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() -> new IllegalArgumentException("해당 레시피가 없습니다."));
+        Recipe recipe = recipeRepository.findByRecipeId(recipeId);
         latelyService.addLately(userId, recipeId);
         return new RecipeResponseDto(recipe, checkBookmark(userId, recipeId));
     }
