@@ -16,16 +16,17 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 class RecipeRepositoryTest {
 
-    private final Long id = 1234L;
-    private final String name = "참치마요 덮밥";
-    private final String thumbnail = "www";
-    private final String time = "15분";
-    private final String difficulty = "초급";
-    private final String composition = "든든하게";
-    private final String ingredients = "참치캔###마요네즈###쪽파";
-    private final String seasoning = "진간장###올리고당###설탕###";
-    private final String orders = "1. 기름 뺀 참치###2. 마요네즈 4.5큰 술###3. 잘 비벼주세요.";
-    private final String photo = "www###wwww####wwww";
+    private final Long recipeId = 6842324L;
+    private final String name = "고구마맛탕";
+    private final String thumbnail = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png";
+    private final Time time = Time.ofTime("60분 이내");
+    private final Difficulty difficulty = Difficulty.ofDifficulty("초급");
+    private final Composition composition = Composition.ofComposition("가볍게");
+    private final String ingredients = "[재료] 고구마| 식용유| 황설탕| 올리고당| 견과류| 물";
+    private final Servings servings = Servings.ofServings("2인분");
+    private final String orders = "|1. 바삭하게 튀기는 꿀팁|2. 달콤한 소스 꿀팁|3. 더 건강하게 먹는 꿀팁";
+    private final String photo = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg";
+
     private Recipe recipe;
 
     @Autowired
@@ -36,13 +37,14 @@ class RecipeRepositoryTest {
 
         // given
         Recipe recipe = Recipe.builder()
-                .id(id)
+                .id(recipeId)
                 .name(name)
                 .thumbnail(thumbnail)
-                .time(Time.ofTime(time))
-                .difficulty(Difficulty.ofDifficulty(difficulty))
-                .composition(Composition.ofComposition(composition))
+                .time(time)
+                .difficulty(difficulty)
+                .composition(composition)
                 .ingredients(ingredients)
+                .servings(servings)
                 .orders(orders)
                 .photo(photo)
                 .build();
@@ -59,13 +61,14 @@ class RecipeRepositoryTest {
 
         // given
         Recipe newRecipe = Recipe.builder()
-                .id(id)
+                .id(recipeId)
                 .name(name)
                 .thumbnail(thumbnail)
-                .time(Time.ofTime(time))
-                .difficulty(Difficulty.ofDifficulty(difficulty))
-                .composition(Composition.ofComposition(composition))
+                .time(time)
+                .difficulty(difficulty)
+                .composition(composition)
                 .ingredients(ingredients)
+                .servings(servings)
                 .orders(orders)
                 .photo(photo)
                 .build();
@@ -80,6 +83,7 @@ class RecipeRepositoryTest {
         assertEquals(addRecipe.getDifficulty(), difficulty);
         assertEquals(addRecipe.getComposition(), composition);
         assertEquals(addRecipe.getIngredients(), ingredients);
+        assertEquals(addRecipe.getServings(), servings);
         assertEquals(addRecipe.getOrders(), orders);
         assertEquals(addRecipe.getPhoto(), photo);
 
@@ -99,15 +103,16 @@ class RecipeRepositoryTest {
         assertEquals(findRecipe.getDifficulty(), difficulty);
         assertEquals(findRecipe.getComposition(), composition);
         assertEquals(findRecipe.getIngredients(), ingredients);
+        assertEquals(findRecipe.getServings(), servings);
         assertEquals(findRecipe.getOrders(), orders);
         assertEquals(findRecipe.getPhoto(), photo);
     }
 
     @Test
-    void 레시피아이디로조회() {
+    void 레시피재료로조회() {
 
         // when
-        List<Recipe> recipeList = recipeRepository.findByIdIn(Arrays.asList("달걀"));
+        List<Recipe> recipeList = recipeRepository.findByIngredientsContaining("고구마");
 
         // then
         Recipe findRecipe = recipeList.get(0);
@@ -117,6 +122,26 @@ class RecipeRepositoryTest {
         assertEquals(findRecipe.getDifficulty(), difficulty);
         assertEquals(findRecipe.getComposition(), composition);
         assertEquals(findRecipe.getIngredients(), ingredients);
+        assertEquals(findRecipe.getServings(), servings);
+        assertEquals(findRecipe.getOrders(), orders);
+        assertEquals(findRecipe.getPhoto(), photo);
+    }
+    
+    @Test
+    void 레시피이름으로조회() {
+
+        // when
+        List<Recipe> recipeList = recipeRepository.findByNameContaining("고구마");
+
+        // then
+        Recipe findRecipe = recipeList.get(0);
+        assertEquals(findRecipe.getName(), name);
+        assertEquals(findRecipe.getThumbnail(), thumbnail);
+        assertEquals(findRecipe.getTime(), time);
+        assertEquals(findRecipe.getDifficulty(), difficulty);
+        assertEquals(findRecipe.getComposition(), composition);
+        assertEquals(findRecipe.getIngredients(), ingredients);
+        assertEquals(findRecipe.getServings(), servings);
         assertEquals(findRecipe.getOrders(), orders);
         assertEquals(findRecipe.getPhoto(), photo);
     }

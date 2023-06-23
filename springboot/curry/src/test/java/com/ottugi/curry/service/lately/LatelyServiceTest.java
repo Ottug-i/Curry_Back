@@ -2,8 +2,7 @@ package com.ottugi.curry.service.lately;
 
 import com.ottugi.curry.domain.lately.Lately;
 import com.ottugi.curry.domain.lately.LatelyRepository;
-import com.ottugi.curry.domain.recipe.Recipe;
-import com.ottugi.curry.domain.recipe.RecipeRepository;
+import com.ottugi.curry.domain.recipe.*;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.web.dto.lately.LatelyListResponseDto;
@@ -26,16 +25,16 @@ class LatelyServiceTest {
     private final String email = "wn8925@sookmyung.ac.kr";
     private final String nickName = "가경";
 
-    private final Long recipeId = 1234L;
-    private final String name = "참치마요 덮밥";
-    private final String thumbnail = "www";
-    private final String time = "15분";
-    private final String difficulty = "초급";
-    private final String composition = "든든하게";
-    private final String ingredients = "참치캔###마요네즈###쪽파";
-    private final String seasoning = "진간장###올리고당###설탕###";
-    private final String orders = "1. 기름 뺀 참치###2. 마요네즈 4.5큰 술###3. 잘 비벼주세요.";
-    private final String photo = "www###wwww####wwww";
+    private final Long recipeId = 6842324L;
+    private final String name = "고구마맛탕";
+    private final String thumbnail = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png";
+    private final Time time = Time.ofTime("60분 이내");
+    private final Difficulty difficulty = Difficulty.ofDifficulty("초급");
+    private final Composition composition = Composition.ofComposition("가볍게");
+    private final String ingredients = "[재료] 고구마| 식용유| 황설탕| 올리고당| 견과류| 물";
+    private final Servings servings = Servings.ofServings("2인분");
+    private final String orders = "|1. 바삭하게 튀기는 꿀팁|2. 달콤한 소스 꿀팁|3. 더 건강하게 먹는 꿀팁";
+    private final String photo = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg";
 
     private final Long latelyId = 1L;
 
@@ -56,7 +55,7 @@ class LatelyServiceTest {
 
         // given
         User user = new User(userId, email, nickName);
-        Recipe recipe = new Recipe(recipeId, name, thumbnail, time, difficulty, composition, ingredients, seasoning, orders, photo);
+        Recipe recipe = new Recipe(recipeId, name, thumbnail, time, difficulty, composition, ingredients, servings, orders, photo);
 
         // when
         when(userRepository.findById(userId)).thenReturn(java.util.Optional.of(user));
@@ -74,7 +73,7 @@ class LatelyServiceTest {
 
         // given
         User user = new User(userId, email, nickName);
-        Recipe recipe = new Recipe(recipeId, name, thumbnail, time, difficulty, composition, ingredients, seasoning, orders, photo);
+        Recipe recipe = new Recipe(recipeId, name, thumbnail, time, difficulty, composition, ingredients, servings, orders, photo);
         Lately lately = new Lately(latelyId);
         lately.setUser(user);
         lately.setRecipe(recipe);
