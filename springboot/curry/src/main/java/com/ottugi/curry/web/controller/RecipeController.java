@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +24,8 @@ public class RecipeController {
     private final RecipeService recipeService;
 
     @PostMapping("/api/recipe/getRecipeList")
-    @ApiOperation(value = "레시피 리스트 조회", notes = "레시피 리스트를 조회하여 레시피 북마크 유무와 함께 리턴합니다.")
-    public ResponseEntity<List<RecipeListResponseDto>> getRecipeList(@RequestBody RecipeRequestDto recipeRequestDto) {
+    @ApiOperation(value = "재료에 따른 레시피 리스트 조회", notes = "재료에 따른 레시피 리스트를 조회하여 레시피 북마크 유무와 함께 리턴합니다.")
+    public ResponseEntity<Page<RecipeListResponseDto>> getRecipeList(@RequestBody RecipeRequestDto recipeRequestDto) {
         return ResponseEntity.ok().body(recipeService.getRecipeList(recipeRequestDto));
     }
 
