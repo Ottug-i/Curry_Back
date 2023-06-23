@@ -42,6 +42,10 @@ dependencies {
 
 	// batch
 	implementation 'org.springframework.boot:spring-boot-starter-batch'
+
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'io.lettuce:lettuce-core:6.1.5.RELEASE'
 }
 
 tasks.named('test') {

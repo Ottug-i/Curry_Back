@@ -7,10 +7,12 @@ import com.ottugi.curry.domain.recipe.Time;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.service.lately.LatelyService;
+import com.ottugi.curry.service.rank.RankService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -26,8 +29,8 @@ public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
     private final UserRepository userRepository;
     private final BookmarkRepository bookmarkRepository;
-
     private final LatelyService latelyService;
+    private final RankService rankService;
 
     @Override
     public List<RecipeListResponseDto> getRecipeList(RecipeRequestDto recipeRequestDto) {
@@ -50,16 +53,17 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public List<RecipeListResponseDto> searchByBox(Long userId, String name, String time, String difficulty, String composition) {
 
-        List<Recipe> recipeList = recipeRepository.findByName(name);
+        List<Recipe> recipeList = recipeRepository.findByNameContaining(name);
         List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
 
-        if (time == null && difficulty == null && composition == null) {
+        if (time.isBlank() && difficulty.isBlank() && composition.isBlank()) {
+            rankService.addRank(name);
             return recipeList.stream().map(recipe -> new RecipeListResponseDto(recipe, checkBookmark(userId, recipe.getId()))).collect(Collectors.toList());
         }
 
         else {
             for (Recipe recipe: recipeList) {
-                if (time.isEmpty()) {
+                if (time == null || time.isEmpty()) {
                     time = "2시간 이상";
                 }
                 if (isRecipeMatching(recipe, time, difficulty, composition)) {
