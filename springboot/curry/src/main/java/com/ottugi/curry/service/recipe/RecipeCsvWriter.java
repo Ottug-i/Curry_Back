@@ -25,7 +25,7 @@ public class RecipeCsvWriter implements ItemWriter<RecipeSaveRequestDto> {
         list.forEach(getRecipe -> {
 
             Recipe recipe = new Recipe();
-            recipe.setId(getRecipe.getId());
+            recipe.setRecipeId(getRecipe.getRecipeId());
             recipe.setName(getRecipe.getName());
             recipe.setComposition(Composition.ofComposition(getRecipe.getComposition()));
             recipe.setIngredients(getRecipe.getIngredients());

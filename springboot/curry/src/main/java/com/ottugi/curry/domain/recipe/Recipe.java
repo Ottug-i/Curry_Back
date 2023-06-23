@@ -1,21 +1,22 @@
 package com.ottugi.curry.domain.recipe;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-public class Recipe {
+public class Recipe implements Serializable {
 
     @Id
-    @Column(name = "Recipe_Id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "Recipe_Id", nullable = false, unique = true)
+    private Long recipeId;
 
     @Column(length = 100, nullable = false)
     private String name;
@@ -49,8 +50,8 @@ public class Recipe {
     private String photo;
 
     @Builder
-    public Recipe(Long id, String name, String thumbnail, Time time, Difficulty difficulty, Composition composition, String ingredients, Servings servings, String orders, String photo) {
-        this.id = id;
+    public Recipe(Long recipeId, String name, String thumbnail, Time time, Difficulty difficulty, Composition composition, String ingredients, Servings servings, String orders, String photo) {
+        this.recipeId = recipeId;
         this.name = name;
         this.thumbnail = thumbnail;
         this.time = time;

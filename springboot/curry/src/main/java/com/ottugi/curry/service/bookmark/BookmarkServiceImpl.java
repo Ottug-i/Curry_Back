@@ -100,7 +100,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     public Recipe findRecipe(Long recipeId) {
 
-        return recipeRepository.findById(recipeId).orElseThrow(() -> new IllegalArgumentException("해당 레시피가 없습니다."));
+        return recipeRepository.findByRecipeId(recipeId);
     }
 
     public Boolean isBookmark(User user, Recipe recipe) {

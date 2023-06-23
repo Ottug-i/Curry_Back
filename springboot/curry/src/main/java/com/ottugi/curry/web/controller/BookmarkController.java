@@ -38,7 +38,7 @@ public class BookmarkController {
     @ApiOperation(value = "북마크 레시피 리스트 중 이름으로 검색", notes = "북마크 레시피 리스트에서 이름으로 검색하여 리턴합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
-            @ApiImplicitParam(name = "name", value = "레시피 이름", example = "유부", required = true),
+            @ApiImplicitParam(name = "name", value = "레시피 이름", example = "고구마", required = true),
     })
     public ResponseEntity<List<BookmarkListResponseDto>> searchByName(@RequestParam Long userId, String name) {
         return ResponseEntity.ok().body(bookmarkService.searchByName(userId, name));
