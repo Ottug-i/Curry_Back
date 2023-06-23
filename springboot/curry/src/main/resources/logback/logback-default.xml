@@ -46,6 +46,13 @@
     <logger name="com.zaxxer">
         <level value="ERROR"/>
     </logger>
+    <logger name="io.netty">
+        <level value="ERROR"/>
+    </logger>
+    <logger name="io.lettuce">
+        <level value="ERROR"/>
+    </logger>
+
 
     <logger name="jdbc" level="ERROR"/>
     <logger name="jdbc.connection" level="ERROR"/>

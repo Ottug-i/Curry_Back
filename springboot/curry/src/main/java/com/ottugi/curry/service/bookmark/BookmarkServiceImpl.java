@@ -82,7 +82,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
         for (Bookmark bookmark : bookmarkList) {
             Recipe recipe = bookmark.getRecipeId();
-            if (time.isEmpty()) {
+            if (time == null || time.isEmpty()) {
                 time = "2시간 이상";
             }
             if (isBookmarkMatching(recipe, time, difficulty, composition)) {
