@@ -39,11 +39,10 @@ class RecipeRepositoryTest {
                 .id(id)
                 .name(name)
                 .thumbnail(thumbnail)
-                .time(time)
-                .difficulty(difficulty)
-                .composition(composition)
+                .time(Time.ofTime(time))
+                .difficulty(Difficulty.ofDifficulty(difficulty))
+                .composition(Composition.ofComposition(composition))
                 .ingredients(ingredients)
-                .seasoning(seasoning)
                 .orders(orders)
                 .photo(photo)
                 .build();
@@ -63,11 +62,10 @@ class RecipeRepositoryTest {
                 .id(id)
                 .name(name)
                 .thumbnail(thumbnail)
-                .time(time)
-                .difficulty(difficulty)
-                .composition(composition)
+                .time(Time.ofTime(time))
+                .difficulty(Difficulty.ofDifficulty(difficulty))
+                .composition(Composition.ofComposition(composition))
                 .ingredients(ingredients)
-                .seasoning(seasoning)
                 .orders(orders)
                 .photo(photo)
                 .build();
@@ -82,7 +80,6 @@ class RecipeRepositoryTest {
         assertEquals(addRecipe.getDifficulty(), difficulty);
         assertEquals(addRecipe.getComposition(), composition);
         assertEquals(addRecipe.getIngredients(), ingredients);
-        assertEquals(addRecipe.getSeasoning(), seasoning);
         assertEquals(addRecipe.getOrders(), orders);
         assertEquals(addRecipe.getPhoto(), photo);
 
@@ -102,7 +99,6 @@ class RecipeRepositoryTest {
         assertEquals(findRecipe.getDifficulty(), difficulty);
         assertEquals(findRecipe.getComposition(), composition);
         assertEquals(findRecipe.getIngredients(), ingredients);
-        assertEquals(findRecipe.getSeasoning(), seasoning);
         assertEquals(findRecipe.getOrders(), orders);
         assertEquals(findRecipe.getPhoto(), photo);
     }
@@ -111,7 +107,7 @@ class RecipeRepositoryTest {
     void 레시피아이디로조회() {
 
         // when
-        List<Recipe> recipeList = recipeRepository.findByIdIn(Arrays.asList(id));
+        List<Recipe> recipeList = recipeRepository.findByIdIn(Arrays.asList("달걀"));
 
         // then
         Recipe findRecipe = recipeList.get(0);
@@ -121,7 +117,6 @@ class RecipeRepositoryTest {
         assertEquals(findRecipe.getDifficulty(), difficulty);
         assertEquals(findRecipe.getComposition(), composition);
         assertEquals(findRecipe.getIngredients(), ingredients);
-        assertEquals(findRecipe.getSeasoning(), seasoning);
         assertEquals(findRecipe.getOrders(), orders);
         assertEquals(findRecipe.getPhoto(), photo);
     }

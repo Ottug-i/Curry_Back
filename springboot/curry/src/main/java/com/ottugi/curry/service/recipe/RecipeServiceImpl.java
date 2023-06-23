@@ -13,11 +13,13 @@ import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,14 +35,31 @@ public class RecipeServiceImpl implements RecipeService {
     private final RankService rankService;
 
     @Override
-    public List<RecipeListResponseDto> getRecipeList(RecipeRequestDto recipeRequestDto) {
+    public Page<RecipeListResponseDto> getRecipeList(RecipeRequestDto recipeRequestDto) {
 
-        List<Recipe> recipeList = recipeRepository.findByIdIn(recipeRequestDto.getRecipeId());
-        if (recipeList.size() != recipeRequestDto.getRecipeId().size()) {
-            throw new IllegalArgumentException("해당 레시피가 없습니다.");
+        List<Map<Recipe, Integer>> sortedRecipeList = new ArrayList<>();
+
+        for (String ingredients : recipeRequestDto.getIngredients()) {
+            List<Recipe> recipeList = recipeRepository.findByIngredientsContaining(ingredients);
+            for (Recipe recipe : recipeList) {
+                updateIngredientsCount(sortedRecipeList, recipe);
+            }
         }
-        return recipeList.stream().map(recipe -> new RecipeListResponseDto(recipe, checkBookmark(recipeRequestDto.getUserId(), recipe.getId()))).collect(Collectors.toList());
+
+        sortedRecipeList.sort((recipeMap1, recipeMap2) -> recipeMap2.values().iterator().next().compareTo(recipeMap1.values().iterator().next()));
+
+        int totalItems = sortedRecipeList.size();
+        int fromIndex = Math.max(0, (recipeRequestDto.getPage() - 1) * recipeRequestDto.getSize());
+        int toIndex = Math.min(totalItems, fromIndex + recipeRequestDto.getSize());
+
+        List<RecipeListResponseDto> pagedRecipeList = sortedRecipeList.subList(fromIndex, toIndex)
+                .stream()
+                .map(recipeMap -> new RecipeListResponseDto(recipeMap.keySet().iterator().next(), checkBookmark(recipeRequestDto.getUserId(), recipeMap.keySet().iterator().next().getId())))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(pagedRecipeList, PageRequest.of(recipeRequestDto.getPage() - 1, recipeRequestDto.getSize()), totalItems);
     }
+
 
     @Override
     public RecipeResponseDto getRecipeDetail(Long userId, Long recipeId) {
@@ -85,4 +104,19 @@ public class RecipeServiceImpl implements RecipeService {
         return recipe.getTime().getTime() <= Time.ofTime(time).getTime() && recipe.getDifficulty().getDifficulty().contains(difficulty) && recipe.getComposition().getComposition().contains(composition);
     }
 
+    public void updateIngredientsCount(List<Map<Recipe, Integer>> sortedRecipeList, Recipe recipe) {
+        boolean recipeExists = false;
+        for (Map<Recipe, Integer> recipeMap : sortedRecipeList) {
+            if (recipeMap.containsKey(recipe)) {
+                recipeMap.put(recipe, recipeMap.get(recipe) + 1);
+                recipeExists = true;
+                break;
+            }
+        }
+        if (!recipeExists) {
+            Map<Recipe, Integer> map = new HashMap<>();
+            map.put(recipe, 1);
+            sortedRecipeList.add(map);
+        }
+    }
 }
