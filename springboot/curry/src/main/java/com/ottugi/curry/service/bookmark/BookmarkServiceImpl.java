@@ -85,7 +85,7 @@ public class BookmarkServiceImpl implements BookmarkService {
             if (time == null || time.isEmpty()) {
                 time = "2시간 이상";
             }
-            if (isBookmarkMatching(recipe, time, difficulty, composition)) {
+            if (isRecipeMatching(recipe, time, difficulty, composition)) {
                 bookmarkListResponseDtoList.add(new BookmarkListResponseDto(recipe, true));
             }
         }
@@ -100,7 +100,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     public Recipe findRecipe(Long recipeId) {
 
-        return recipeRepository.findByRecipeId(recipeId);
+        return recipeRepository.findByRecipeId(recipeId).orElseThrow(() -> new IllegalArgumentException("해당 레시피가 없습니다."));
     }
 
     public Boolean isBookmark(User user, Recipe recipe) {
@@ -108,7 +108,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         return bookmarkRepository.findByUserIdAndRecipeId(user, recipe) != null;
     }
 
-    public Boolean isBookmarkMatching(Recipe recipe, String time, String difficulty, String composition) {
+    public Boolean isRecipeMatching(Recipe recipe, String time, String difficulty, String composition) {
         return recipe.getTime().getTime() <= Time.ofTime(time).getTime() && recipe.getDifficulty().getDifficulty().contains(difficulty) && recipe.getComposition().getComposition().contains(composition);
     }
 }

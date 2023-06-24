@@ -55,7 +55,7 @@ public class LatelyServiceImpl implements LatelyService {
 
     public Recipe findRecipe(Long recipeId) {
 
-        return recipeRepository.findById(recipeId).orElseThrow(() -> new IllegalArgumentException("해당 레시피가 없습니다."));
+        return recipeRepository.findByRecipeId(recipeId).orElseThrow(() -> new IllegalArgumentException("해당 레시피가 없습니다."));
     }
 
     public void deleteDuplicatedLately(User user, Recipe recipe) {
