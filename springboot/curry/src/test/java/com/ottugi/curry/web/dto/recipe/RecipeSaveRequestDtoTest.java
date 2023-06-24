@@ -10,7 +10,7 @@ class RecipeSaveRequestDtoTest {
     void RecipeSaveRequestDtoTest_롬복() {
 
         // given
-        Long recipeId = 6842324L;
+        Long recipeId = 1234L;
         String name = "고구마맛탕";
         String thumbnail = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png";
         String time = "60분 이내";
@@ -22,17 +22,17 @@ class RecipeSaveRequestDtoTest {
         String photo = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg";
 
         // when
-        RecipeSaveRequestDto recipeSaveRequestDto = new RecipeSaveRequestDto(recipeId, name, thumbnail, time, difficulty, composition, ingredients, servings, orders, photo);
+        RecipeSaveRequestDto recipeSaveRequestDto = new RecipeSaveRequestDto(recipeId, name, composition, ingredients, servings, difficulty, thumbnail, time, orders, photo);
 
         // then
-        assertEquals(recipeSaveRequestDto.getId(), recipeId);
+        assertEquals(recipeSaveRequestDto.getRecipeId(), recipeId);
         assertEquals(recipeSaveRequestDto.getName(), name);
-        assertEquals(recipeSaveRequestDto.getThumbnail(), thumbnail);
-        assertEquals(recipeSaveRequestDto.getTime(), thumbnail);
-        assertEquals(recipeSaveRequestDto.getDifficulty(), difficulty);
         assertEquals(recipeSaveRequestDto.getComposition(), composition);
         assertEquals(recipeSaveRequestDto.getIngredients(), ingredients);
         assertEquals(recipeSaveRequestDto.getServings(), servings);
+        assertEquals(recipeSaveRequestDto.getDifficulty(), difficulty);
+        assertEquals(recipeSaveRequestDto.getThumbnail(), thumbnail);
+        assertEquals(recipeSaveRequestDto.getTime(), time);
         assertEquals(recipeSaveRequestDto.getOrders(), orders);
         assertEquals(recipeSaveRequestDto.getPhoto(), photo);
     }

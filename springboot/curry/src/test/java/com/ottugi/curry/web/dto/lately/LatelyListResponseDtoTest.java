@@ -11,7 +11,7 @@ class LatelyListResponseDtoTest {
     void LatelyListResponseDto_롬복() {
 
         // given
-        Long recipeId = 6842324L;
+        Long recipeId = 1234L;
         String name = "고구마맛탕";
         String thumbnail = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png";
         Time time = Time.ofTime("60분 이내");
@@ -23,7 +23,7 @@ class LatelyListResponseDtoTest {
         String photo = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg";
 
         Recipe recipe = Recipe.builder()
-                .id(recipeId)
+                .recipeId(recipeId)
                 .name(name)
                 .thumbnail(thumbnail)
                 .time(time)
@@ -39,7 +39,7 @@ class LatelyListResponseDtoTest {
         LatelyListResponseDto latelyListResponseDto = new LatelyListResponseDto(recipe);
 
         // then
-        assertEquals(latelyListResponseDto.getId(), recipeId);
+        assertEquals(latelyListResponseDto.getRecipeId(), recipeId);
         assertEquals(latelyListResponseDto.getName(), name);
         assertEquals(latelyListResponseDto.getThumbnail(), thumbnail);
     }

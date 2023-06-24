@@ -6,6 +6,7 @@ import com.ottugi.curry.domain.recipe.*;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.web.dto.lately.LatelyListResponseDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -25,7 +26,7 @@ class LatelyServiceTest {
     private final String email = "wn8925@sookmyung.ac.kr";
     private final String nickName = "가경";
 
-    private final Long recipeId = 6842324L;
+    private final Long recipeId = 1234L;
     private final String name = "고구마맛탕";
     private final String thumbnail = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png";
     private final Time time = Time.ofTime("60분 이내");
@@ -36,7 +37,8 @@ class LatelyServiceTest {
     private final String orders = "|1. 바삭하게 튀기는 꿀팁|2. 달콤한 소스 꿀팁|3. 더 건강하게 먹는 꿀팁";
     private final String photo = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg";
 
-    private final Long latelyId = 1L;
+    private User user;
+    private Recipe recipe;
 
     @Mock
     private LatelyRepository latelyRepository;
@@ -50,16 +52,20 @@ class LatelyServiceTest {
     @InjectMocks
     private LatelyServiceImpl latelyService;
 
+    @BeforeEach
+    public void setUp() {
+
+        // given
+        user = new User(email, nickName);
+        recipe = new Recipe(recipeId, name, thumbnail, time, difficulty, composition, ingredients, servings, orders, photo);
+    }
+
     @Test
     void 최근본레시피추가() {
 
-        // given
-        User user = new User(userId, email, nickName);
-        Recipe recipe = new Recipe(recipeId, name, thumbnail, time, difficulty, composition, ingredients, servings, orders, photo);
-
         // when
         when(userRepository.findById(userId)).thenReturn(java.util.Optional.of(user));
-        when(recipeRepository.findById(recipeId)).thenReturn(java.util.Optional.of(recipe));
+        when(recipeRepository.findByRecipeId(recipeId)).thenReturn(java.util.Optional.of(recipe));
         when(latelyRepository.findByUserIdAndRecipeId(user, recipe)).thenReturn(null);
         when(latelyRepository.save(any())).thenReturn(new Lately());
         Boolean result = latelyService.addLately(userId, recipeId);
@@ -72,9 +78,7 @@ class LatelyServiceTest {
     void 최근본레시피리스트조회() {
 
         // given
-        User user = new User(userId, email, nickName);
-        Recipe recipe = new Recipe(recipeId, name, thumbnail, time, difficulty, composition, ingredients, servings, orders, photo);
-        Lately lately = new Lately(latelyId);
+        Lately lately = new Lately();
         lately.setUser(user);
         lately.setRecipe(recipe);
 
@@ -86,6 +90,6 @@ class LatelyServiceTest {
         List<LatelyListResponseDto> latelyListResponseDtoList = latelyService.getLatelyAll(userId);
 
         // then
-        assertEquals(latelyListResponseDtoList.get(0).getName(), recipe.getName());
+        assertEquals(latelyListResponseDtoList.get(0).getRecipeId(), recipe.getRecipeId());
     }
 }

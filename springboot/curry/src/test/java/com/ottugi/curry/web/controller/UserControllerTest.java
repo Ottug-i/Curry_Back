@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class UserControllerTest {
 
+    private final Long userId = 1L;
     private final String email = "wn8925@gmail.com";
     private final String nickName = "가경";
     private final String newNickName = "가경이";
@@ -53,7 +54,7 @@ public class UserControllerTest {
 
         // given
         UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(email, nickName);
-        TokenDto tokenDto = new TokenDto(1L, email, nickName, secret);
+        TokenDto tokenDto = new TokenDto(userId, email, nickName, secret);
 
         // when
         when(userService.login(any(UserSaveRequestDto.class))).thenReturn(tokenDto);
@@ -63,7 +64,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userSaveRequestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.id").value(userId))
                 .andExpect(jsonPath("$.email").value(email))
                 .andExpect(jsonPath("$.nickName").value(nickName))
                 .andExpect(jsonPath("$.token").value(secret));
@@ -73,7 +74,7 @@ public class UserControllerTest {
     void 회원조회() throws Exception {
 
         // given
-        User user = new User(1L, email, nickName);
+        User user = new User(email, nickName);
         UserResponseDto userResponseDto = new UserResponseDto(user);
 
         // when
@@ -83,7 +84,7 @@ public class UserControllerTest {
         mockMvc.perform(get("/api/user/getProfile")
                         .param("id", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.id").value(user.getId()))
                 .andExpect(jsonPath("$.email").value(email))
                 .andExpect(jsonPath("$.nickName").value(nickName));
     }
@@ -92,9 +93,9 @@ public class UserControllerTest {
     void 회원수정() throws Exception {
 
         // given
-        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(1L, newNickName);
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(userId, newNickName);
 
-        User changingUser = new User(1L, email, newNickName);
+        User changingUser = new User(email, newNickName);
         UserResponseDto userResponseDto = new UserResponseDto(changingUser);
 
         // when
@@ -105,7 +106,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userUpdateRequestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.id").value(changingUser.getId()))
                 .andExpect(jsonPath("$.email").value(email))
                 .andExpect(jsonPath("$.nickName").value(newNickName));
     }

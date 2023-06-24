@@ -11,7 +11,7 @@ class BookmarkRequestDtoTest {
 
         // given
         Long userId = 1L;
-        Long recipeId = 6842324L;
+        Long recipeId = 1234L;
 
         // when
         BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(userId, recipeId);

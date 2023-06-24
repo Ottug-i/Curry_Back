@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.parameters.P;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -32,8 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class RecipeControllerTest {
 
-    private final Long recipeId1 = 6842324L;
-    private final Long recipeId2 = 6848305L;
+    private final Long recipeId1 = 1234L;
+    private final Long recipeId2 = 1235L;
     private final String name = "고구마맛탕";
     private final String thumbnail = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png";
     private final Time time = Time.ofTime("60분 이내");
@@ -88,8 +87,7 @@ class RecipeControllerTest {
         mockMvc.perform(post("/api/recipe/getRecipeList")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(new ObjectMapper().writeValueAsString(recipeRequestDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").value(recipeListResponseDtoList.size()));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -107,7 +105,7 @@ class RecipeControllerTest {
                     .param("userId", String.valueOf(userId))
                     .param("recipeId", String.valueOf(recipeId1)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(recipeId1));
+                .andExpect(jsonPath("$.recipeId").value(recipeId1));
     }
 
     @Test

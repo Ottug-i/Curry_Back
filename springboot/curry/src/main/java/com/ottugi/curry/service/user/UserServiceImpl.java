@@ -37,6 +37,9 @@ public class UserServiceImpl implements UserService {
         }
         else {
             User user = userRepository.save(userSaveRequestDto.toEntity());
+            if (user == null) {
+                throw new IllegalArgumentException("사용자 저장에 실패했습니다.");
+            }
             return createToken(user);
         }
     }

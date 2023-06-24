@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class RecipeTest {
 
-    private final Long recipeId = 6842324L;
+    private final Long recipeId = 1234L;
     private final String name = "고구마맛탕";
     private final String thumbnail = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png";
     private final String time = "60분 이내";
@@ -24,7 +24,7 @@ class RecipeTest {
 
         // given
         Recipe recipe = Recipe.builder()
-                .id(recipeId)
+                .recipeId(recipeId)
                 .name(name)
                 .thumbnail(thumbnail)
                 .time(Time.ofTime(time))
@@ -48,5 +48,4 @@ class RecipeTest {
         assertEquals(recipe.getOrders(), orders);
         assertEquals(recipe.getPhoto(), photo);
     }
-
 }

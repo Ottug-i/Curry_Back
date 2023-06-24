@@ -32,7 +32,7 @@ class BookmarkControllerTest {
 
     private final Long userId = 1L;
 
-    private final Long recipeId = 6842324L;
+    private final Long recipeId = 1234L;
     private final String name = "고구마맛탕";
     private final String time = "60분 이내";
     private final String difficulty = "초급";

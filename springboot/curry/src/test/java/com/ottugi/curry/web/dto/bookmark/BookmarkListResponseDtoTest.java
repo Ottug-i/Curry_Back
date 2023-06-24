@@ -11,7 +11,7 @@ class BookmarkListResponseDtoTest {
     void BookmarkListResponseDto_롬복() {
 
         // given
-        Long recipeId = 6842324L;
+        Long recipeId = 1234L;
         String name = "고구마맛탕";
         String thumbnail = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png";
         Time time = Time.ofTime("60분 이내");
@@ -25,7 +25,7 @@ class BookmarkListResponseDtoTest {
         Boolean isBookmark = true;
 
         Recipe recipe = Recipe.builder()
-                .id(recipeId)
+                .recipeId(recipeId)
                 .name(name)
                 .thumbnail(thumbnail)
                 .time(time)
@@ -41,12 +41,12 @@ class BookmarkListResponseDtoTest {
         BookmarkListResponseDto bookmarkListResponseDto = new BookmarkListResponseDto(recipe, isBookmark);
 
         // then
-        assertEquals(bookmarkListResponseDto.getId(), recipeId);
+        assertEquals(bookmarkListResponseDto.getRecipeId(), recipeId);
         assertEquals(bookmarkListResponseDto.getName(), name);
         assertEquals(bookmarkListResponseDto.getThumbnail(), thumbnail);
-        assertEquals(bookmarkListResponseDto.getTime(), time);
-        assertEquals(bookmarkListResponseDto.getDifficulty(), difficulty);
-        assertEquals(bookmarkListResponseDto.getComposition(), composition);
+        assertEquals(bookmarkListResponseDto.getTime(), "60분 이내");
+        assertEquals(bookmarkListResponseDto.getDifficulty(), "초급");
+        assertEquals(bookmarkListResponseDto.getComposition(), "가볍게");
         assertEquals(bookmarkListResponseDto.getIngredients(), ingredients);
         assertEquals(bookmarkListResponseDto.getIsBookmark(), isBookmark);
     }
