@@ -11,13 +11,13 @@ class BookmarkRequestDtoTest {
 
         // given
         Long userId = 1L;
-        Long recipeId1 = 1234L;
+        Long recipeId = 1234L;
 
         // when
-        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(userId, recipeId1);
+        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(userId, recipeId);
 
         // then
         assertEquals(bookmarkRequestDto.getUserId(), userId);
-        assertEquals(bookmarkRequestDto.getRecipeId(), recipeId1);
+        assertEquals(bookmarkRequestDto.getRecipeId(), recipeId);
     }
 }

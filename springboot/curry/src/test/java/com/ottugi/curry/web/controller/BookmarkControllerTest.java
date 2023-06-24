@@ -1,6 +1,9 @@
 package com.ottugi.curry.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ottugi.curry.domain.recipe.Composition;
+import com.ottugi.curry.domain.recipe.Difficulty;
+import com.ottugi.curry.domain.recipe.Time;
 import com.ottugi.curry.service.bookmark.BookmarkServiceImpl;
 import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
@@ -30,10 +33,10 @@ class BookmarkControllerTest {
     private final Long userId = 1L;
 
     private final Long recipeId = 1234L;
-    private final String name = "참치마요 덮밥";
-    private final String time = "15분";
+    private final String name = "고구마맛탕";
+    private final String time = "60분 이내";
     private final String difficulty = "초급";
-    private final String composition = "든든하게";
+    private final String composition = "가볍게";
 
     private MockMvc mockMvc;
 

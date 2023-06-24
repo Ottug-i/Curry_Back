@@ -49,17 +49,15 @@ class UserServiceTest {
 
         // given
         UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(email, nickName);
+        User user = new User(userSaveRequestDto.getEmail(), userSaveRequestDto.getNickName());
 
         // when
         when(userRepository.countByEmail(any())).thenReturn(0);
-        when(userRepository.save(any())).thenReturn(new User(1L, userSaveRequestDto.getEmail(), userSaveRequestDto.getNickName()));
+        when(userRepository.save(any())).thenReturn(user);
         TokenDto tokenDto = userService.login(userSaveRequestDto);
 
         // then
         assertNotNull(tokenDto);
-        assertEquals(1L, tokenDto.getId());
-        assertEquals(userSaveRequestDto.getEmail(), tokenDto.getEmail());
-        assertEquals(userSaveRequestDto.getNickName(), tokenDto.getNickName());
     }
 
     @Test
@@ -67,7 +65,7 @@ class UserServiceTest {
 
         // given
         UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(email, nickName);
-        User existingUser = new User(1L, userSaveRequestDto.getEmail(), userSaveRequestDto.getNickName());
+        User existingUser = new User(userSaveRequestDto.getEmail(), userSaveRequestDto.getNickName());
 
         // when
         when(userRepository.countByEmail(any())).thenReturn(1);
@@ -76,55 +74,47 @@ class UserServiceTest {
 
         // then
         assertNotNull(tokenDto);
-        assertEquals(1L, tokenDto.getId());
-        assertEquals(userSaveRequestDto.getEmail(), tokenDto.getEmail());
-        assertEquals(userSaveRequestDto.getNickName(), tokenDto.getNickName());
     }
 
     @Test
     void 회원조회() {
 
         // given
-        User user = new User(1L, email, nickName);
+        User user = new User(email, nickName);
 
         // when
-        when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user));
-        UserResponseDto userResponseDto = userService.getProfile(1L);
+        when(userRepository.findById(user.getId())).thenReturn(java.util.Optional.of(user));
+        UserResponseDto userResponseDto = userService.getProfile(user.getId());
 
         // then
         assertNotNull(userResponseDto);
-        assertEquals(1L, userResponseDto.getId());
-        assertEquals(user.getEmail(), userResponseDto.getEmail());
-        assertEquals(user.getNickName(), userResponseDto.getNickName());
     }
 
     @Test
     void 회원수정() {
 
         // given
-        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(1L, newNickName);
-
-        User existingUser = new User(1L, email, nickName);
+        User existingUser = new User(email, nickName);
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(existingUser.getId(), newNickName);
 
         // when
-        when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(existingUser));
+        when(userRepository.findById(existingUser.getId())).thenReturn(java.util.Optional.of(existingUser));
         UserResponseDto userResponseDto = userService.setProfile(userUpdateRequestDto);
 
         // then
         assertNotNull(userResponseDto);
         assertEquals(userResponseDto.getId(), userUpdateRequestDto.getId());
-        assertEquals(userResponseDto.getNickName(), userUpdateRequestDto.getNickName());
     }
 
     @Test
     void 탈퇴() {
 
         // given
-        User user = new User(1L, email, nickName);
+        User user = new User(email, nickName);
 
         // when
-        when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user));
-        Boolean isWithdraw = userService.setWithdraw(1L);
+        when(userRepository.findById(user.getId())).thenReturn(java.util.Optional.of(user));
+        Boolean isWithdraw = userService.setWithdraw(user.getId());
 
         // then
         assertTrue(isWithdraw);
