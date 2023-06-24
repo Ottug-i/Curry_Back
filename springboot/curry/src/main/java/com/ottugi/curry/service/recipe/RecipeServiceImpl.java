@@ -54,7 +54,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         List<RecipeListResponseDto> pagedRecipeList = sortedRecipeList.subList(fromIndex, toIndex)
                 .stream()
-                .map(recipeMap -> new RecipeListResponseDto(recipeMap.keySet().iterator().next(), checkBookmark(recipeRequestDto.getUserId(), recipeMap.keySet().iterator().next().getId())))
+                .map(recipeMap -> new RecipeListResponseDto(recipeMap.keySet().iterator().next(), checkBookmark(recipeRequestDto.getUserId(), recipeMap.keySet().iterator().next().getRecipeId())))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(pagedRecipeList, PageRequest.of(recipeRequestDto.getPage() - 1, recipeRequestDto.getSize()), totalItems);
@@ -64,7 +64,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public RecipeResponseDto getRecipeDetail(Long userId, Long recipeId) {
 
-        Recipe recipe = recipeRepository.findByRecipeId(recipeId);
+        Recipe recipe = recipeRepository.findByRecipeId(recipeId).orElseThrow(() -> new IllegalArgumentException("해당 레시피가 없습니다."));
         latelyService.addLately(userId, recipeId);
         return new RecipeResponseDto(recipe, checkBookmark(userId, recipeId));
     }
@@ -77,7 +77,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         if (time.isBlank() && difficulty.isBlank() && composition.isBlank()) {
             rankService.addRank(name);
-            return recipeList.stream().map(recipe -> new RecipeListResponseDto(recipe, checkBookmark(userId, recipe.getId()))).collect(Collectors.toList());
+            return recipeList.stream().map(recipe -> new RecipeListResponseDto(recipe, checkBookmark(userId, recipe.getRecipeId()))).collect(Collectors.toList());
         }
 
         else {
@@ -86,17 +86,17 @@ public class RecipeServiceImpl implements RecipeService {
                     time = "2시간 이상";
                 }
                 if (isRecipeMatching(recipe, time, difficulty, composition)) {
-                    recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, checkBookmark(userId, recipe.getId())));
+                    recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, checkBookmark(userId, recipe.getRecipeId())));
                 }
             }
             return recipeListResponseDtoList;
         }
     }
 
-    public Boolean checkBookmark(Long userId, Long id) {
+    public Boolean checkBookmark(Long userId, Long recipeId) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다."));
-        Recipe recipe = recipeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 레시피가 없습니다."));
+        Recipe recipe = recipeRepository.findByRecipeId(recipeId).orElseThrow(() -> new IllegalArgumentException("해당 레시피가 없습니다."));
         return bookmarkRepository.findByUserIdAndRecipeId(user, recipe) != null;
     }
 
