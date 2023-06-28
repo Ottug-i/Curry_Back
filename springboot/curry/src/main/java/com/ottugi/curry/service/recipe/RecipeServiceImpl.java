@@ -37,27 +37,32 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public Page<RecipeListResponseDto> getRecipeList(RecipeRequestDto recipeRequestDto) {
 
-        List<Map<Recipe, Integer>> sortedRecipeList = new ArrayList<>();
-
-        for (String ingredients : recipeRequestDto.getIngredients()) {
-            List<Recipe> recipeList = recipeRepository.findByIngredientsContaining(ingredients);
-            recipeList.forEach(recipe -> updateIngredientsCount(sortedRecipeList, recipe));
+        List<Recipe> recipeList = recipeRepository.findByIngredientsContaining(recipeRequestDto.getIngredients().get(0));
+        List<Recipe> resultList = new ArrayList<>();
+        for (Recipe recipe: recipeList) {
+            boolean isAllIncluded = true;
+            for (int i = 1; i < recipeRequestDto.getIngredients().size(); i++) {
+                if (!recipe.getIngredients().contains(recipeRequestDto.getIngredients().get(i))) {
+                    isAllIncluded = false;
+                    break;
+                }
+            }
+            if (isAllIncluded) {
+                resultList.add(recipe);
+            }
         }
 
-        sortedRecipeList.sort((recipeMap1, recipeMap2) -> recipeMap2.values().iterator().next().compareTo(recipeMap1.values().iterator().next()));
-
-        int totalItems = sortedRecipeList.size();
+        int totalItems = resultList.size();
         int fromIndex = Math.max(0, (recipeRequestDto.getPage() - 1) * recipeRequestDto.getSize());
         int toIndex = Math.min(totalItems, fromIndex + recipeRequestDto.getSize());
 
-        List<RecipeListResponseDto> pagedRecipeList = sortedRecipeList.subList(fromIndex, toIndex)
+        List<RecipeListResponseDto> pagedRecipeList = resultList.subList(fromIndex, toIndex)
                 .stream()
-                .map(recipeMap -> new RecipeListResponseDto(recipeMap.keySet().iterator().next(), checkBookmark(recipeRequestDto.getUserId(), recipeMap.keySet().iterator().next().getRecipeId())))
+                .map(recipe -> new RecipeListResponseDto(recipe, checkBookmark(recipeRequestDto.getUserId(), recipe.getRecipeId())))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(pagedRecipeList, PageRequest.of(recipeRequestDto.getPage() - 1, recipeRequestDto.getSize()), totalItems);
     }
-
 
     @Override
     public RecipeResponseDto getRecipeDetail(Long userId, Long recipeId) {
@@ -110,21 +115,5 @@ public class RecipeServiceImpl implements RecipeService {
 
     public Boolean isRecipeMatching(Recipe recipe, String time, String difficulty, String composition) {
         return recipe.getTime().getTime() <= Time.ofTime(time).getTime() && recipe.getDifficulty().getDifficulty().contains(difficulty) && recipe.getComposition().getComposition().contains(composition);
-    }
-
-    public void updateIngredientsCount(List<Map<Recipe, Integer>> sortedRecipeList, Recipe recipe) {
-        boolean recipeExists = false;
-        for (Map<Recipe, Integer> recipeMap : sortedRecipeList) {
-            if (recipeMap.containsKey(recipe)) {
-                recipeMap.put(recipe, recipeMap.get(recipe) + 1);
-                recipeExists = true;
-                break;
-            }
-        }
-        if (!recipeExists) {
-            Map<Recipe, Integer> map = new HashMap<>();
-            map.put(recipe, 1);
-            sortedRecipeList.add(map);
-        }
     }
 }
