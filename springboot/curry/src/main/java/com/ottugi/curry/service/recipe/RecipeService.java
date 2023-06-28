@@ -11,5 +11,5 @@ public interface RecipeService {
 
     Page<RecipeListResponseDto> getRecipeList(RecipeRequestDto recipeRequestDto);
     RecipeResponseDto getRecipeDetail(Long userId, Long recipeId);
-    List<RecipeListResponseDto> searchByBox(Long userId, String name, String time, String difficulty, String composition);
+    Page<RecipeListResponseDto> searchByBox(Long userId, int page, int size, String name, String time, String difficulty, String composition);
 }

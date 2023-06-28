@@ -41,9 +41,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         for (String ingredients : recipeRequestDto.getIngredients()) {
             List<Recipe> recipeList = recipeRepository.findByIngredientsContaining(ingredients);
-            for (Recipe recipe : recipeList) {
-                updateIngredientsCount(sortedRecipeList, recipe);
-            }
+            recipeList.forEach(recipe -> updateIngredientsCount(sortedRecipeList, recipe));
         }
 
         sortedRecipeList.sort((recipeMap1, recipeMap2) -> recipeMap2.values().iterator().next().compareTo(recipeMap1.values().iterator().next()));
@@ -70,14 +68,19 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public List<RecipeListResponseDto> searchByBox(Long userId, String name, String time, String difficulty, String composition) {
+    public Page<RecipeListResponseDto> searchByBox(Long userId, int page, int size, String name, String time, String difficulty, String composition) {
 
         List<Recipe> recipeList = recipeRepository.findByNameContaining(name);
         List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
 
+        int totalItems = recipeList.size();
+        int fromIndex = Math.max(0, page - 1) * size;
+        int toIndex = Math.min(totalItems, fromIndex + size);
+
         if (time.isBlank() && difficulty.isBlank() && composition.isBlank()) {
             rankService.addRank(name);
-            return recipeList.stream().map(recipe -> new RecipeListResponseDto(recipe, checkBookmark(userId, recipe.getRecipeId()))).collect(Collectors.toList());
+            recipeListResponseDtoList = recipeList.subList(fromIndex, toIndex)
+                    .stream().map(recipe -> new RecipeListResponseDto(recipe, checkBookmark(userId, recipe.getRecipeId()))).collect(Collectors.toList());
         }
 
         else {
@@ -89,8 +92,13 @@ public class RecipeServiceImpl implements RecipeService {
                     recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, checkBookmark(userId, recipe.getRecipeId())));
                 }
             }
-            return recipeListResponseDtoList;
+
+            totalItems = recipeListResponseDtoList.size();
+            toIndex = Math.min(totalItems, fromIndex + size);
+
+            recipeListResponseDtoList = recipeListResponseDtoList.subList(fromIndex, toIndex);
         }
+        return new PageImpl<>(recipeListResponseDtoList, PageRequest.of(page - 1, size), totalItems);
     }
 
     public Boolean checkBookmark(Long userId, Long recipeId) {
