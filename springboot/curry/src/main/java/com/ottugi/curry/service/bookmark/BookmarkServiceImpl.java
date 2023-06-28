@@ -10,6 +10,9 @@ import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +49,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public List<BookmarkListResponseDto> getBookmarkAll(Long userId) {
+    public Page<BookmarkListResponseDto> getBookmarkAll(Long userId, int page, int size) {
 
         User user = findUser(userId);
         List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(user);
@@ -55,11 +58,11 @@ public class BookmarkServiceImpl implements BookmarkService {
             bookmarkListResponseDtoList.add(new BookmarkListResponseDto(bookmark.getRecipeId(), true));
         }
 
-        return bookmarkListResponseDtoList;
+        return getPage(bookmarkListResponseDtoList, page, size);
     }
 
     @Override
-    public List<BookmarkListResponseDto> searchByName(Long userId, String name) {
+    public Page<BookmarkListResponseDto> searchByName(Long userId, int page, int size, String name) {
 
         User user = findUser(userId);
         List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(user);
@@ -71,11 +74,11 @@ public class BookmarkServiceImpl implements BookmarkService {
             }
         }
 
-        return bookmarkListResponseDtoList;
+        return getPage(bookmarkListResponseDtoList, page, size);
     }
 
     @Override
-    public List<BookmarkListResponseDto> searchByOption(Long userId, String time, String difficulty, String composition) {
+    public Page<BookmarkListResponseDto> searchByOption(Long userId, int page, int size, String time, String difficulty, String composition) {
 
         User user = findUser(userId);
         List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(user);
@@ -90,7 +93,7 @@ public class BookmarkServiceImpl implements BookmarkService {
             }
         }
 
-        return bookmarkListResponseDtoList;
+        return getPage(bookmarkListResponseDtoList, page, size);
     }
 
     public User findUser(Long userId) {
@@ -110,5 +113,13 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     public Boolean isRecipeMatching(Recipe recipe, String time, String difficulty, String composition) {
         return recipe.getTime().getTime() <= Time.ofTime(time).getTime() && recipe.getDifficulty().getDifficulty().contains(difficulty) && recipe.getComposition().getComposition().contains(composition);
+    }
+
+    public Page<BookmarkListResponseDto> getPage(List<BookmarkListResponseDto> bookmarkListResponseDtoList, int page, int size) {
+        int totalItems = bookmarkListResponseDtoList.size();
+        int fromIndex = Math.max(0, page - 1) * size;
+        int toIndex = Math.min(totalItems, fromIndex + size);
+        bookmarkListResponseDtoList = bookmarkListResponseDtoList.subList(fromIndex, toIndex);
+        return new PageImpl<>(bookmarkListResponseDtoList, PageRequest.of(page - 1, size), totalItems);
     }
 }
