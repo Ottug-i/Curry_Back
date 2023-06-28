@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RecipeSaveRequestDtoTest {
 
     @Test
-    void RecipeSaveRequestDtoTest_롬복() {
+    void RecipeSaveRequestDto_롬복() {
 
         // given
         Long recipeId = 1234L;
