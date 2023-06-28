@@ -4,8 +4,6 @@ import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface BookmarkService {
 
     Boolean addOrRemoveBookmark(BookmarkRequestDto bookmarkRequestDto);

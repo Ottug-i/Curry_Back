@@ -12,8 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Api(tags={"Bookmark API (북마크 레시피 API)"})
 @RestController
 @RequiredArgsConstructor

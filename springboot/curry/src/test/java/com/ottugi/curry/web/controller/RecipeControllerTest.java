@@ -47,6 +47,9 @@ class RecipeControllerTest {
 
     private final Long userId = 1L;
 
+    private final int page = 1;
+    private final int size = 10;
+
     private MockMvc mockMvc;
 
     @Mock
@@ -126,18 +129,22 @@ class RecipeControllerTest {
         recipeListResponseDtoList.add(new RecipeListResponseDto(recipe1, isBookmark));
         recipeListResponseDtoList.add(new RecipeListResponseDto(recipe2, isBookmark));
 
+        Page<RecipeListResponseDto> recipeListResponseDtoPage = new PageImpl<>(recipeListResponseDtoList);
+
         // when
-        when(recipeService.searchByBox(userId, name, time.toString(), difficulty.toString(), composition.toString())).thenReturn(recipeListResponseDtoList);
+        when(recipeService.searchByBox(userId, page, size, name, time.toString(), difficulty.toString(), composition.toString())).thenReturn(recipeListResponseDtoPage);
 
         // then
         mockMvc.perform(get("/api/recipe/searchByBox")
                         .param("userId", String.valueOf(userId))
+                        .param("page", String.valueOf(page))
+                        .param("size", String.valueOf(size))
                         .param("name", name)
                         .param("time", time.toString())
                         .param("difficulty", difficulty.toString())
                         .param("composition", composition.toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(recipeListResponseDtoList.size())));
+                .andExpect(jsonPath("$.content", hasSize(recipeListResponseDtoList.size())));
     }
 }

@@ -41,6 +41,9 @@ class RecipeServiceTest {
     private final String orders = "|1. 바삭하게 튀기는 꿀팁|2. 달콤한 소스 꿀팁|3. 더 건강하게 먹는 꿀팁";
     private final String photo = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg";
 
+    private final int page = 1;
+    private final int size = 10;
+
     private User user;
     private Recipe recipe1;
     private Recipe recipe2;
@@ -115,9 +118,9 @@ class RecipeServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(recipeRepository.findByNameContaining("고구마")).thenReturn(recipeList);
 
-        List<RecipeListResponseDto> recipeListResponseDtoList = recipeService.searchByBox(userId, name, "60분 이내", "초급", "가볍게");
+        Page<RecipeListResponseDto> recipeListResponseDtoPage = recipeService.searchByBox(userId, page, size, name, "60분 이내", "초급", "가볍게");
 
         // then
-        assertNotNull(recipeListResponseDtoList);
+        assertNotNull(recipeListResponseDtoPage);
     }
 }

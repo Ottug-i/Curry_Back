@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,9 @@ class BookmarkServiceTest {
     private final Servings servings = Servings.ofServings("2인분");
     private final String orders = "|1. 바삭하게 튀기는 꿀팁|2. 달콤한 소스 꿀팁|3. 더 건강하게 먹는 꿀팁";
     private final String photo = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg";
+
+    private final int page = 1;
+    private final int size = 10;
 
     private User user;
     private Recipe recipe;
@@ -109,10 +113,10 @@ class BookmarkServiceTest {
         List<Bookmark> bookmarkList = new ArrayList<>();
         bookmarkList.add(bookmark);
         when(bookmarkRepository.findByUserId(user)).thenReturn(bookmarkList);
-        List<BookmarkListResponseDto> bookmarkListResponseDtoList = bookmarkService.getBookmarkAll(userId);
+        Page<BookmarkListResponseDto> bookmarkListResponseDtoPage = bookmarkService.getBookmarkAll(userId, page, size);
 
         // then
-        assertEquals(bookmarkListResponseDtoList.get(0).getRecipeId(), recipe.getRecipeId());
+        assertEquals(bookmarkListResponseDtoPage.getContent().get(0).getRecipeId(), recipe.getRecipeId());
     }
 
     @Test
@@ -128,10 +132,10 @@ class BookmarkServiceTest {
         List<Bookmark> bookmarkList = new ArrayList<>();
         bookmarkList.add(bookmark);
         when(bookmarkRepository.findByUserId(user)).thenReturn(bookmarkList);
-        List<BookmarkListResponseDto> bookmarkListResponseDtoList = bookmarkService.searchByName(userId, recipe.getName());
+        Page<BookmarkListResponseDto> bookmarkListResponseDtoPage = bookmarkService.searchByName(userId, page, size, recipe.getName());
 
         // then
-        assertEquals(bookmarkListResponseDtoList.get(0).getRecipeId(), recipe.getRecipeId());
+        assertEquals(bookmarkListResponseDtoPage.getContent().get(0).getRecipeId(), recipe.getRecipeId());
     }
 
     @Test
@@ -147,9 +151,9 @@ class BookmarkServiceTest {
         List<Bookmark> bookmarkList = new ArrayList<>();
         bookmarkList.add(bookmark);
         when(bookmarkRepository.findByUserId(user)).thenReturn(bookmarkList);
-        List<BookmarkListResponseDto> bookmarkListResponseDtoList = bookmarkService.searchByOption(userId, "60분 이내", "초급", "가볍게");
+        Page<BookmarkListResponseDto> bookmarkListResponseDtoPage = bookmarkService.searchByOption(userId, page, size,"60분 이내", "초급", "가볍게");
 
         // then
-        assertEquals(bookmarkListResponseDtoList.get(0).getRecipeId(), recipe.getRecipeId());
+        assertEquals(bookmarkListResponseDtoPage.getContent().get(0).getRecipeId(), recipe.getRecipeId());
     }
 }
