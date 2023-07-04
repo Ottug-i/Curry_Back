@@ -5,7 +5,7 @@
 <br/><br/>
 
 ## 🛠 기술 스택
-> **Backend** : JAVA 11, Spring Boot (Gradle), Spring Data JPA, Spring Security, JWT, Spring Batch, Spring Redis<br/>
+> **Backend** : JAVA 11, Spring Boot (Gradle), Spring Data JPA, H2 DB, Spring Security, JWT, Spring Batch, Spring Redis<br/>
 
 <br/><br/>
 
