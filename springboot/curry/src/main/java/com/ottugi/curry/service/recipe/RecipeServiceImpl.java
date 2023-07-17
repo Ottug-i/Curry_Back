@@ -11,6 +11,7 @@ import com.ottugi.curry.service.rank.RankService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
+import com.ottugi.curry.web.dto.recipe.RecommendRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -62,6 +63,16 @@ public class RecipeServiceImpl implements RecipeService {
                 .collect(Collectors.toList());
 
         return new PageImpl<>(pagedRecipeList, PageRequest.of(recipeRequestDto.getPage() - 1, recipeRequestDto.getSize()), totalItems);
+    }
+
+    @Override
+    public List<RecipeListResponseDto> getRecommendList(RecommendRequestDto recommendRequestDto) {
+
+        List<Recipe> recipeList = recipeRepository.findByRecipeIdIn(recommendRequestDto.getRecipeId());
+        if (recipeList.size() != recommendRequestDto.getRecipeId().size()) {
+            throw new IllegalArgumentException("해당 레시피가 없습니다.");
+        }
+        return recipeList.stream().map(recipe -> new RecipeListResponseDto(recipe, checkBookmark(recommendRequestDto.getUserId(), recipe.getId()))).collect(Collectors.toList());
     }
 
     @Override
