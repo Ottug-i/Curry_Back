@@ -4,6 +4,7 @@ import com.ottugi.curry.service.recipe.RecipeService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
+import com.ottugi.curry.web.dto.recipe.RecommendRequestDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Api(tags={"Recipe API (레시피 API)"})
 @RestController
@@ -27,11 +30,17 @@ public class RecipeController {
         return ResponseEntity.ok().body(recipeService.getRecipeList(recipeRequestDto));
     }
 
+    @PostMapping("/api/recipe/getRecommendList")
+    @ApiOperation(value = "레시피 아이디에 따른 추천 레시피 리스트 조회", notes = "레시피 아이디에 따른 추천 레시피 리스트를 조회하여 레시피 북마크 유무와 함께 리턴합니다.")
+    public ResponseEntity<List<RecipeListResponseDto>> getRecipeList(@RequestBody RecommendRequestDto recommendRequestDto) {
+        return ResponseEntity.ok().body(recipeService.getRecommendList(recommendRequestDto));
+    }
+
     @GetMapping("/api/recipe/getRecipeDetail")
     @ApiOperation(value = "레시피 상세 조회", notes = "레시피를 상세 조회하여 레시피 북마크 유무와 함께 리턴합니다. 이후 최근 본 레시피에 추가됩니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
-            @ApiImplicitParam(name = "recipeId", value = "레시피 아이디", example = "6909678", required = true),
+            @ApiImplicitParam(name = "recipeId", value = "레시피 아이디", example = "6909678", required = true)
     })
     public ResponseEntity<RecipeResponseDto> getRecipeDetail(@RequestParam Long userId, Long recipeId) {
         return ResponseEntity.ok().body(recipeService.getRecipeDetail(userId, recipeId));
