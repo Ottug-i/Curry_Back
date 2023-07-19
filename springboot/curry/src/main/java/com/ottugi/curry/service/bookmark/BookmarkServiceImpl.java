@@ -62,34 +62,38 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public Page<BookmarkListResponseDto> searchByName(Long userId, int page, int size, String name) {
+    public Page<BookmarkListResponseDto> searchBookmark(Long userId, int page, int size, String name, String time, String difficulty, String composition) {
 
         User user = findUser(userId);
         List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(user);
         List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
-        for (Bookmark bookmark : bookmarkList) {
-            Recipe recipe = bookmark.getRecipeId();
-            if (recipe.getName().contains(name)) {
-                bookmarkListResponseDtoList.add(new BookmarkListResponseDto(recipe, true));
+
+        if (name == null || name.isBlank()) {
+            for (Bookmark bookmark : bookmarkList) {
+                Recipe recipe = bookmark.getRecipeId();
+                if (time == null || time.isEmpty()) {
+                    time = "2시간 이상";
+                }
+                if (isRecipeMatching(recipe, time, difficulty, composition)) {
+                    bookmarkListResponseDtoList.add(new BookmarkListResponseDto(recipe, true));
+                }
             }
-        }
-
-        return getPage(bookmarkListResponseDtoList, page, size);
-    }
-
-    @Override
-    public Page<BookmarkListResponseDto> searchByOption(Long userId, int page, int size, String time, String difficulty, String composition) {
-
-        User user = findUser(userId);
-        List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(user);
-        List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
-        for (Bookmark bookmark : bookmarkList) {
-            Recipe recipe = bookmark.getRecipeId();
-            if (time == null || time.isEmpty()) {
-                time = "2시간 이상";
+        } else if (time.isBlank() && difficulty.isBlank() && composition.isBlank()) {
+            for (Bookmark bookmark : bookmarkList) {
+                Recipe recipe = bookmark.getRecipeId();
+                if (recipe.getName().contains(name)) {
+                    bookmarkListResponseDtoList.add(new BookmarkListResponseDto(recipe, true));
+                }
             }
-            if (isRecipeMatching(recipe, time, difficulty, composition)) {
-                bookmarkListResponseDtoList.add(new BookmarkListResponseDto(recipe, true));
+        } else {
+            for (Bookmark bookmark : bookmarkList) {
+                Recipe recipe = bookmark.getRecipeId();
+                if (time == null || time.isEmpty()) {
+                    time = "2시간 이상";
+                }
+                if (recipe.getName().contains(name) && isRecipeMatching(recipe, time, difficulty, composition)) {
+                    bookmarkListResponseDtoList.add(new BookmarkListResponseDto(recipe, true));
+                }
             }
         }
 
