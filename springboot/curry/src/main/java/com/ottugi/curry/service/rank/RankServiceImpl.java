@@ -27,6 +27,10 @@ public class RankServiceImpl implements RankService {
     @Override
     public void addRank(String name) {
 
+        if (name == null || name.isEmpty()) {
+            return;
+        }
+
         Double score = 0.0;
         try {
             redisTemplate.opsForZSet().incrementScore("ranking", name, 1);
