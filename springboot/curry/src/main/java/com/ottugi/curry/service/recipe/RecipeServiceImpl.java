@@ -94,9 +94,11 @@ public class RecipeServiceImpl implements RecipeService {
         int toIndex = Math.min(totalItems, fromIndex + size);
 
         if (time.isBlank() && difficulty.isBlank() && composition.isBlank()) {
-            rankService.addRank(name);
             recipeListResponseDtoList = recipeList.subList(fromIndex, toIndex)
                     .stream().map(recipe -> new RecipeListResponseDto(recipe, checkBookmark(userId, recipe.getRecipeId()))).collect(Collectors.toList());
+            if (recipeListResponseDtoList.size() != 0) {
+                rankService.addRank(name);
+            }
         }
 
         else {
