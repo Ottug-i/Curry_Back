@@ -4,7 +4,7 @@ import com.ottugi.curry.service.recipe.RecipeService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
-import com.ottugi.curry.web.dto.recipe.RecommendRequestDto;
+import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
