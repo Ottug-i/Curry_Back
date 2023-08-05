@@ -11,7 +11,7 @@ import com.ottugi.curry.service.rank.RankService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
-import com.ottugi.curry.web.dto.recipe.RecommendRequestDto;
+import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -69,10 +70,17 @@ public class RecipeServiceImpl implements RecipeService {
     public List<RecipeListResponseDto> getRecommendList(RecommendRequestDto recommendRequestDto) {
 
         List<Recipe> recipeList = recipeRepository.findByRecipeIdIn(recommendRequestDto.getRecipeId());
+
+        Map<Long, Recipe> recipeMap = recipeList.stream().collect(Collectors.toMap(Recipe::getRecipeId, Function.identity()));
+        List<Recipe> sortedRecipeList = recommendRequestDto.getRecipeId().stream()
+                .map(recipeMap::get)
+                .collect(Collectors.toList());
+
         if (recipeList.size() != recommendRequestDto.getRecipeId().size()) {
             throw new IllegalArgumentException("해당 레시피가 없습니다.");
         }
-        return recipeList.stream().map(recipe -> new RecipeListResponseDto(recipe, checkBookmark(recommendRequestDto.getUserId(), recipe.getId()))).collect(Collectors.toList());
+
+        return sortedRecipeList.stream().map(recipe -> new RecipeListResponseDto(recipe, checkBookmark(recommendRequestDto.getUserId(), recipe.getRecipeId()))).collect(Collectors.toList());
     }
 
     @Override
