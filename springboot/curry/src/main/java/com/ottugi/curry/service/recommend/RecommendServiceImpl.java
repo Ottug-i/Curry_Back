@@ -105,10 +105,6 @@ public class RecommendServiceImpl implements RecommendService {
         ObjectMapper objectMapper = new ObjectMapper();
         Object[] resultList = objectMapper.readValue(response, Object[].class);
 
-        log.info(String.valueOf(resultList));
-        log.info((String) resultList[0]);
-        log.info(String.valueOf(resultList[1]));
-
         String genre = (String) resultList[0];
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다."));
         user.updateGenre(genre);
