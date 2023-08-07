@@ -1,5 +1,7 @@
 package com.ottugi.curry.web.dto.user;
 
+import com.ottugi.curry.domain.recipe.Servings;
+import com.ottugi.curry.domain.user.Role;
 import com.ottugi.curry.domain.user.User;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -16,9 +18,13 @@ public class UserResponseDto {
     @ApiModelProperty(notes = "회원 닉네임", example = "가경")
     private String nickName;
 
+    @ApiModelProperty(notes = "회원 권한", example = "일반 사용자")
+    private String role;
+
     public UserResponseDto(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.nickName = user.getNickName();
+        this.role = user.getRole().getRole();
     }
 }
