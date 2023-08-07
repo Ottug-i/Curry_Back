@@ -12,6 +12,7 @@ class UserTest {
     private final String email = "wn8925@gmail.com";
     private final String nickName = "가경";
     private final String newNickName = "가경이";
+
     private User user;
 
     @BeforeEach
@@ -22,7 +23,7 @@ class UserTest {
     }
 
     @Test
-    void 회원생성() {
+    void 회원추가() {
 
         // when, then
         assertEquals(user.getEmail(), email);
@@ -33,7 +34,7 @@ class UserTest {
     void 회원수정() {
 
         // when
-        user.updateProfile("가경이");
+        user.updateProfile(newNickName);
 
         // then
         assertEquals(user.getNickName(), newNickName);

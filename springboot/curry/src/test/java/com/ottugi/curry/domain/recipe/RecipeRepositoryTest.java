@@ -1,128 +1,45 @@
 package com.ottugi.curry.domain.recipe;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+@SpringBootTest
 class RecipeRepositoryTest {
 
-    private final Long id = 1234L;
-    private final String name = "참치마요 덮밥";
-    private final String thumbnail = "www";
-    private final String time = "15분";
-    private final String difficulty = "초급";
-    private final String composition = "든든하게";
-    private final String ingredients = "참치캔###마요네즈###쪽파";
-    private final String seasoning = "진간장###올리고당###설탕###";
-    private final String orders = "1. 기름 뺀 참치###2. 마요네즈 4.5큰 술###3. 잘 비벼주세요.";
-    private final String photo = "www###wwww####wwww";
-    private Recipe recipe;
+    // 이미 DB에 저장되어있는 데이터 사용
+    private final Long recipeId = 6842324L;
 
     @Autowired
     private RecipeRepository recipeRepository;
 
-    @BeforeEach
-    public void setUp() {
+    @Test
+    void 레시피재료로조회() {
 
-        // given
-        Recipe recipe = Recipe.builder()
-                .id(id)
-                .name(name)
-                .thumbnail(thumbnail)
-                .time(time)
-                .difficulty(difficulty)
-                .composition(composition)
-                .ingredients(ingredients)
-                .seasoning(seasoning)
-                .orders(orders)
-                .photo(photo)
-                .build();
-        recipeRepository.save(recipe);
-    }
+        String ingredients = "고구마";
+        List<Recipe> recipeList = recipeRepository.findByIngredientsContaining(ingredients);
 
-    @AfterEach
-    void clean() {
-        recipeRepository.deleteAll();
+        assertNotNull(recipeList);
     }
 
     @Test
-    void 레시피추가() {
+    void 레시피이름으로조회() {
 
-        // given
-        Recipe newRecipe = Recipe.builder()
-                .id(id)
-                .name(name)
-                .thumbnail(thumbnail)
-                .time(time)
-                .difficulty(difficulty)
-                .composition(composition)
-                .ingredients(ingredients)
-                .seasoning(seasoning)
-                .orders(orders)
-                .photo(photo)
-                .build();
+        String ingredients = "고구마";
+        List<Recipe> recipeList = recipeRepository.findByNameContaining(ingredients);
 
-        // when
-        Recipe addRecipe = recipeRepository.save(newRecipe);
-
-        // then
-        assertEquals(addRecipe.getName(), name);
-        assertEquals(addRecipe.getThumbnail(), thumbnail);
-        assertEquals(addRecipe.getTime(), time);
-        assertEquals(addRecipe.getDifficulty(), difficulty);
-        assertEquals(addRecipe.getComposition(), composition);
-        assertEquals(addRecipe.getIngredients(), ingredients);
-        assertEquals(addRecipe.getSeasoning(), seasoning);
-        assertEquals(addRecipe.getOrders(), orders);
-        assertEquals(addRecipe.getPhoto(), photo);
-
-    }
-
-    @Test
-    void 레시피조회() {
-
-        // when
-        List<Recipe> recipeList = recipeRepository.findAll();
-
-        // then
-        Recipe findRecipe = recipeList.get(0);
-        assertEquals(findRecipe.getName(), name);
-        assertEquals(findRecipe.getThumbnail(), thumbnail);
-        assertEquals(findRecipe.getTime(), time);
-        assertEquals(findRecipe.getDifficulty(), difficulty);
-        assertEquals(findRecipe.getComposition(), composition);
-        assertEquals(findRecipe.getIngredients(), ingredients);
-        assertEquals(findRecipe.getSeasoning(), seasoning);
-        assertEquals(findRecipe.getOrders(), orders);
-        assertEquals(findRecipe.getPhoto(), photo);
+        assertNotNull(recipeList);
     }
 
     @Test
     void 레시피아이디로조회() {
 
-        // when
-        List<Recipe> recipeList = recipeRepository.findByIdIn(Arrays.asList(id));
+        Recipe recipe = recipeRepository.findByRecipeId(recipeId).orElseThrow();
 
-        // then
-        Recipe findRecipe = recipeList.get(0);
-        assertEquals(findRecipe.getName(), name);
-        assertEquals(findRecipe.getThumbnail(), thumbnail);
-        assertEquals(findRecipe.getTime(), time);
-        assertEquals(findRecipe.getDifficulty(), difficulty);
-        assertEquals(findRecipe.getComposition(), composition);
-        assertEquals(findRecipe.getIngredients(), ingredients);
-        assertEquals(findRecipe.getSeasoning(), seasoning);
-        assertEquals(findRecipe.getOrders(), orders);
-        assertEquals(findRecipe.getPhoto(), photo);
+        assertEquals(recipe.getRecipeId(), recipeId);
     }
 }

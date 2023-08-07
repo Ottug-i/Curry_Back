@@ -1,21 +1,22 @@
 package com.ottugi.curry.domain.recipe;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
-public class Recipe {
+public class Recipe implements Serializable {
 
     @Id
-    @Column(name = "Recipe_Id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "Recipe_Id", nullable = false, unique = true)
+    private Long recipeId;
 
     @Column(length = 100, nullable = false)
     private String name;
@@ -23,37 +24,41 @@ public class Recipe {
     @Column(nullable = false)
     private String thumbnail;
 
-    @Column(length = 100, nullable = false)
-    private String time;
-
-    @Column(length = 100, nullable = false)
-    private String difficulty;
-
-    @Column(length = 100, nullable = false)
-    private String composition;
-
+    @Convert(converter = TimeConverter.class)
     @Column(nullable = false)
+    private Time time;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Difficulty difficulty;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Composition composition;
+
+    @Column(columnDefinition="TEXT", nullable = false)
     private String ingredients;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String seasoning;
+    private Servings servings;
 
-    @Column(length = 1000, nullable = false)
+    @Column(columnDefinition="TEXT", nullable = false)
     private String orders;
 
-    @Column(length = 1000)
+    @Column(columnDefinition="TEXT")
     private String photo;
 
     @Builder
-    public Recipe(Long id, String name, String thumbnail, String time, String difficulty, String composition, String ingredients, String seasoning, String orders, String photo) {
-        this.id = id;
+    public Recipe(Long recipeId, String name, String thumbnail, Time time, Difficulty difficulty, Composition composition, String ingredients, Servings servings, String orders, String photo) {
+        this.recipeId = recipeId;
         this.name = name;
         this.thumbnail = thumbnail;
         this.time = time;
         this.difficulty = difficulty;
         this.composition = composition;
         this.ingredients = ingredients;
-        this.seasoning = seasoning;
+        this.servings = servings;
         this.orders = orders;
         this.photo = photo;
     }

@@ -13,16 +13,20 @@ class RecipeRequestDtoTest {
 
         // given
         Long userId = 1L;
-        Long recipeId1 = 1234L;
-        Long recipeId2 = 2345L;
+        String ingredients1 = "고구마";
+        String ingredients2 = "올리고당";
+        int page = 1;
+        int size = 10;
 
         // when
-        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(userId, Arrays.asList(recipeId1, recipeId2));
+        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(userId, Arrays.asList(ingredients1, ingredients2), page, size);
 
         // then
         assertEquals(recipeRequestDto.getUserId(), userId);
-        assertEquals(recipeRequestDto.getRecipeId().size(), 2);
-        assertEquals(recipeRequestDto.getRecipeId().get(0), recipeId1);
-        assertEquals(recipeRequestDto.getRecipeId().get(1), recipeId2);
+        assertEquals(recipeRequestDto.getIngredients().size(), 2);
+        assertEquals(recipeRequestDto.getIngredients().get(0), ingredients1);
+        assertEquals(recipeRequestDto.getIngredients().get(1), ingredients2);
+        assertEquals(recipeRequestDto.getPage(), page);
+        assertEquals(recipeRequestDto.getSize(), size);
     }
 }

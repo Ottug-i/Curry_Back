@@ -33,8 +33,7 @@ public class User {
     private List<Lately> latelyList = new ArrayList<>();
 
     @Builder
-    public User(Long id, String email, String nickName) {
-        this.id = id;
+    public User(String email, String nickName) {
         this.email = email;
         this.nickName = nickName;
     }
