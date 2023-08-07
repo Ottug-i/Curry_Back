@@ -22,14 +22,14 @@ public class RecipeCsvReader {
     public FlatFileItemReader<RecipeSaveRequestDto> csvFileItemReader() {
 
         FlatFileItemReader<RecipeSaveRequestDto> flatFileItemReader = new FlatFileItemReader<>();
-        flatFileItemReader.setResource(new ClassPathResource("/csv/curry_recipe.csv"));
+        flatFileItemReader.setResource(new ClassPathResource("/csv/curry_recipe_with_genres.csv"));
         flatFileItemReader.setLinesToSkip(1);
         flatFileItemReader.setEncoding("UTF-8");
 
         DefaultLineMapper<RecipeSaveRequestDto> defaultLineMapper = new DefaultLineMapper<>();
 
         DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer("@");
-        delimitedLineTokenizer.setNames("recipeId", "name", "composition", "ingredients", "servings", "difficulty", "thumbnail", "time", "orders", "photo");
+        delimitedLineTokenizer.setNames("recipeId", "name", "composition", "ingredients", "servings", "difficulty", "thumbnail", "time", "orders", "photo", "genre");
         delimitedLineTokenizer.setStrict(false);
 
         defaultLineMapper.setLineTokenizer(delimitedLineTokenizer);

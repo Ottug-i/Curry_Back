@@ -26,6 +26,9 @@ public class User {
     @Column(length = 100, nullable = false)
     private String nickName;
 
+    @Column(length = 100)
+    private String favoriteGenre;
+
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmarkList = new ArrayList<>();
 
@@ -33,13 +36,19 @@ public class User {
     private List<Lately> latelyList = new ArrayList<>();
 
     @Builder
-    public User(String email, String nickName) {
+    public User(String email, String nickName, String favoriteGenre) {
         this.email = email;
         this.nickName = nickName;
+        this.favoriteGenre = favoriteGenre;
     }
 
     public User updateProfile(String nickName) {
         this.nickName = nickName;
+        return this;
+    }
+
+    public User updateGenre(String favoriteGenre) {
+        this.favoriteGenre = favoriteGenre;
         return this;
     }
 

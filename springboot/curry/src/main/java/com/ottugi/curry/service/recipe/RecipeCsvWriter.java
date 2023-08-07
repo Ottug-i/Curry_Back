@@ -35,6 +35,7 @@ public class RecipeCsvWriter implements ItemWriter<RecipeSaveRequestDto> {
             recipe.setTime(Time.ofTime(getRecipe.getTime()));
             recipe.setOrders(getRecipe.getOrders());
             recipe.setPhoto(getRecipe.getPhoto());
+            recipe.setGenre(getRecipe.getGenre());
 
             recipeList.add(recipe);
         });

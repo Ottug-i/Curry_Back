@@ -49,8 +49,11 @@ public class Recipe implements Serializable {
     @Column(columnDefinition="TEXT")
     private String photo;
 
+    @Column(columnDefinition="TEXT")
+    private String genre;
+
     @Builder
-    public Recipe(Long recipeId, String name, String thumbnail, Time time, Difficulty difficulty, Composition composition, String ingredients, Servings servings, String orders, String photo) {
+    public Recipe(Long recipeId, String name, String thumbnail, Time time, Difficulty difficulty, Composition composition, String ingredients, Servings servings, String orders, String photo, String genre) {
         this.recipeId = recipeId;
         this.name = name;
         this.thumbnail = thumbnail;
@@ -61,5 +64,6 @@ public class Recipe implements Serializable {
         this.servings = servings;
         this.orders = orders;
         this.photo = photo;
+        this.genre = genre;
     }
 }
