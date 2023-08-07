@@ -1,8 +1,11 @@
 package com.ottugi.curry.service.recommend;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.web.dto.recommend.RatingRequestDto;
 import com.ottugi.curry.web.dto.recommend.RatingResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ import java.util.*;
 public class RecommendServiceImpl implements RecommendService {
 
     private final String FLASK_API_URL = "http://localhost:5000";
+    private final UserRepository userRepository;
 
     @Override
     public List<Long> getRecommendBookmark(Long recipeId, int page) throws JsonProcessingException {
@@ -99,7 +103,17 @@ public class RecommendServiceImpl implements RecommendService {
         String response = restTemplate.getForObject(apiUrl, String.class);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        Long[] result = objectMapper.readValue(response, Long[].class);
+        Object[] resultList = objectMapper.readValue(response, Object[].class);
+
+        log.info(String.valueOf(resultList));
+        log.info((String) resultList[0]);
+        log.info(String.valueOf(resultList[1]));
+
+        String genre = (String) resultList[0];
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다."));
+        user.updateGenre(genre);
+
+        Long[] result = objectMapper.convertValue(resultList[1], Long[].class);
 
         if (response != null) {
             return Arrays.asList(result);

@@ -41,8 +41,11 @@ public class RecipeSaveRequestDto {
     @ApiModelProperty(notes = "레시피 사진", example = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg")
     private String photo;
 
+    @ApiModelProperty(notes = "레시피 장르", example = "ing5|ing9|ing10|ing14|ing15")
+    private String genre;
+
     @Builder
-    public RecipeSaveRequestDto(Long recipeId, String name, String composition, String ingredients, String servings, String difficulty, String thumbnail, String time, String orders, String photo) {
+    public RecipeSaveRequestDto(Long recipeId, String name, String composition, String ingredients, String servings, String difficulty, String thumbnail, String time, String orders, String photo, String genre) {
         this.recipeId = recipeId;
         this.name = name;
         this.composition = composition;
@@ -53,5 +56,6 @@ public class RecipeSaveRequestDto {
         this.time = time;
         this.orders = orders;
         this.photo = photo;
+        this.genre = genre;
     }
 }
