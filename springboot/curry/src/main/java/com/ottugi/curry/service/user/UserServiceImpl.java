@@ -2,6 +2,7 @@ package com.ottugi.curry.service.user;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.ottugi.curry.domain.user.Role;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.web.dto.user.TokenDto;
@@ -82,9 +83,9 @@ public class UserServiceImpl implements UserService {
                 .withSubject(user.getEmail())
                 .withExpiresAt(new Date(System.currentTimeMillis()+ expiration_time))
                 .withClaim("id", user.getId())
-                .withClaim("role", "회원")
+                .withClaim("role", user.getRole().getRole())
                 .sign(Algorithm.HMAC512(secret));
 
-        return new TokenDto(user.getId(), user.getEmail(), user.getNickName(), jwtToken);
+        return new TokenDto(user, jwtToken);
     }
 }

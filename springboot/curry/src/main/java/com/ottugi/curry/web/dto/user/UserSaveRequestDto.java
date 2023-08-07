@@ -1,5 +1,7 @@
 package com.ottugi.curry.web.dto.user;
 
+import com.ottugi.curry.domain.recipe.Servings;
+import com.ottugi.curry.domain.user.Role;
 import com.ottugi.curry.domain.user.User;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
@@ -26,6 +28,8 @@ public class UserSaveRequestDto {
         return User.builder()
                 .email(email)
                 .nickName(nickName)
+                .favoriteGenre(null)
+                .role(Role.ofRole("일반 사용자"))
                 .build();
     }
 }

@@ -30,6 +30,10 @@ public class User extends BaseTime {
     @Column(length = 100)
     private String favoriteGenre;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmarkList = new ArrayList<>();
 
@@ -37,10 +41,11 @@ public class User extends BaseTime {
     private List<Lately> latelyList = new ArrayList<>();
 
     @Builder
-    public User(String email, String nickName, String favoriteGenre) {
+    public User(String email, String nickName, String favoriteGenre, Role role) {
         this.email = email;
         this.nickName = nickName;
         this.favoriteGenre = favoriteGenre;
+        this.role = role;
     }
 
     public User updateProfile(String nickName) {
@@ -50,6 +55,11 @@ public class User extends BaseTime {
 
     public User updateGenre(String favoriteGenre) {
         this.favoriteGenre = favoriteGenre;
+        return this;
+    }
+
+    public User updateRole(Role role) {
+        this.role = role;
         return this;
     }
 
