@@ -1,5 +1,6 @@
 package com.ottugi.curry.domain.lately;
 
+import com.ottugi.curry.domain.BaseTime;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
 import lombok.Builder;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Lately {
+public class Lately extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

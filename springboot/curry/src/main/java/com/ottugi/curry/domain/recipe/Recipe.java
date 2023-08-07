@@ -1,5 +1,6 @@
 package com.ottugi.curry.domain.recipe;
 
+import com.ottugi.curry.domain.BaseTime;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,7 +10,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @Entity
-public class Recipe implements Serializable {
+public class Recipe extends BaseTime implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,6 @@
 package com.ottugi.curry.domain.user;
 
+import com.ottugi.curry.domain.BaseTime;
 import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.lately.Lately;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Entity(name = "users")
-public class User {
+public class User extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
