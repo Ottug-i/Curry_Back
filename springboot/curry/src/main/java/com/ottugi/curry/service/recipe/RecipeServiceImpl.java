@@ -39,8 +39,10 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public Page<RecipeListResponseDto> getRecipeList(RecipeRequestDto recipeRequestDto) {
 
+        User user =  userRepository.findById(recipeRequestDto.getUserId()).orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다."));
+
         List<Recipe> recipeList = recipeRepository.findByIngredientsContaining(recipeRequestDto.getIngredients().get(0));
-        List<Recipe> resultList = new ArrayList<>();
+        List<Map<Recipe, Integer>> sortedRecipeList = new ArrayList<>();
         for (Recipe recipe: recipeList) {
             boolean isAllIncluded = true;
             for (int i = 1; i < recipeRequestDto.getIngredients().size(); i++) {
@@ -50,17 +52,26 @@ public class RecipeServiceImpl implements RecipeService {
                 }
             }
             if (isAllIncluded) {
-                resultList.add(recipe);
+                Map<Recipe, Integer> recipeMap = new HashMap<>();
+                if (recipe.getGenre().contains(user.getFavoriteGenre())) {
+                    recipeMap.put(recipe, 1);
+                }
+                else {
+                    recipeMap.put(recipe, 0);
+                }
+                sortedRecipeList.add(recipeMap);
             }
         }
 
-        int totalItems = resultList.size();
+        sortedRecipeList.sort((recipeMap1, recipeMap2) -> recipeMap2.values().iterator().next().compareTo(recipeMap1.values().iterator().next()));
+
+        int totalItems = sortedRecipeList.size();
         int fromIndex = Math.max(0, (recipeRequestDto.getPage() - 1) * recipeRequestDto.getSize());
         int toIndex = Math.min(totalItems, fromIndex + recipeRequestDto.getSize());
 
-        List<RecipeListResponseDto> pagedRecipeList = resultList.subList(fromIndex, toIndex)
+        List<RecipeListResponseDto> pagedRecipeList = sortedRecipeList.subList(fromIndex, toIndex)
                 .stream()
-                .map(recipe -> new RecipeListResponseDto(recipe, checkBookmark(recipeRequestDto.getUserId(), recipe.getRecipeId())))
+                .map(recipeMap -> new RecipeListResponseDto(recipeMap.keySet().iterator().next(), checkBookmark(recipeRequestDto.getUserId(), recipeMap.keySet().iterator().next().getRecipeId())))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(pagedRecipeList, PageRequest.of(recipeRequestDto.getPage() - 1, recipeRequestDto.getSize()), totalItems);
