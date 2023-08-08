@@ -26,7 +26,7 @@ public class RecommendController {
     private final RecommendService recommendService;
     private final RecipeService recipeService;
 
-    @GetMapping("/recommend/bookmark")
+    @GetMapping("/api/recommend/bookmark")
     @ApiOperation(value = "레시피 북마크 추천", notes = "북마크한 레시피와 비슷한 레시피를 추천하여 5개씩 리턴합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
@@ -39,7 +39,7 @@ public class RecommendController {
         return ResponseEntity.ok().body(recipeService.getRecommendList(new RecommendRequestDto(userId, recipeIdList)));
     }
 
-    @GetMapping("/recommend/user")
+    @GetMapping("/api/recommend/user")
     @ApiOperation(value = "레시피 평점 조회", notes = "유저 아이디에 따른 레시피 평점 정보를 리턴합니다. 조회되지 않을 경우 null을 리턴합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
@@ -49,13 +49,13 @@ public class RecommendController {
         return ResponseEntity.ok().body(recommendService.getUserRating(userId, recipeId));
     }
 
-    @PostMapping("/recommend/user")
+    @PostMapping("/api/recommend/user")
     @ApiOperation(value = "레시피 평점 추가", notes = "유저 아이디에 따른 레시피 평점 정보를 추가/수정합니다.")
     public ResponseEntity<Boolean> updateUserRatings(@RequestBody RatingRequestDto ratingRequestDto) {
         return ResponseEntity.ok().body(recommendService.updateUserRating(ratingRequestDto));
     }
 
-    @GetMapping("/recommend/rating")
+    @GetMapping("/api/recommend/rating")
     @ApiOperation(value = "레시피 평점 추천", notes = "레시피 평점순에 따라 10개씩 리턴합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
