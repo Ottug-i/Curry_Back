@@ -1,20 +1,24 @@
 package com.ottugi.curry.service.user;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.ottugi.curry.domain.user.Role;
-import com.ottugi.curry.domain.user.User;
-import com.ottugi.curry.domain.user.UserRepository;
+import com.ottugi.curry.config.jwt.TokenProvider;
+import com.ottugi.curry.domain.token.Token;
+import com.ottugi.curry.domain.token.TokenRepository;
+import com.ottugi.curry.domain.user.*;
 import com.ottugi.curry.web.dto.user.TokenDto;
 import com.ottugi.curry.web.dto.user.UserResponseDto;
 import com.ottugi.curry.web.dto.user.UserSaveRequestDto;
 import com.ottugi.curry.web.dto.user.UserUpdateRequestDto;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -23,26 +27,53 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    @Value("${jwt.secret}")
+    @Autowired
+    TokenProvider tokenProvider;
+
+    @Autowired
+    TokenRepository tokenRepository;
+
+    @Value("${jwt.security.key}")
     public String secret;
 
-    @Value("${jwt.expiration_time}")
-    public int expiration_time;
-
     @Override
-    public TokenDto login(UserSaveRequestDto userSaveRequestDto) {
+    public TokenDto login(UserSaveRequestDto userSaveRequestDto, HttpServletResponse response) {
 
         if(validateDuplicatedUser(userSaveRequestDto.getEmail())) {
-            User user = userRepository.findByEmail(userSaveRequestDto.getEmail());
-            return createToken(user);
+            Optional<User> user = userRepository.findByEmail(userSaveRequestDto.getEmail());
+            return createToken(user.get(), response);
         }
         else {
             User user = userRepository.save(userSaveRequestDto.toEntity());
             if (user == null) {
                 throw new IllegalArgumentException("사용자 저장에 실패했습니다.");
             }
-            return createToken(user);
+            return createToken(user, response);
         }
+    }
+
+    @Override
+    public TokenDto reissue(String email, HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+            Optional<Token> refreshToken = tokenRepository.findById(email);
+            if (refreshToken == null) {
+                throw new IllegalArgumentException("토큰 재발급에 실패했습니다.");
+            }
+
+            boolean isTokenValid = tokenProvider.validateToken(refreshToken.get().getValue(), request);
+
+            if(isTokenValid) {
+                Optional<User> user = userRepository.findByEmail(email);
+
+                if(user.isPresent()) {
+                    return createToken(user.get(), response);
+                }
+            }
+        } catch(ExpiredJwtException e) {
+            throw new IllegalArgumentException("토큰이 만료되었습니다. 다시 로그인하세요.");
+        }
+        return null;
     }
 
     @Override
@@ -78,14 +109,15 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다."));
     }
 
-    public TokenDto createToken(User user) {
-        String jwtToken = JWT.create()
-                .withSubject(user.getEmail())
-                .withExpiresAt(new Date(System.currentTimeMillis()+ expiration_time))
-                .withClaim("id", user.getId())
-                .withClaim("role", user.getRole().getRole())
-                .sign(Algorithm.HMAC512(secret));
+    public TokenDto createToken(User user, HttpServletResponse response) {
 
-        return new TokenDto(user, jwtToken);
+        Token accessToken = tokenProvider.createAccessToken(user);
+        Token refreshToken = tokenProvider.createRefreshToken(user);
+
+        tokenProvider.setHeaderAccessToken(response, accessToken.getValue());
+
+        tokenRepository.save(refreshToken);
+
+        return new TokenDto(user, accessToken.getValue());
     }
 }
