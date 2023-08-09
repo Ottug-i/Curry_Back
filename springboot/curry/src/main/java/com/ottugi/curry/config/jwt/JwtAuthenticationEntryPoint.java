@@ -1,4 +1,4 @@
-package com.ottugi.curry.config;
+package com.ottugi.curry.config.jwt;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

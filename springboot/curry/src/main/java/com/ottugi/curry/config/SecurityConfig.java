@@ -1,5 +1,9 @@
 package com.ottugi.curry.config;
 
+import com.ottugi.curry.config.jwt.JwtAccessDeniedHandler;
+import com.ottugi.curry.config.jwt.JwtAuthenticationEntryPoint;
+import com.ottugi.curry.config.jwt.JwtAuthenticationFilter;
+import com.ottugi.curry.config.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +23,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    private final JwtRequestFilter jwtRequestFilter;
+    private final TokenProvider tokenProvider;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -51,7 +55,7 @@ public class SecurityConfig {
                 // .antMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()
                 .and()
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)

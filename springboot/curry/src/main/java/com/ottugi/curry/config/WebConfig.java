@@ -1,6 +1,8 @@
 package com.ottugi.curry.config;
 
+import com.ottugi.curry.config.handler.BaseHandlerInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,6 +13,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Value("${jwt.response.header}")
+    private String jwtHeader;
 
     @Bean
     public BaseHandlerInterceptor baseHandlerInterceptor() {
@@ -32,8 +37,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("*")
+        registry.addMapping("/api/**")
+                .allowedOriginPatterns("*")
+                .exposedHeaders(jwtHeader)
                 .allowedMethods(
                         HttpMethod.GET.name(),
                         HttpMethod.HEAD.name(),
@@ -42,7 +48,6 @@ public class WebConfig implements WebMvcConfigurer {
                         HttpMethod.DELETE.name(),
                         HttpMethod.PATCH.name()
                 )
-                .allowCredentials(false);
+                .allowCredentials(true);
     }
-
 }
