@@ -1,13 +1,15 @@
 package com.ottugi.curry.service.recommend;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.web.dto.recommend.RatingRequestDto;
 import com.ottugi.curry.web.dto.recommend.RatingResponseDto;
+import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -20,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,6 +33,20 @@ public class RecommendServiceImpl implements RecommendService {
 
     private final String FLASK_API_URL = "http://localhost:5000";
     private final UserRepository userRepository;
+    private final RecipeRepository recipeRepository;
+
+    @Override
+    public List<RecommendListResponseDto> getRandomRecipe() {
+
+        long min = 1L;
+        long max = 3616L;
+        int batchSize = 10;
+
+        List<Long> selectedIdList = ThreadLocalRandom.current().longs(min, max + 1).distinct().limit(batchSize).boxed().collect(Collectors.toList());
+        List<Recipe> recipeList = recipeRepository.findByIdIn(selectedIdList);
+
+        return recipeList.stream().map(recipe -> new RecommendListResponseDto(recipe)).collect(Collectors.toList());
+    }
 
     @Override
     public List<Long> getRecommendBookmark(Long recipeId, int page) throws JsonProcessingException {
