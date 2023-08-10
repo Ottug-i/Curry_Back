@@ -6,6 +6,7 @@ import com.ottugi.curry.service.recommend.RecommendService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RatingRequestDto;
 import com.ottugi.curry.web.dto.recommend.RatingResponseDto;
+import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -25,6 +26,12 @@ public class RecommendController {
 
     private final RecommendService recommendService;
     private final RecipeService recipeService;
+
+    @GetMapping("/api/recommend/randomRecipe")
+    @ApiOperation(value = "초기 랜덤 레시피 평점", notes = "초기 레시피 선호도 조사를 위한 10개의 랜덤 레시피를 리턴합니다.")
+    public ResponseEntity<List<RecommendListResponseDto>> getRandomRecipe() {
+        return ResponseEntity.ok().body(recommendService.getRandomRecipe());
+    }
 
     @GetMapping("/api/recommend/bookmark")
     @ApiOperation(value = "레시피 북마크 추천", notes = "북마크한 레시피와 비슷한 레시피를 추천하여 5개씩 리턴합니다.")
