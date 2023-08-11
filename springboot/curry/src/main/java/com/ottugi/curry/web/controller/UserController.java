@@ -32,7 +32,7 @@ public class UserController {
         return ResponseEntity.ok().body(userService.updateProfile(userUpdateRequestDto));
     }
 
-    @DeleteMapping("/setWithdraw")
+    @DeleteMapping("/withdraw")
     @ApiOperation(value = "회원 탈퇴", notes = "회원 탈퇴를 한 후, true를 리턴합니다.")
     @ApiImplicitParam(name = "id", value = "회원 기본키", example = "1", required = true)
     public ResponseEntity<Boolean> setWithdraw(@RequestParam Long id) {
