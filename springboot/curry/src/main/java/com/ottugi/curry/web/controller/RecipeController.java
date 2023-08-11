@@ -21,23 +21,24 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/recipe")
 public class RecipeController {
 
     private final RecipeService recipeService;
 
-    @PostMapping("/api/recipe/getRecipeList")
+    @PostMapping("/getRecipeList")
     @ApiOperation(value = "재료에 따른 레시피 리스트 조회", notes = "재료에 따른 레시피 리스트를 조회하여 레시피 북마크 유무와 함께 리턴합니다.")
     public ResponseEntity<Page<RecipeIngListResponseDto>> getRecipeList(@RequestBody RecipeRequestDto recipeRequestDto) {
         return ResponseEntity.ok().body(recipeService.getRecipeList(recipeRequestDto));
     }
 
-    @PostMapping("/api/recipe/getRecommendList")
+    @PostMapping("/getRecommendList")
     @ApiOperation(value = "레시피 아이디에 따른 추천 레시피 리스트 조회", notes = "레시피 아이디에 따른 추천 레시피 리스트를 조회하여 레시피 북마크 유무와 함께 리턴합니다.")
     public ResponseEntity<List<RecipeListResponseDto>> getRecipeList(@RequestBody RecommendRequestDto recommendRequestDto) {
         return ResponseEntity.ok().body(recipeService.getRecommendList(recommendRequestDto));
     }
 
-    @GetMapping("/api/recipe/getRecipeDetail")
+    @GetMapping("/getRecipeDetail")
     @ApiOperation(value = "레시피 상세 조회", notes = "레시피를 상세 조회하여 레시피 북마크 유무와 함께 리턴합니다. 이후 최근 본 레시피에 추가됩니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
@@ -47,7 +48,7 @@ public class RecipeController {
         return ResponseEntity.ok().body(recipeService.getRecipeDetail(userId, recipeId));
     }
 
-    @GetMapping("/api/recipe/searchByBox")
+    @GetMapping("/searchByBox")
     @ApiOperation(value = "레시피 텍스트 검색", notes = "레시피 리스트에서 텍스트 및 옵션(시간/난이도/구성)으로 검색하여 리턴합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),

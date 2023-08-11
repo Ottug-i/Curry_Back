@@ -7,10 +7,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,11 +15,12 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/lately")
 public class LatelyController {
 
     private final LatelyService latelyService;
 
-    @GetMapping("/api/lately/getLatelyAll")
+    @GetMapping("/getLatelyAll")
     @ApiOperation(value = "최근 본 레시피 리스트 조회", notes = "최근 본 레시피 리스트를 조회하여 리턴합니다.")
     @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true)
     public ResponseEntity<List<LatelyListResponseDto>> getLatelyAll(@RequestParam Long userId) {

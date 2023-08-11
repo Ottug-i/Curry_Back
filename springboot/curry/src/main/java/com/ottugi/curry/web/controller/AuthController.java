@@ -17,17 +17,18 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/auth")
 public class AuthController {
 
     private final UserService userService;
 
-    @PostMapping("/auth/login")
+    @PostMapping("/login")
     @ApiOperation(value = "소셜 회원가입과 로그인", notes = "소셜 회원가입 또는 로그인을 한 후, jwt 토큰과 사용자 정보를 리턴합니다.")
     public ResponseEntity<TokenDto> login(@RequestBody UserSaveRequestDto userSaveRequestDto, HttpServletResponse response) {
         return ResponseEntity.ok().body(userService.login(userSaveRequestDto, response));
     }
 
-    @PostMapping("/auth/reissue")
+    @PostMapping("/reissue")
     @ApiOperation(value = "토큰 재발급", notes = "재발급된 토큰 정보를 리턴합니다.")
     @ApiImplicitParam(name = "email", value = "회원 이메일", example = "wn8925@sookmyung.ac.kr", required = true)
     public ResponseEntity<TokenDto> reissue(@RequestParam String email, HttpServletRequest request, HttpServletResponse response) {

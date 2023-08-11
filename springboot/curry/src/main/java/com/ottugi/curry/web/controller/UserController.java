@@ -14,24 +14,25 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/api/user/getProfile")
+    @GetMapping("/getProfile")
     @ApiOperation(value = "회원 정보", notes = "회원 정보를 리턴합니다.")
     @ApiImplicitParam(name = "id", value = "회원 기본키", example = "1", required = true)
     public ResponseEntity<UserResponseDto> getProfile(@RequestParam Long id) {
         return ResponseEntity.ok().body(userService.getProfile(id));
     }
 
-    @PutMapping("/api/user/setProfile")
+    @PutMapping("/setProfile")
     @ApiOperation(value = "회원 정보 수정", notes = "회원 정보 수정를 수정한 후, 수정된 회원 정보를 리턴합니다.")
     public ResponseEntity<UserResponseDto> setProfile(@RequestBody UserUpdateRequestDto userUpdateRequestDto) {
         return ResponseEntity.ok().body(userService.setProfile(userUpdateRequestDto));
     }
 
-    @DeleteMapping("/api/user/setWithdraw")
+    @DeleteMapping("/setWithdraw")
     @ApiOperation(value = "회원 탈퇴", notes = "회원 탈퇴를 한 후, true를 리턴합니다.")
     @ApiImplicitParam(name = "id", value = "회원 기본키", example = "1", required = true)
     public ResponseEntity<Boolean> setWithdraw(@RequestParam Long id) {
