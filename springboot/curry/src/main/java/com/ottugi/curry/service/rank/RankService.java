@@ -6,7 +6,7 @@ import java.util.List;
 public interface RankService {
 
     void clear();
-    void addRank(String name);
+    void updateOrAddRank(String name);
     List<RankResponseDto> getRankList();
     void weeklyRankingReset();
 }

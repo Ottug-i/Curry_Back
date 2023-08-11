@@ -20,8 +20,8 @@ public class LatelyController {
 
     private final LatelyService latelyService;
 
-    @GetMapping("/getLatelyAll")
-    @ApiOperation(value = "최근 본 레시피 리스트 조회", notes = "최근 본 레시피 리스트를 조회하여 리턴합니다.")
+    @GetMapping("/list")
+    @ApiOperation(value = "최근 본 레시피 조회", notes = "최근 본 레시피를 조회하여 리턴합니다.")
     @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true)
     public ResponseEntity<List<LatelyListResponseDto>> getLatelyAll(@RequestParam Long userId) {
         return ResponseEntity.ok().body(latelyService.getLatelyAll(userId));

@@ -28,13 +28,14 @@ public class BookmarkServiceImpl implements BookmarkService {
     private final UserRepository userRepository;
     private final RecipeRepository recipeRepository;
 
+    // 북마크 추가 또는 제거
     @Override
     public Boolean addOrRemoveBookmark(BookmarkRequestDto bookmarkRequestDto) {
 
         User user = findUser(bookmarkRequestDto.getUserId());
         Recipe recipe = findRecipe(bookmarkRequestDto.getRecipeId());
 
-        if(isBookmark(user, recipe)) {
+        if(isBookmarked(user, recipe)) {
             bookmarkRepository.delete(bookmarkRepository.findByUserIdAndRecipeId(user, recipe));
             return false;
         }
@@ -48,6 +49,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         }
     }
 
+    // 모든 북마크 목록 조회
     @Override
     public Page<BookmarkListResponseDto> getBookmarkAll(Long userId, int page, int size) {
 
@@ -61,6 +63,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         return getPage(bookmarkListResponseDtoList, page, size);
     }
 
+    // 북마크 검색
     @Override
     public Page<BookmarkListResponseDto> searchBookmark(Long userId, int page, int size, String name, String time, String difficulty, String composition) {
 
@@ -100,25 +103,30 @@ public class BookmarkServiceImpl implements BookmarkService {
         return getPage(bookmarkListResponseDtoList, page, size);
     }
 
+    // 회원 조회
     public User findUser(Long userId) {
 
         return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다."));
     }
 
+    // 레시피 조회
     public Recipe findRecipe(Long recipeId) {
 
         return recipeRepository.findByRecipeId(recipeId).orElseThrow(() -> new IllegalArgumentException("해당 레시피가 없습니다."));
     }
 
-    public Boolean isBookmark(User user, Recipe recipe) {
+    // 북마크 여부
+    public Boolean isBookmarked(User user, Recipe recipe) {
 
         return bookmarkRepository.findByUserIdAndRecipeId(user, recipe) != null;
     }
 
+    // 레시피 조건 일치 확인
     public Boolean isRecipeMatching(Recipe recipe, String time, String difficulty, String composition) {
         return recipe.getTime().getTime() <= Time.ofTime(time).getTime() && recipe.getDifficulty().getDifficulty().contains(difficulty) && recipe.getComposition().getComposition().contains(composition);
     }
 
+    // 페이지 처리
     public Page<BookmarkListResponseDto> getPage(List<BookmarkListResponseDto> bookmarkListResponseDtoList, int page, int size) {
         int totalItems = bookmarkListResponseDtoList.size();
         int fromIndex = Math.max(0, page - 1) * size;

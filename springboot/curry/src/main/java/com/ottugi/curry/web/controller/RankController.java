@@ -22,7 +22,7 @@ public class RankController {
 
     private final RankService rankService;
 
-    @GetMapping("/getRankList")
+    @GetMapping("/list")
     @ApiOperation(value = "인기 검색어 조회", notes = "인기 검색어 10개를 조회하여 리턴합니다.")
     public ResponseEntity<List<RankResponseDto>> getRankList(){
         return ResponseEntity.ok().body(rankService.getRankList());

@@ -1,5 +1,6 @@
 package com.ottugi.curry.web.dto.user;
 
+import com.ottugi.curry.web.dto.auth.UserSaveRequestDto;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

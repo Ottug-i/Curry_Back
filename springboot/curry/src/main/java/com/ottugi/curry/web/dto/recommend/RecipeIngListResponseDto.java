@@ -1,4 +1,4 @@
-package com.ottugi.curry.web.dto.recipe;
+package com.ottugi.curry.web.dto.recommend;
 
 import com.ottugi.curry.domain.recipe.Recipe;
 import io.swagger.annotations.ApiModelProperty;

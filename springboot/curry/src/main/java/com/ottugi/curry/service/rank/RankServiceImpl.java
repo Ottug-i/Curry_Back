@@ -18,13 +18,15 @@ public class RankServiceImpl implements RankService {
 
     private final RankRepository rankRepository;
 
+    // 검색어 랭킹 초기화
     @Override
     public void clear() {
         rankRepository.deleteAll();
     }
 
+    // 검색어 랭킹 추가
     @Override
-    public void addRank(String name) {
+    public void updateOrAddRank(String name) {
 
         if (name == null || name.isEmpty()) {
             return;
@@ -42,6 +44,7 @@ public class RankServiceImpl implements RankService {
         }
     }
 
+    // 검색어 랭킹 목록 조회
     @Override
     public List<RankResponseDto> getRankList() {
         List<RankResponseDto> rankList = new ArrayList<>();
@@ -52,6 +55,7 @@ public class RankServiceImpl implements RankService {
         return rankList;
     }
 
+    // 일주일마다 검색어 랭킹 초기화
     @Scheduled(cron = "0 0 0 * * 1")
     @Override
     public void weeklyRankingReset() {

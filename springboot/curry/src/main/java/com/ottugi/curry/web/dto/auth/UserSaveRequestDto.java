@@ -1,4 +1,4 @@
-package com.ottugi.curry.web.dto.user;
+package com.ottugi.curry.web.dto.auth;
 
 import com.ottugi.curry.domain.user.Role;
 import com.ottugi.curry.domain.user.User;

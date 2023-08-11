@@ -25,7 +25,7 @@ public class TestRankRunner implements ApplicationRunner {
         List<String> nameList = Arrays.asList("달걀빵", "달걀", "연어", "두부", "딸기", "식빵", "돼지고기", "김치", "달걀", "달걀", "연어", "수박", "바나나", "된장");
 
         for (String name: nameList) {
-            rankService.addRank(name);
+            rankService.updateOrAddRank(name);
         }
     }
 }
