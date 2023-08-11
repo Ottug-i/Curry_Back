@@ -12,7 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Api(tags={"Bookmark API (북마크 레시피 API)"})
+@Api(tags={"Bookmark API (북마크 API)"})
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
