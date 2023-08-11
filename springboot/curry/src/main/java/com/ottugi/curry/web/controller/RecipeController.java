@@ -1,6 +1,7 @@
 package com.ottugi.curry.web.controller;
 
 import com.ottugi.curry.service.recipe.RecipeService;
+import com.ottugi.curry.web.dto.recipe.RecipeIngListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
@@ -26,7 +27,7 @@ public class RecipeController {
 
     @PostMapping("/api/recipe/getRecipeList")
     @ApiOperation(value = "재료에 따른 레시피 리스트 조회", notes = "재료에 따른 레시피 리스트를 조회하여 레시피 북마크 유무와 함께 리턴합니다.")
-    public ResponseEntity<Page<RecipeListResponseDto>> getRecipeList(@RequestBody RecipeRequestDto recipeRequestDto) {
+    public ResponseEntity<Page<RecipeIngListResponseDto>> getRecipeList(@RequestBody RecipeRequestDto recipeRequestDto) {
         return ResponseEntity.ok().body(recipeService.getRecipeList(recipeRequestDto));
     }
 

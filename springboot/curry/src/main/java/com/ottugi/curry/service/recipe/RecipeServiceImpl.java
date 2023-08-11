@@ -8,6 +8,7 @@ import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.service.lately.LatelyService;
 import com.ottugi.curry.service.rank.RankService;
+import com.ottugi.curry.web.dto.recipe.RecipeIngListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
@@ -37,7 +38,7 @@ public class RecipeServiceImpl implements RecipeService {
     private final RankService rankService;
 
     @Override
-    public Page<RecipeListResponseDto> getRecipeList(RecipeRequestDto recipeRequestDto) {
+    public Page<RecipeIngListResponseDto> getRecipeList(RecipeRequestDto recipeRequestDto) {
 
         User user =  userRepository.findById(recipeRequestDto.getUserId()).orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다."));
 
@@ -69,9 +70,9 @@ public class RecipeServiceImpl implements RecipeService {
         int fromIndex = Math.max(0, (recipeRequestDto.getPage() - 1) * recipeRequestDto.getSize());
         int toIndex = Math.min(totalItems, fromIndex + recipeRequestDto.getSize());
 
-        List<RecipeListResponseDto> pagedRecipeList = sortedRecipeList.subList(fromIndex, toIndex)
+        List<RecipeIngListResponseDto> pagedRecipeList = sortedRecipeList.subList(fromIndex, toIndex)
                 .stream()
-                .map(recipeMap -> new RecipeListResponseDto(recipeMap.keySet().iterator().next(), checkBookmark(recipeRequestDto.getUserId(), recipeMap.keySet().iterator().next().getRecipeId())))
+                .map(recipeMap -> new RecipeIngListResponseDto(recipeRequestDto.getIngredients(), recipeMap.keySet().iterator().next(), checkBookmark(recipeRequestDto.getUserId(), recipeMap.keySet().iterator().next().getRecipeId())))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(pagedRecipeList, PageRequest.of(recipeRequestDto.getPage() - 1, recipeRequestDto.getSize()), totalItems);
