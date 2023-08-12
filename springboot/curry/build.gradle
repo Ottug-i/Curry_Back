@@ -46,6 +46,9 @@ dependencies {
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'io.lettuce:lettuce-core:6.1.5.RELEASE'
+
+	// common
+	implementation 'org.apache.commons:commons-lang3'
 }
 
 tasks.named('test') {
