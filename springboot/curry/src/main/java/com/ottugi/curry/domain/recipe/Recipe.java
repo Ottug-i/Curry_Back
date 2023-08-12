@@ -1,10 +1,14 @@
 package com.ottugi.curry.domain.recipe;
 
 import com.ottugi.curry.domain.BaseTime;
+import com.ottugi.curry.domain.bookmark.Bookmark;
+import com.ottugi.curry.domain.lately.Lately;
 import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -53,6 +57,12 @@ public class Recipe extends BaseTime implements Serializable {
     @Column(columnDefinition="TEXT")
     private String genre;
 
+    @OneToMany(mappedBy = "recipeId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Bookmark> bookmarkList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "recipeId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Lately> latelyList = new ArrayList<>();
+
     @Builder
     public Recipe(Long recipeId, String name, String thumbnail, Time time, Difficulty difficulty, Composition composition, String ingredients, Servings servings, String orders, String photo, String genre) {
         this.recipeId = recipeId;
@@ -66,5 +76,19 @@ public class Recipe extends BaseTime implements Serializable {
         this.orders = orders;
         this.photo = photo;
         this.genre = genre;
+    }
+
+    public void addBookmarkList(Bookmark bookmark) {
+        this.bookmarkList.add(bookmark);
+        if(bookmark.getRecipeId() != this) {
+            bookmark.setRecipe(this);
+        }
+    }
+
+    public void addLatelyList(Lately lately){
+        this.latelyList.add(lately);
+        if(lately.getRecipeId() != this){
+            lately.setRecipe(this);
+        }
     }
 }

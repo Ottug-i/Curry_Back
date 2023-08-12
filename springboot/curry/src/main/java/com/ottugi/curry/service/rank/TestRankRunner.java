@@ -20,7 +20,7 @@ public class TestRankRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
 
         // 초기 인기 검색어 데이터 - 추후 삭제
-        rankService.clear();
+        rankService.clearRanking();
 
         List<String> nameList = Arrays.asList("달걀빵", "달걀", "연어", "두부", "딸기", "식빵", "돼지고기", "김치", "달걀", "달걀", "연어", "수박", "바나나", "된장");
 

@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public interface AuthService {
-
     TokenResponseDto login(UserSaveRequestDto userSaveRequestDto, HttpServletResponse response);
     TokenResponseDto reissueToken(String email, HttpServletRequest request, HttpServletResponse response);
 }

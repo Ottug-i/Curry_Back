@@ -65,7 +65,6 @@ public class RecommendController {
             @ApiImplicitParam(name = "page", value = "페이지 번호", example = "1")
     })
     public ResponseEntity<List<RecipeListResponseDto>> getBookmarkRecommendList(@RequestParam Long userId, Long recipeId, int page) throws JsonProcessingException {
-
         List<Long> recipeIdList = recommendService.getRecommendBookmarkId(recipeId, page);
         return ResponseEntity.ok().body(recommendService.getBookmarkOrRatingRecommendList(new RecommendRequestDto(userId, recipeIdList)));
     }
@@ -78,7 +77,6 @@ public class RecommendController {
             @ApiImplicitParam(name = "bookmarkList", value = "북마크한 레시피 아이디", required = true)
     })
     public ResponseEntity<List<RecipeListResponseDto>> getRatingRecommendList(@RequestParam Long userId, int page, Long[] bookmarkList) throws JsonProcessingException {
-
         List<Long> recipeIdList = recommendService.getRecommendRatingId(userId, page, bookmarkList);
         return ResponseEntity.ok().body(recommendService.getBookmarkOrRatingRecommendList(new RecommendRequestDto(userId, recipeIdList)));
     }

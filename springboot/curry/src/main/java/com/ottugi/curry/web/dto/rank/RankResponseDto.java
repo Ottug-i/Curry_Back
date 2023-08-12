@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.redis.core.ZSetOperations;
 
 @Getter
 @Setter
@@ -20,5 +21,12 @@ public class RankResponseDto {
     public RankResponseDto(Rank rank) {
         this.name = rank.getName();
         this.score = rank.getScore();
+    }
+
+    public static RankResponseDto convertToRankDto(ZSetOperations.TypedTuple typedTuple) {
+        RankResponseDto rankResponseDto = new RankResponseDto();
+        rankResponseDto.name = typedTuple.getValue().toString();
+        rankResponseDto.score = typedTuple.getScore().intValue();
+        return rankResponseDto;
     }
 }

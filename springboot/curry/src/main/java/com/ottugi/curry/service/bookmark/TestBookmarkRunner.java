@@ -4,6 +4,7 @@ import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.bookmark.BookmarkRepository;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.service.CommonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -19,7 +20,7 @@ import java.util.List;
 public class TestBookmarkRunner implements ApplicationRunner {
 
     private final BookmarkRepository bookmarkRepository;
-    private final BookmarkServiceImpl bookmarkService;
+    private final CommonService commonService;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -27,10 +28,10 @@ public class TestBookmarkRunner implements ApplicationRunner {
         // 초기 북마크 데이터 - 추후 삭제
         List<Long> recipeIdList = Arrays.asList(6842324L, 6845721L, 6845906L, 6846020L, 6846262L);
 
-        User user = bookmarkService.findUser(1L);
+        User user = commonService.findByUserId(1L);
 
         for (Long recipeId: recipeIdList) {
-            Recipe recipe = bookmarkService.findRecipe(recipeId);
+            Recipe recipe = commonService.findByRecipeId(recipeId);
 
             Bookmark bookmark = new Bookmark();
             bookmark.setUser(user);

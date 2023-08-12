@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface RecommendService {
-
     List<RecommendListResponseDto> getRandomRecipe();
     RatingResponseDto getUserRating(Long userId, Long recipeId) throws JsonProcessingException;
     Boolean updateUserRating(RatingRequestDto ratingRequestDto);

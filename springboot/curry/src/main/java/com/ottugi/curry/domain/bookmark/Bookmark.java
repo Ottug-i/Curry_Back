@@ -3,7 +3,6 @@ package com.ottugi.curry.domain.bookmark;
 import com.ottugi.curry.domain.BaseTime;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,12 +28,13 @@ public class Bookmark extends BaseTime {
 
     public void setUser(User user) {
         this.userId = user;
-
         if(!userId.getBookmarkList().contains(this))
             user.getBookmarkList().add(this);
     }
 
     public void setRecipe(Recipe recipe) {
         this.recipeId = recipe;
+        if(!recipeId.getBookmarkList().contains(this))
+            recipe.getBookmarkList().add(this);
     }
 }
