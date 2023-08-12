@@ -1,12 +1,9 @@
-package com.ottugi.curry.config.jwt;
+package com.ottugi.curry.jwt;
 
 import com.ottugi.curry.domain.token.Token;
-import com.ottugi.curry.domain.token.TokenRepository;
 import com.ottugi.curry.domain.user.User;
 import io.jsonwebtoken.*;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

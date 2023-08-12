@@ -1,8 +1,8 @@
-package com.ottugi.curry.config.jwt;
+package com.ottugi.curry.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ottugi.curry.config.exception.BaseCode;
-import com.ottugi.curry.config.exception.ErrorResponse;
+import com.ottugi.curry.except.BaseCode;
+import com.ottugi.curry.except.ErrorResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.ottugi.curry.config.exception;
+package com.ottugi.curry.except;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

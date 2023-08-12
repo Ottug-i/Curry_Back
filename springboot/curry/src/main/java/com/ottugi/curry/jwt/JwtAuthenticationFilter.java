@@ -1,8 +1,8 @@
-package com.ottugi.curry.config.jwt;
+package com.ottugi.curry.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ottugi.curry.config.exception.BaseCode;
-import com.ottugi.curry.config.exception.ErrorResponse;
+import com.ottugi.curry.except.BaseCode;
+import com.ottugi.curry.except.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

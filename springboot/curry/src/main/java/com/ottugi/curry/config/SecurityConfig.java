@@ -1,9 +1,9 @@
 package com.ottugi.curry.config;
 
-import com.ottugi.curry.config.jwt.JwtAccessDeniedHandler;
-import com.ottugi.curry.config.jwt.JwtAuthenticationEntryPoint;
-import com.ottugi.curry.config.jwt.JwtAuthenticationFilter;
-import com.ottugi.curry.config.jwt.TokenProvider;
+import com.ottugi.curry.jwt.JwtAccessDeniedHandler;
+import com.ottugi.curry.jwt.JwtAuthenticationEntryPoint;
+import com.ottugi.curry.jwt.JwtAuthenticationFilter;
+import com.ottugi.curry.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
