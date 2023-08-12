@@ -21,7 +21,7 @@ public class RecipeController {
 
     private final RecipeService recipeService;
 
-    @GetMapping("/detail")
+    @GetMapping
     @ApiOperation(value = "레시피 상세 조회", notes = "레시피를 상세 조회하여 레시피 북마크 유무와 함께 리턴합니다. 이후 최근 본 레시피에 추가됩니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
@@ -32,7 +32,7 @@ public class RecipeController {
     }
 
     @GetMapping("/search")
-    @ApiOperation(value = "레시피 텍스트 검색", notes = "레시피에서 텍스트 및 옵션(시간/난이도/구성)으로 검색하여 리턴합니다.")
+    @ApiOperation(value = "레시피 중 텍스트와 옵션으로 검색", notes = "레시피에서 텍스트 및 옵션(시간/난이도/구성)으로 검색하여 리턴합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
             @ApiImplicitParam(name = "page", value = "페이지 번호", example = "1"),

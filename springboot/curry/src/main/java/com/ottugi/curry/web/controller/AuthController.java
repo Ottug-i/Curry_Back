@@ -28,7 +28,7 @@ public class AuthController {
         return ResponseEntity.ok().body(authService.login(userSaveRequestDto, response));
     }
 
-    @PostMapping("/token-reissue")
+    @PostMapping("/reissue")
     @ApiOperation(value = "토큰 재발급", notes = "재발급된 토큰 정보를 리턴합니다.")
     @ApiImplicitParam(name = "email", value = "회원 이메일", example = "wn8925@sookmyung.ac.kr", required = true)
     public ResponseEntity<TokenResponseDto> reissueToken(@RequestParam String email, HttpServletRequest request, HttpServletResponse response) {

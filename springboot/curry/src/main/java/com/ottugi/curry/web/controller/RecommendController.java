@@ -29,7 +29,7 @@ public class RecommendController {
 
     private final RecommendService recommendService;
 
-    @GetMapping("/rating/initial")
+    @GetMapping("/initial")
     @ApiOperation(value = "초기 랜덤 레시피 평점", notes = "초기 레시피 선호도 조사를 위한 10개의 랜덤 레시피를 리턴합니다.")
     public ResponseEntity<List<RecommendListResponseDto>> getRandomRecipe() {
         return ResponseEntity.ok().body(recommendService.getRandomRecipe());

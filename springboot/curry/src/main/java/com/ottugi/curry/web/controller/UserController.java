@@ -19,14 +19,14 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/profile")
+    @GetMapping
     @ApiOperation(value = "회원 정보 조회", notes = "회원 정보를 리턴합니다.")
     @ApiImplicitParam(name = "id", value = "회원 기본키", example = "1", required = true)
     public ResponseEntity<UserResponseDto> getProfile(@RequestParam Long id) {
         return ResponseEntity.ok().body(userService.getProfile(id));
     }
 
-    @PutMapping("/profile")
+    @PutMapping
     @ApiOperation(value = "회원 정보 수정", notes = "회원 정보 수정를 수정한 후, 수정된 회원 정보를 리턴합니다.")
     public ResponseEntity<UserResponseDto> updateProfile(@RequestBody UserUpdateRequestDto userUpdateRequestDto) {
         return ResponseEntity.ok().body(userService.updateProfile(userUpdateRequestDto));
