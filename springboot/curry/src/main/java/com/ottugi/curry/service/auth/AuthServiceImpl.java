@@ -1,8 +1,8 @@
 package com.ottugi.curry.service.auth;
 
-import com.ottugi.curry.config.exception.BaseCode;
-import com.ottugi.curry.config.exception.BaseException;
-import com.ottugi.curry.config.jwt.TokenProvider;
+import com.ottugi.curry.except.BaseCode;
+import com.ottugi.curry.except.BaseException;
+import com.ottugi.curry.jwt.TokenProvider;
 import com.ottugi.curry.domain.token.Token;
 import com.ottugi.curry.domain.token.TokenRepository;
 import com.ottugi.curry.domain.user.User;

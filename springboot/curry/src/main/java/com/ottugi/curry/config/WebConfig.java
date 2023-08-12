@@ -1,24 +1,24 @@
 package com.ottugi.curry.config;
 
-import com.ottugi.curry.config.handler.BaseHandlerInterceptor;
+import com.ottugi.curry.handler.BaseHandlerInterceptor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.Locale;
 
 @RequiredArgsConstructor
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${jwt.response.header}")
     private String jwtHeader;
+
+    public WebConfig(GlobalConfig config) {
+        this.jwtHeader = config.getHeader();
+    }
 
     @Bean
     public BaseHandlerInterceptor baseHandlerInterceptor() {
@@ -52,5 +52,15 @@ public class WebConfig implements WebMvcConfigurer {
                         HttpMethod.PATCH.name()
                 )
                 .allowCredentials(true);
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    @Bean
+    public GlobalConfig config() {
+        return new GlobalConfig();
     }
 }

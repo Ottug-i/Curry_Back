@@ -1,7 +1,7 @@
-package com.ottugi.curry.config.handler;
+package com.ottugi.curry.handler;
 
-import com.ottugi.curry.config.exception.BaseException;
-import com.ottugi.curry.config.exception.ErrorResponse;
+import com.ottugi.curry.except.BaseException;
+import com.ottugi.curry.except.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

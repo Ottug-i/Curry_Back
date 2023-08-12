@@ -2,8 +2,8 @@ package com.ottugi.curry.service.recommend;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ottugi.curry.config.exception.BaseCode;
-import com.ottugi.curry.config.exception.BaseException;
+import com.ottugi.curry.except.BaseCode;
+import com.ottugi.curry.except.BaseException;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.service.CommonService;

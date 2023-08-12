@@ -1,7 +1,7 @@
 package com.ottugi.curry.service;
 
-import com.ottugi.curry.config.exception.BaseCode;
-import com.ottugi.curry.config.exception.BaseException;
+import com.ottugi.curry.except.BaseCode;
+import com.ottugi.curry.except.BaseException;
 import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.bookmark.BookmarkRepository;
 import com.ottugi.curry.domain.recipe.Recipe;

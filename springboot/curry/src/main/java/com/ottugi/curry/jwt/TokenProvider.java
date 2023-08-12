@@ -1,13 +1,10 @@
-package com.ottugi.curry.config.jwt;
+package com.ottugi.curry.jwt;
 
+import com.ottugi.curry.config.GlobalConfig;
 import com.ottugi.curry.domain.token.Token;
-import com.ottugi.curry.domain.token.TokenRepository;
 import com.ottugi.curry.domain.user.User;
 import io.jsonwebtoken.*;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,14 +22,15 @@ import java.util.*;
 @Component
 public class TokenProvider {
 
-    @Value("${jwt.security.key}")
     private String secretKey;
-
-    @Value("${jwt.response.header}")
     private String jwtHeader;
-
-    @Value("${jwt.token.prefix}")
     private String jwtTokenPrefix;
+
+    public TokenProvider(GlobalConfig config) {
+        this.secretKey = config.getKey();
+        this.jwtHeader = config.getHeader();
+        this.jwtTokenPrefix = config.getPrefix();
+    }
 
     private long accessTokenValidTime = Duration.ofMinutes(30).toMillis();
     private long refreshTokenValidTime = Duration.ofDays(14).toMillis();
