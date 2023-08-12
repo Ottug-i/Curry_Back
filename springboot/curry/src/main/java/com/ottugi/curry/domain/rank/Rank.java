@@ -3,16 +3,13 @@ package com.ottugi.curry.domain.rank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.TimeToLive;
 import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
-@Setter
 @NoArgsConstructor
-@RedisHash(value = "Rank")
+@RedisHash(value = "rank")
 public class Rank {
 
     @Id
@@ -21,17 +18,14 @@ public class Rank {
     
     private int score;
 
-    @TimeToLive
-    private Long expiredTime;
-
     @Builder
-    public Rank(String name, int score, Long expiredTime) {
+    public Rank(String name) {
         this.name = name;
-        this.score = score;
-        this.expiredTime = expiredTime;
+        this.score = 1;
     }
 
-    public void incrementScore(int score) {
+    public Rank incrementScore(int score) {
         this.score += score;
+        return this;
     }
 }

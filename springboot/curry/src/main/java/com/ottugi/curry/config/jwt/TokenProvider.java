@@ -4,6 +4,7 @@ import com.ottugi.curry.domain.token.Token;
 import com.ottugi.curry.domain.token.TokenRepository;
 import com.ottugi.curry.domain.user.User;
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,9 +36,6 @@ public class TokenProvider {
 
     private long accessTokenValidTime = Duration.ofMinutes(30).toMillis();
     private long refreshTokenValidTime = Duration.ofDays(14).toMillis();
-
-    @Autowired
-    private TokenRepository tokenRepository;
 
     @PostConstruct
     protected void init() {

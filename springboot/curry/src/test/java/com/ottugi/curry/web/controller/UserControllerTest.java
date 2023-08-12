@@ -3,9 +3,9 @@ package com.ottugi.curry.web.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.service.user.UserServiceImpl;
-import com.ottugi.curry.web.dto.user.TokenDto;
+import com.ottugi.curry.web.dto.auth.TokenResponseDto;
 import com.ottugi.curry.web.dto.user.UserResponseDto;
-import com.ottugi.curry.web.dto.user.UserSaveRequestDto;
+import com.ottugi.curry.web.dto.auth.UserSaveRequestDto;
 import com.ottugi.curry.web.dto.user.UserUpdateRequestDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,10 +54,10 @@ public class UserControllerTest {
 
         // given
         UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(email, nickName);
-        TokenDto tokenDto = new TokenDto(userId, email, nickName, secret);
+        TokenResponseDto tokenResponseDto = new TokenResponseDto(userId, email, nickName, secret);
 
         // when
-        when(userService.login(any(UserSaveRequestDto.class))).thenReturn(tokenDto);
+        when(userService.login(any(UserSaveRequestDto.class))).thenReturn(tokenResponseDto);
 
         // then
         mockMvc.perform(post("/auth/login")

@@ -16,18 +16,19 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/bookmark")
 public class BookmarkController {
 
     private final BookmarkService bookmarkService;
 
-    @PostMapping("/api/bookmark/addAndRemoveBookmark")
+    @PostMapping
     @ApiOperation(value = "북마크 레시피 추가/삭제", notes = "북마크 레시피를 추가한 후 true를 리턴합니다. 이미 북마크일 경우 북마크가 삭제되고 false를 리턴합니다.")
     public ResponseEntity<Boolean> addOrRemoveBookmark(@RequestBody BookmarkRequestDto bookmarkRequestDto) {
         return ResponseEntity.ok().body(bookmarkService.addOrRemoveBookmark(bookmarkRequestDto));
     }
 
-    @GetMapping("/api/bookmark/getBookmarkAll")
-    @ApiOperation(value = "북마크 레시피 리스트 조회", notes = "북마크 레시피 리스트를 조회하여 리턴합니다.")
+    @GetMapping("/list")
+    @ApiOperation(value = "북마크 레시피 조회", notes = "북마크 레시피를 조회하여 리턴합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
             @ApiImplicitParam(name = "page", value = "페이지 번호", example = "1"),
@@ -37,8 +38,8 @@ public class BookmarkController {
         return ResponseEntity.ok().body(bookmarkService.getBookmarkAll(userId, page, size));
     }
 
-    @GetMapping("/api/bookmark/searchBookmark")
-    @ApiOperation(value = "북마크 레시피 리스트 중 이름과 옵션으로 검색", notes = "북마크 레시피 리스트에서 이름과 옵션으로 검색하여 리턴합니다.")
+    @GetMapping("/search")
+    @ApiOperation(value = "북마크 레시피 중 이름과 옵션으로 검색", notes = "북마크 레시피에서 이름과 옵션(시간/난이도/구성)으로 검색하여 리턴합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
             @ApiImplicitParam(name = "page", value = "페이지 번호", example = "1"),

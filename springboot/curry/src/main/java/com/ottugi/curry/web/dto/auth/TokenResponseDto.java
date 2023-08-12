@@ -1,6 +1,5 @@
-package com.ottugi.curry.web.dto.user;
+package com.ottugi.curry.web.dto.auth;
 
-import com.ottugi.curry.domain.user.Role;
 import com.ottugi.curry.domain.user.User;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -10,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TokenDto {
+public class TokenResponseDto {
 
     @ApiModelProperty(notes = "회원 기본키", example = "1")
     private Long id;
@@ -27,7 +26,7 @@ public class TokenDto {
     @ApiModelProperty(notes = "회원 토큰", example = "secret")
     private String token;
 
-    public TokenDto(User user, String token) {
+    public TokenResponseDto(User user, String token) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.nickName = user.getNickName();

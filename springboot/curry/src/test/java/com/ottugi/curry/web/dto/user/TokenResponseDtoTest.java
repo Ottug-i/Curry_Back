@@ -1,11 +1,12 @@
 package com.ottugi.curry.web.dto.user;
 
+import com.ottugi.curry.web.dto.auth.TokenResponseDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TokenDtoTest {
+class TokenResponseDtoTest {
 
     @Value("${jwt.secret}")
     private String secret;
@@ -19,12 +20,12 @@ class TokenDtoTest {
         String nickName = "가경";
 
         // when
-        TokenDto tokenDto = new TokenDto(id, email, nickName, secret);
+        TokenResponseDto tokenResponseDto = new TokenResponseDto(id, email, nickName, secret);
 
         // then
-        assertEquals(tokenDto.getId(), id);
-        assertEquals(tokenDto.getEmail(), email);
-        assertEquals(tokenDto.getNickName(), nickName);
-        assertEquals(tokenDto.getToken(), secret);
+        assertEquals(tokenResponseDto.getId(), id);
+        assertEquals(tokenResponseDto.getEmail(), email);
+        assertEquals(tokenResponseDto.getNickName(), nickName);
+        assertEquals(tokenResponseDto.getToken(), secret);
     }
 }

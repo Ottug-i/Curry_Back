@@ -2,9 +2,9 @@ package com.ottugi.curry.service.user;
 
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
-import com.ottugi.curry.web.dto.user.TokenDto;
+import com.ottugi.curry.web.dto.auth.TokenResponseDto;
 import com.ottugi.curry.web.dto.user.UserResponseDto;
-import com.ottugi.curry.web.dto.user.UserSaveRequestDto;
+import com.ottugi.curry.web.dto.auth.UserSaveRequestDto;
 import com.ottugi.curry.web.dto.user.UserUpdateRequestDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,10 +54,10 @@ class UserServiceTest {
         // when
         when(userRepository.countByEmail(any())).thenReturn(0);
         when(userRepository.save(any())).thenReturn(user);
-        TokenDto tokenDto = userService.login(userSaveRequestDto);
+        TokenResponseDto tokenResponseDto = userService.login(userSaveRequestDto);
 
         // then
-        assertNotNull(tokenDto);
+        assertNotNull(tokenResponseDto);
     }
 
     @Test
@@ -70,10 +70,10 @@ class UserServiceTest {
         // when
         when(userRepository.countByEmail(any())).thenReturn(1);
         when(userRepository.findByEmail(any())).thenReturn(existingUser);
-        TokenDto tokenDto = userService.login(userSaveRequestDto);
+        TokenResponseDto tokenResponseDto = userService.login(userSaveRequestDto);
 
         // then
-        assertNotNull(tokenDto);
+        assertNotNull(tokenResponseDto);
     }
 
     @Test

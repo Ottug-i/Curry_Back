@@ -1,5 +1,8 @@
 package com.ottugi.curry.config.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ottugi.curry.config.exception.BaseCode;
+import com.ottugi.curry.config.exception.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private final TokenProvider tokenProvider;
 
@@ -39,8 +44,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         } catch (ExpiredJwtException e) {
-            response.setStatus(401);
-            response.getWriter().flush();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+
+            ErrorResponse errorResponse = new ErrorResponse(BaseCode.JWT_ACCESS_TOKEN_EXPIRED);
+            String result = objectMapper.writeValueAsString(errorResponse);
+            response.setStatus(errorResponse.getStatus());
+            response.getWriter().write(result);
         }
     }
 
