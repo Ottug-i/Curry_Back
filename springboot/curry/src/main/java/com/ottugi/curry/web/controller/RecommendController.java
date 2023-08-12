@@ -51,6 +51,16 @@ public class RecommendController {
         return ResponseEntity.ok().body(recommendService.updateUserRating(ratingRequestDto));
     }
 
+    @DeleteMapping("/rating")
+    @ApiOperation(value = "레시피 평점 삭제", notes = "유저 아이디에 따른 레시피 평점 정보를 삭제합니다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
+            @ApiImplicitParam(name = "recipeId", value = "레시피 아이디", example = "6846342", required = true)
+    })
+    public ResponseEntity<Boolean> updateUserRatings(@RequestParam Long userId, Long recipeId) {
+        return ResponseEntity.ok().body(recommendService.deleteUserRating(userId, recipeId));
+    }
+
     @PostMapping("/ingredients/list")
     @ApiOperation(value = "재료에 따른 추천 레시피 조회", notes = "재료에 따른 레시피를 조회하여 레시피 북마크 유무와 함께 리턴합니다.")
     public ResponseEntity<Page<RecipeIngListResponseDto>> getIngredientsRecommendList(@RequestBody RecipeRequestDto recipeRequestDto) {

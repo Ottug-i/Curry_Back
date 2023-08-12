@@ -94,6 +94,21 @@ public class RecommendServiceImpl implements RecommendService {
         }
     }
 
+    // 유저 레시피 평점 삭제
+    @Override
+    @Transactional
+    public Boolean deleteUserRating(Long userId, Long recipeId) {
+        try {
+            String apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, userId, recipeId);
+
+            restTemplate.delete(apiUrl);
+
+            return true;
+        } catch (RestClientException e) {
+            throw new BaseException(BaseCode.RECOMMEND_NOT_FOUND);
+        }
+    }
+
     // 재료 추천 레시피 목록 조회
     @Override
     @Transactional(readOnly = true)

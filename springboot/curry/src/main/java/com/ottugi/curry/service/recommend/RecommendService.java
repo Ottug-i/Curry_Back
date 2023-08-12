@@ -16,6 +16,7 @@ public interface RecommendService {
     List<RecommendListResponseDto> getRandomRecipe();
     RatingResponseDto getUserRating(Long userId, Long recipeId) throws JsonProcessingException;
     Boolean updateUserRating(RatingRequestDto ratingRequestDto);
+    Boolean deleteUserRating(Long userId, Long recipeId);
     Page<RecipeIngListResponseDto> getIngredientsRecommendList(RecipeRequestDto recipeRequestDto);
     List<Long> getRecommendBookmarkId(Long recipeId, int page) throws JsonProcessingException;
     List<Long> getRecommendRatingId(Long userId, int page, Long[] bookmarkList) throws JsonProcessingException;
