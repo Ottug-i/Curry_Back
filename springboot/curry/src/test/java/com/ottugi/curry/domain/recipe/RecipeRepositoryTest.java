@@ -1,45 +1,75 @@
 package com.ottugi.curry.domain.recipe;
 
+import com.ottugi.curry.TestConstants;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Arrays;
 import java.util.List;
 
+import static com.ottugi.curry.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@RequiredArgsConstructor
 class RecipeRepositoryTest {
 
-    // 이미 DB에 저장되어있는 데이터 사용
-    private final Long recipeId = 6842324L;
+    private String ingredients = "고구마";
 
-    @Autowired
-    private RecipeRepository recipeRepository;
+    private Recipe recipe;
+    private List<Recipe> recipeList;
+    private List<Long> recipeIdList = Arrays.asList(RECIPE_ID);
+    private List<Long> idList = Arrays.asList(1L);
+
+    private final TestConstants testConstants;
+    private final RecipeRepository recipeRepository;
 
     @Test
     void 레시피재료로조회() {
+        // when
+        recipeList = recipeRepository.findByIngredientsContaining(ingredients);
 
-        String ingredients = "고구마";
-        List<Recipe> recipeList = recipeRepository.findByIngredientsContaining(ingredients);
-
-        assertNotNull(recipeList);
-    }
+        // then
+        recipe = recipeList.get(0);
+        assertTrue(recipe.getIngredients().contains(ingredients));    }
 
     @Test
     void 레시피이름으로조회() {
+        // when
+        recipeList = recipeRepository.findByNameContaining(ingredients);
 
-        String ingredients = "고구마";
-        List<Recipe> recipeList = recipeRepository.findByNameContaining(ingredients);
+        // then
+        recipe = recipeList.get(0);
+        assertTrue(recipe.getName().contains(ingredients));
+    }
 
-        assertNotNull(recipeList);
+    @Test
+    void 레시피아이디리스트로조회() {
+        // when
+        recipeList = recipeRepository.findByRecipeIdIn(recipeIdList);
+
+        // then
+        recipe = recipeList.get(0);
+        assertEquals(recipe, recipeIdList.get(0));
+    }
+
+    @Test
+    void 레시피기본키리스트로조회() {
+        // when
+        recipeList = recipeRepository.findByIdIn(idList);
+
+        // then
+        recipe = recipeList.get(0);
+        assertEquals(recipe.getRecipeId(), idList.get(0));
     }
 
     @Test
     void 레시피아이디로조회() {
+        // when
+        recipe = recipeRepository.findByRecipeId(RECIPE_ID).get();
 
-        Recipe recipe = recipeRepository.findByRecipeId(recipeId).orElseThrow();
-
-        assertEquals(recipe.getRecipeId(), recipeId);
+        // then
+        assertEquals(recipe.getRecipeId(), RECIPE_ID);
     }
 }

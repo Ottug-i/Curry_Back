@@ -8,6 +8,5 @@ import java.util.List;
 @Repository
 public interface RankRepository extends CrudRepository<Rank, String> {
     Rank findByName(String name);
-    List<Rank> findAll();
     List<Rank> findAllByOrderByScoreDesc();
 }
