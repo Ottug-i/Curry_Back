@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService {
 
     // 회원 탈퇴
     @Override
+    @Transactional
     public Boolean setWithdraw(Long id) {
         User user = commonService.findByUserId(id);
         if (user != null) {

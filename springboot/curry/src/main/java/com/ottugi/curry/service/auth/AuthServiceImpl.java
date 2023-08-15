@@ -55,16 +55,19 @@ public class AuthServiceImpl implements AuthService {
     }
 
     // 중복 사용자 검증
+    @Transactional(readOnly = true)
     private Boolean isDuplicatedUser(String email) {
         return userRepository.existsByEmail(email);
     }
 
     // 리프레시 토큰 찾기
+    @Transactional(readOnly = true)
     private Token findToken(String email) {
         return tokenRepository.findById(email).orElseThrow(() -> new BaseException(BaseCode.JWT_UNAUTHORIZED));
     }
     
     // 토큰 유효성 검증
+    @Transactional(readOnly = true)
     private void validateToken(Token refreshToken, HttpServletRequest request) {
         if (!tokenProvider.validateToken(refreshToken.getValue(), request)) {
             throw new BaseException(BaseCode.JWT_REFRESH_TOKEN_EXPIRED);
@@ -72,6 +75,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     // 토큰 생성 및 저장
+    @Transactional
     private TokenResponseDto createToken(User user, HttpServletResponse response) {
         Token accessToken = tokenProvider.createAccessToken(user);
         Token refreshToken = tokenProvider.createRefreshToken(user);

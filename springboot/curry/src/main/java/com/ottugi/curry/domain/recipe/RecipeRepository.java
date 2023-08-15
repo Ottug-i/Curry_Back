@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
@@ -11,5 +12,5 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     List<Recipe> findByNameContaining(String name);
     List<Recipe> findByRecipeIdIn(List<Long> recipeId);
     List<Recipe> findByIdIn(List<Long> id);
-    List<Recipe> findByRecipeId(Long recipeId);
+    Optional<Recipe> findByRecipeId(Long recipeId);
 }

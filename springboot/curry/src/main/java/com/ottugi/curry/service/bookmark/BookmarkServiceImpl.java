@@ -83,12 +83,14 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     // 북마크 삭제
+    @Transactional
     private void removeBookmark(User user, Recipe recipe) {
         Bookmark bookmark = commonService.findBookmarkByUserAndRecipe(user, recipe);
         bookmarkRepository.delete(bookmark);
     }
 
     // 북마크 추가
+    @Transactional
     private void addBookmark(User user, Recipe recipe) {
         Bookmark bookmark = new Bookmark();
         bookmark.setUser(user);
