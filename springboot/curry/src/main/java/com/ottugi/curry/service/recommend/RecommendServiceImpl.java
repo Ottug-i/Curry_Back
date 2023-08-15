@@ -51,7 +51,6 @@ public class RecommendServiceImpl implements RecommendService {
         int batchSize = 10;
 
         List<Long> selectedIdList = ThreadLocalRandom.current().longs(min, max + 1).distinct().limit(batchSize).boxed().collect(Collectors.toList());
-        System.out.println(selectedIdList);
         List<Recipe> recipeList = commonService.findByIdIn(selectedIdList);
 
         return recipeList.stream().map(recipe -> new RecommendListResponseDto(recipe)).collect(Collectors.toList());
@@ -65,10 +64,18 @@ public class RecommendServiceImpl implements RecommendService {
             String apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, userId, recipeId);
 
             String response = restTemplate.getForObject(apiUrl, String.class);
-
-            Double[] result = objectMapper.readValue(response, Double[].class);
-            return new RatingResponseDto(Arrays.asList(result));
-        } catch (RestClientException | JsonProcessingException e) {
+            
+            if (response.equals("false")) {
+                throw new BaseException(BaseCode.RECOMMEND_NOT_FOUND);
+            }
+            else {
+                Double[] result = objectMapper.readValue(response, Double[].class);
+                return new RatingResponseDto(Arrays.asList(result));
+            }
+        } catch (NullPointerException e) {
+            return null;
+        }
+        catch (RestClientException | JsonProcessingException e) {
             throw new BaseException(BaseCode.RECOMMEND_NOT_FOUND);
         }
 
@@ -88,7 +95,12 @@ public class RecommendServiceImpl implements RecommendService {
 
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(apiUrl, httpEntity, String.class);
 
-            return responseEntity.getStatusCode().is2xxSuccessful();
+            if (Objects.equals(responseEntity.getBody(), "true")) {
+                return true;
+            }
+            else {
+                throw new BaseException(BaseCode.RECOMMEND_NOT_FOUND);
+            }
         } catch (RestClientException e) {
             throw new BaseException(BaseCode.RECOMMEND_NOT_FOUND);
         }
@@ -101,7 +113,7 @@ public class RecommendServiceImpl implements RecommendService {
         try {
             String apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, userId, recipeId);
 
-            restTemplate.delete(apiUrl);
+             restTemplate.delete(apiUrl);
 
             return true;
         } catch (RestClientException e) {
@@ -174,8 +186,10 @@ public class RecommendServiceImpl implements RecommendService {
     public List<Long> getRecommendRatingId(Long userId, int page, Long[] bookmarkList) throws JsonProcessingException {
         try {
             String apiUrl = String.format("%s/rating/recommend?user_id=%d&page=%d", FLASK_API_URL, userId, page);
-            for (Long bookmarkId : bookmarkList) {
-                apiUrl += "&bookmark_list=" + bookmarkId;
+            if(bookmarkList != null) {
+                for (Long bookmarkId : bookmarkList) {
+                    apiUrl += "&bookmark_list=" + bookmarkId;
+                }
             }
 
             String response = restTemplate.getForObject(apiUrl, String.class);
@@ -183,8 +197,10 @@ public class RecommendServiceImpl implements RecommendService {
             Object[] resultList = objectMapper.readValue(response, Object[].class);
 
             String genre = (String) resultList[0];
-            User user = commonService.findByUserId(userId);
-            user.updateGenre(genre);
+            if (genre != null) {
+                User user = commonService.findByUserId(userId);
+                user.updateGenre(genre);
+            }
 
             Long[] result = objectMapper.convertValue(resultList[1], Long[].class);
             return Arrays.asList(result);
