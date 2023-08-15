@@ -25,7 +25,7 @@ class BookmarkTest {
     public void setUp() {
         // given
         user = new User(EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        recipe = new Recipe(1234L, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        recipe = new Recipe(RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
     }
 
     @Test

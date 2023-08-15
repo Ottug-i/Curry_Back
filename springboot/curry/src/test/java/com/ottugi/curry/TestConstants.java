@@ -27,7 +27,7 @@ public class TestConstants {
     public static final Long EXPIRED_TIME = Duration.ofDays(14).toMillis();;
 
     // Recipe
-    public static final Long RECIPE_ID = 6842324L;
+    public static final Long RECIPE_ID = 1234L;
     public static final String NAME = "고구마맛탕";
     public static final String THUMBNAIL = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png";
     public static final Time TIME = Time.ofTime("60분 이내");
@@ -38,6 +38,9 @@ public class TestConstants {
     public static final String ORDERS = "|1. 바삭하게 튀기는 꿀팁|2. 달콤한 소스 꿀팁|3. 더 건강하게 먹는 꿀팁";
     public static final String PHOTO = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg";
     public static final String GENRE = "ing13|ing21";
+
+    public static final int PAGE = 1;
+    public static final int SIZE = 1;
 
     // Rank
     public static final String KEYWORD = "망고";

@@ -48,7 +48,6 @@ public class RecipeServiceImpl implements RecipeService {
         if (time.isBlank() && difficulty.isBlank() && composition.isBlank()) {
             recipeListResponseDtoList = recipeList.stream().map(recipe -> new RecipeListResponseDto(recipe, commonService.isBookmarked(user, recipe))).collect(Collectors.toList());
             if (!recipeListResponseDtoList.isEmpty()) {
-                log.info("rank up");
                 rankService.updateOrAddRank(name);
             }
         }
