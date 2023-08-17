@@ -29,7 +29,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     // 레시피 상세 조회
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public RecipeResponseDto getRecipeDetail(Long userId, Long recipeId) {
         User user = commonService.findByUserId(userId);
         Recipe recipe = commonService.findByRecipeId(recipeId);
@@ -66,6 +66,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     // 레시피 이름으로 조회
+    @Transactional(readOnly = true)
     private List<Recipe> findByName(String name) {
         return recipeRepository.findByNameContaining(name);
     }

@@ -49,7 +49,7 @@ public class CommonService {
     // 레시피 아이디로 레시피 조회
     @Transactional(readOnly = true)
     public Recipe findByRecipeId(Long recipeId) {
-        return recipeRepository.findByRecipeId(recipeId).orElseThrow(() -> new BaseException(BaseCode.RECIPE_NOT_FOUND));
+        return recipeRepository.findByRecipeId(recipeId).orElseThrow(() -> new BaseException(BaseCode.USER_NOT_FOUND));
     }
 
     // 레시피 아이디 리스트로 레시피 조회

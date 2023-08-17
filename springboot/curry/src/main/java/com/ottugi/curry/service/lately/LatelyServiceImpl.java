@@ -47,6 +47,7 @@ public class LatelyServiceImpl implements LatelyService {
     }
 
     // 최근 본 레시피 목록에서 중복 레시피 제거
+    @Transactional
     private void removeDuplicatedLately(User user, Recipe recipe) {
         Lately duplicatedLately = latelyRepository.findByUserIdAndRecipeId(user, recipe);
         if (duplicatedLately != null) {
@@ -55,6 +56,7 @@ public class LatelyServiceImpl implements LatelyService {
     }
 
     // 최근 본 레시피 목록의 갯수를 5개로 제한
+    @Transactional
     private void limitLatelySize(User user) {
         if (latelyRepository.countByUserId(user) >= 5) {
             List<Lately> latelyList = findLatelyWithDescendingOrder(user);
@@ -63,6 +65,7 @@ public class LatelyServiceImpl implements LatelyService {
     }
 
     // 최근에 본 레시피 순서 정렬 조회
+    @Transactional(readOnly = true)
     private List<Lately> findLatelyWithDescendingOrder(User user) {
         return latelyRepository.findByUserIdOrderByIdDesc(user);
     }
