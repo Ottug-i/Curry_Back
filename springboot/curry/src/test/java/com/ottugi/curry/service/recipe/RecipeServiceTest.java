@@ -58,8 +58,8 @@ class RecipeServiceTest {
     @Test
     void 레시피검색() {
         // when
-        when(commonService.findByUserId(anyLong())).thenReturn(new User());
-        when(recipeRepository.findByNameContaining(anyString())).thenReturn(recipeList);
+        when(commonService.findByUserId(USER_ID)).thenReturn(new User());
+        when(recipeRepository.findByNameContaining(NAME)).thenReturn(recipeList);
         when(commonService.isRecipeMatching(recipe, TIME.getTimeName(), DIFFICULTY.getDifficulty(), COMPOSITION.getComposition())).thenReturn(true);
 
         Page<RecipeListResponseDto> response = recipeService.searchByBox(USER_ID, PAGE, SIZE, NAME, TIME.getTimeName(), DIFFICULTY.getDifficulty(), COMPOSITION.getComposition());

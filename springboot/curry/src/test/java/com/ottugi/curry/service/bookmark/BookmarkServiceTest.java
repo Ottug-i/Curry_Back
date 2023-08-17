@@ -1,6 +1,7 @@
 package com.ottugi.curry.service.bookmark;
 
 import com.ottugi.curry.domain.bookmark.Bookmark;
+import com.ottugi.curry.domain.bookmark.BookmarkRepository;
 import com.ottugi.curry.domain.recipe.*;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.service.CommonService;
@@ -25,10 +26,15 @@ class BookmarkServiceTest {
 
     private User user;
     private Recipe recipe;
+    private Bookmark bookmark;
+    private BookmarkRequestDto bookmarkRequestDto;
     private List<Bookmark> bookmarkList = new ArrayList<>();
 
     @Mock
     private CommonService commonService;
+
+    @Mock
+    private BookmarkRepository bookmarkRepository;
 
     @InjectMocks
     private BookmarkService bookmarkService;
@@ -38,12 +44,13 @@ class BookmarkServiceTest {
         // given
         user = new User();
         recipe = new Recipe();
+        bookmark = new Bookmark();
     }
 
     @Test
     void 북마크추가() {
         // given
-        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(USER_ID, RECIPE_ID);
+        bookmarkRequestDto = new BookmarkRequestDto(USER_ID, RECIPE_ID);
 
         // when
         when(commonService.findByUserId(USER_ID)).thenReturn(user);
@@ -52,12 +59,13 @@ class BookmarkServiceTest {
 
         // then
         assertTrue(bookmarkService.addOrRemoveBookmark(bookmarkRequestDto));
+        verify(bookmarkRepository, times(1)).save(bookmark);
     }
 
     @Test
     void 북마크삭제() {
         // given
-        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(USER_ID, RECIPE_ID);
+        bookmarkRequestDto = new BookmarkRequestDto(USER_ID, RECIPE_ID);
 
         // when
         when(commonService.findByUserId(USER_ID)).thenReturn(user);
@@ -66,6 +74,7 @@ class BookmarkServiceTest {
 
         // then
         assertTrue(bookmarkService.addOrRemoveBookmark(bookmarkRequestDto));
+        verify(bookmarkRepository, times(1)).delete(bookmark);
     }
 
     @Test

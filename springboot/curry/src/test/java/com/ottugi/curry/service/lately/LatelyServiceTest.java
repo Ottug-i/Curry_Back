@@ -17,13 +17,14 @@ import java.util.List;
 
 import static com.ottugi.curry.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class LatelyServiceTest {
 
     private User user;
     private Recipe recipe;
+    private Lately lately;
     private List<Lately> latelyList = new ArrayList<>();
 
     @Mock
@@ -40,6 +41,7 @@ class LatelyServiceTest {
         // given
         user = new User();
         recipe = new Recipe();
+        lately = new Lately();
     }
 
     @Test
@@ -48,9 +50,11 @@ class LatelyServiceTest {
         when(commonService.findByUserId(USER_ID)).thenReturn(user);
         when(commonService.findByRecipeId(RECIPE_ID)).thenReturn(recipe);
         when(latelyRepository.findByUserIdAndRecipeId(user, recipe)).thenReturn(null);
+        when(latelyRepository.save(lately)).thenReturn(lately);
 
         // then
         assertTrue(latelyService.addLately(USER_ID, RECIPE_ID));
+        verify(latelyRepository, times(1)).save(lately);
     }
 
     @Test
