@@ -1,10 +1,8 @@
 package com.ottugi.curry.web.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ottugi.curry.domain.recipe.*;
-import com.ottugi.curry.service.recipe.RecipeServiceImpl;
+import com.ottugi.curry.service.recipe.RecipeService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
-import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,12 +12,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -27,104 +23,64 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import static com.ottugi.curry.TestConstants.*;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 class RecipeControllerTest {
 
-    private final Long recipeId1 = 1234L;
-    private final Long recipeId2 = 1235L;
-    private final String name = "고구마맛탕";
-    private final String thumbnail = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png";
-    private final Time time = Time.ofTime("60분 이내");
-    private final Difficulty difficulty = Difficulty.ofDifficulty("초급");
-    private final Composition composition = Composition.ofComposition("가볍게");
-    private final String ingredients = "[재료] 고구마| 식용유| 황설탕| 올리고당| 견과류| 물";
-    private final Servings servings = Servings.ofServings("2인분");
-    private final String orders = "|1. 바삭하게 튀기는 꿀팁|2. 달콤한 소스 꿀팁|3. 더 건강하게 먹는 꿀팁";
-    private final String photo = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg";
+    private Recipe recipe1;
+    private Recipe recipe2;
+
+    private Long recipeId1 = 1234L;
+    private Long recipeId2 = 1235L;
 
     private final Boolean isBookmark = true;
-
-    private final Long userId = 1L;
-
-    private final int page = 1;
-    private final int size = 10;
 
     private MockMvc mockMvc;
 
     @Mock
-    private RecipeServiceImpl recipeService;
+    private RecipeService recipeService;
 
     @InjectMocks
     private RecipeController recipeController;
 
     @BeforeEach
     public void setUp() {
+        recipe1 = new Recipe(recipeId1, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        recipe2 = new Recipe(recipeId2, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
         mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
     }
 
     @Test
-    void 재료로레시피리스트조회() throws Exception {
-
-        // given
-        RecipeRequestDto recipeRequestDto = RecipeRequestDto.builder()
-                .userId(userId)
-                .ingredients(Arrays.asList("고구마", "올리고당"))
-                .page(1)
-                .size(10)
-                .build();
-
-        Recipe recipe1 = new Recipe(recipeId1, name, thumbnail, time, difficulty, composition, ingredients, servings, orders, photo);
-        Recipe recipe2 = new Recipe(recipeId2, name, thumbnail, time, difficulty, composition, ingredients, servings, orders, photo);
-
-        List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
-        recipeListResponseDtoList.add(new RecipeListResponseDto(recipe1, isBookmark));
-        recipeListResponseDtoList.add(new RecipeListResponseDto(recipe2, isBookmark));
-
-        Page<RecipeListResponseDto> pagedRecipeList = new PageImpl<>(recipeListResponseDtoList);
-
-        // when
-        when(recipeService.getRecipeList(recipeRequestDto)).thenReturn(pagedRecipeList);
-
-        // then
-        mockMvc.perform(post("/api/recipe/getRecipeList")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(new ObjectMapper().writeValueAsString(recipeRequestDto)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     void 레시피상세조회() throws Exception {
-
         // given
-        Recipe recipe = new Recipe(recipeId1, name, thumbnail, time, difficulty, composition, ingredients, servings, orders, photo);
-        RecipeResponseDto recipeResponseDto = new RecipeResponseDto(recipe, isBookmark);
+        RecipeResponseDto recipeResponseDto = new RecipeResponseDto(recipe1, isBookmark);
 
         // when
-        when(recipeService.getRecipeDetail(userId, recipeId1)).thenReturn(recipeResponseDto);
+        when(recipeService.getRecipeDetail(USER_ID, recipeId1)).thenReturn(recipeResponseDto);
 
         // then
-        mockMvc.perform(get("/api/recipe/getRecipeDetail")
-                    .param("userId", String.valueOf(userId))
+        mockMvc.perform(get("/api/recipe")
+                    .param("userId", String.valueOf(USER_ID))
                     .param("recipeId", String.valueOf(recipeId1)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.recipeId").value(recipeId1));
+                .andExpect(jsonPath("$.recipeId").value(recipeId1))
+                .andExpect(jsonPath("$.name").value(NAME))
+                .andExpect(jsonPath("$.thumbnail").value(THUMBNAIL))
+                .andExpect(jsonPath("$.time").value(TIME))
+                .andExpect(jsonPath("$.difficulty").value(DIFFICULTY))
+                .andExpect(jsonPath("$.composition").value(COMPOSITION))
+                .andExpect(jsonPath("$.ingredients").value(INGREDIENTS))
+                .andExpect(jsonPath("$.servings").value(SERVINGS))
+                .andExpect(jsonPath("$.orders").value(ORDERS))
+                .andExpect(jsonPath("$.photo").value(PHOTO))
+                .andExpect(jsonPath("$.isBookmark").value(isBookmark));
     }
 
     @Test
     void 검색창으로레시피리스트조회() throws Exception {
-
         // given
-        RecipeRequestDto recipeRequestDto = RecipeRequestDto.builder()
-                .userId(userId)
-                .ingredients(Arrays.asList("고구마", "올리고당"))
-                .page(1)
-                .size(10)
-                .build();
-
-        Recipe recipe1 = new Recipe(recipeId1, name, thumbnail, time, difficulty, composition, ingredients, servings, orders, photo);
-        Recipe recipe2 = new Recipe(recipeId2, name, thumbnail, time, difficulty, composition, ingredients, servings, orders, photo);
-
         List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
         recipeListResponseDtoList.add(new RecipeListResponseDto(recipe1, isBookmark));
         recipeListResponseDtoList.add(new RecipeListResponseDto(recipe2, isBookmark));
@@ -132,18 +88,17 @@ class RecipeControllerTest {
         Page<RecipeListResponseDto> recipeListResponseDtoPage = new PageImpl<>(recipeListResponseDtoList);
 
         // when
-        when(recipeService.searchByBox(userId, page, size, name, time.toString(), difficulty.toString(), composition.toString())).thenReturn(recipeListResponseDtoPage);
+        when(recipeService.searchByBox(USER_ID, PAGE, SIZE, NAME, TIME.getTimeName(), DIFFICULTY.getDifficulty(), COMPOSITION.getComposition())).thenReturn(recipeListResponseDtoPage);
 
         // then
         mockMvc.perform(get("/api/recipe/searchByBox")
-                        .param("userId", String.valueOf(userId))
-                        .param("page", String.valueOf(page))
-                        .param("size", String.valueOf(size))
-                        .param("name", name)
-                        .param("time", time.toString())
-                        .param("difficulty", difficulty.toString())
-                        .param("composition", composition.toString())
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .param("userId", String.valueOf(USER_ID))
+                        .param("page", String.valueOf(PAGE))
+                        .param("size", String.valueOf(SIZE))
+                        .param("name", NAME)
+                        .param("time", TIME.getTimeName())
+                        .param("difficulty", DIFFICULTY.getDifficulty())
+                        .param("composition", COMPOSITION.getComposition()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(recipeListResponseDtoList.size())));
     }

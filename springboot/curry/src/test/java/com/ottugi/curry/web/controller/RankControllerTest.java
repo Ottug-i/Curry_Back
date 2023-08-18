@@ -1,7 +1,7 @@
 package com.ottugi.curry.web.controller;
 
-import com.ottugi.curry.service.lately.LatelyService;
-import com.ottugi.curry.web.dto.lately.LatelyListResponseDto;
+import com.ottugi.curry.service.rank.RankService;
+import com.ottugi.curry.web.dto.rank.RankResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,36 +20,33 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static com.ottugi.curry.TestConstants.*;
-
 @SpringBootTest
 @AutoConfigureMockMvc
-class LatelyControllerTest {
+class RankControllerTest {
 
     private MockMvc mockMvc;
 
     @Mock
-    private LatelyService latelyService;
+    private RankService rankService;
 
     @InjectMocks
-    private LatelyController latelyController;
+    private RankController rankController;
 
     @BeforeEach
     public void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(latelyController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(rankController).build();
     }
 
     @Test
-    void 최근본레시피리스트조회() throws Exception {
+    void 인기검색어조회() throws Exception {
         // given
-        List<LatelyListResponseDto> latelyListResponseDtoList = new ArrayList<>();
+        List<RankResponseDto> rankResponseDtoList = new ArrayList<>();
 
         // when
-        when(latelyService.getLatelyAll(USER_ID)).thenReturn(latelyListResponseDtoList);
+        when(rankService.getRankList()).thenReturn(rankResponseDtoList);
 
         // then
-        mockMvc.perform(get("/api/lately/list")
-                        .param("userId", String.valueOf(USER_ID)))
+        mockMvc.perform(get("/api/rank/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
