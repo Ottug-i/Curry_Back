@@ -2,22 +2,18 @@ package com.ottugi.curry.web.dto.bookmark;
 
 import org.junit.jupiter.api.Test;
 
+import static com.ottugi.curry.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BookmarkRequestDtoTest {
 
     @Test
     void BookmarkRequestDto_롬복() {
-
-        // given
-        Long userId = 1L;
-        Long recipeId = 1234L;
-
         // when
-        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(userId, recipeId);
+        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(USER_ID, RECIPE_ID);
 
         // then
-        assertEquals(bookmarkRequestDto.getUserId(), userId);
-        assertEquals(bookmarkRequestDto.getRecipeId(), recipeId);
+        assertEquals(bookmarkRequestDto.getUserId(), USER_ID);
+        assertEquals(bookmarkRequestDto.getRecipeId(), RECIPE_ID);
     }
 }
