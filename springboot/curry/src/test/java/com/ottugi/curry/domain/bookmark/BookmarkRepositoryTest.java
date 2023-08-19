@@ -20,6 +20,7 @@ class BookmarkRepositoryTest {
     private User user;
     private Recipe recipe;
     private Bookmark bookmark;
+    private Bookmark findBookmark;
 
     private BookmarkRepository bookmarkRepository;
     private UserRepository userRepository;
@@ -58,11 +59,11 @@ class BookmarkRepositoryTest {
     @Test
     void 북마크유저이름과레시피아이디로조회() {
         // when
-        bookmark = bookmarkRepository.findByUserIdAndRecipeId(user, recipe);
+        findBookmark = bookmarkRepository.findByUserIdAndRecipeId(user, recipe);
 
         // then
-        assertEquals(bookmark.getUserId().getId(), user.getId());
-        assertEquals(bookmark.getRecipeId().getId(), recipe.getId());
+        assertEquals(findBookmark.getUserId().getId(), user.getId());
+        assertEquals(findBookmark.getRecipeId().getId(), recipe.getId());
     }
 
     @Test
@@ -71,8 +72,8 @@ class BookmarkRepositoryTest {
         List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(user);
 
         // then
-        bookmark = bookmarkList.get(0);
-        assertEquals(bookmark.getUserId().getId(), user.getId());
-        assertEquals(bookmark.getRecipeId().getId(), recipe.getId());
+        findBookmark = bookmarkList.get(0);
+        assertEquals(findBookmark.getUserId().getId(), user.getId());
+        assertEquals(findBookmark.getRecipeId().getId(), recipe.getId());
     }
 }

@@ -20,6 +20,7 @@ class LatelyRepositoryTest {
     private User user;
     private Recipe recipe;
     private Lately lately;
+    private Lately findLately;
 
     private LatelyRepository latelyRepository;
     private UserRepository userRepository;
@@ -58,11 +59,11 @@ class LatelyRepositoryTest {
     @Test
     void 최근본레시피유저이름과레시피이름으로검색() {
         // when
-        lately = latelyRepository.findByUserIdAndRecipeId(user, recipe);
+        findLately = latelyRepository.findByUserIdAndRecipeId(user, recipe);
 
         // then
-        assertEquals(lately.getUserId().getId(), user.getId());
-        assertEquals(lately.getRecipeId().getId(), recipe.getId());
+        assertEquals(findLately.getUserId().getId(), user.getId());
+        assertEquals(findLately.getRecipeId().getId(), recipe.getId());
     }
 
     @Test
@@ -71,9 +72,9 @@ class LatelyRepositoryTest {
         List<Lately> latelyList = latelyRepository.findByUserIdOrderByIdDesc(user);
 
         // then
-        lately = latelyList.get(0);
-        assertEquals(lately.getUserId().getId(), user.getId());
-        assertEquals(lately.getRecipeId().getId(), recipe.getId());
+        findLately = latelyList.get(0);
+        assertEquals(findLately.getUserId().getId(), user.getId());
+        assertEquals(findLately.getRecipeId().getId(), recipe.getId());
     }
 
     @Test

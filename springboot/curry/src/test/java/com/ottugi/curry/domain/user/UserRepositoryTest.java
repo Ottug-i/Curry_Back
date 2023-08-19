@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserRepositoryTest {
 
     private User user;
+    private User findUser;
     
     private UserRepository userRepository;
 
@@ -30,16 +31,16 @@ class UserRepositoryTest {
     @Test
     void 이메일로회원조회() {
         // when
-        user = userRepository.findByEmail(EMAIL).get();
+        findUser = userRepository.findByEmail(user.getEmail()).get();
 
         // then
-        assertEquals(user.getEmail(), EMAIL);
+        assertEquals(findUser.getEmail(), EMAIL);
     }
 
     @Test
     void 이메일로회원존재조회() {
         // when
-        Boolean existUser = userRepository.existsByEmail(EMAIL);
+        Boolean existUser = userRepository.existsByEmail(user.getEmail());
 
         // then
         assertNotNull(existUser);
@@ -48,7 +49,7 @@ class UserRepositoryTest {
     @Test
     void 이메일로회원수조회() {
         // when
-        int userEmailCount = userRepository.countByEmail(EMAIL);
+        int userEmailCount = userRepository.countByEmail(user.getEmail());
 
         // then
         assertEquals(userEmailCount, 1);

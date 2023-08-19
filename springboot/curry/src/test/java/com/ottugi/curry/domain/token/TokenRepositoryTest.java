@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TokenRepositoryTest {
 
     private Token token;
+    private Token findToken;
 
     private TokenRepository tokenRepository;
 
@@ -37,10 +38,10 @@ public class TokenRepositoryTest {
     @Test
     void 키로조회() {
         // when
-        token = tokenRepository.findByKey(EMAIL).get();
+        findToken = tokenRepository.findByKey(token.getKey()).get();
 
         // then
-        assertEquals(token.getKey(), EMAIL);
-        assertEquals(token.getValue(), VALUE);
+        assertEquals(findToken.getKey(), EMAIL);
+        assertEquals(findToken.getValue(), VALUE);
     }
 }

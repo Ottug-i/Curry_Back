@@ -18,6 +18,7 @@ class RecipeRepositoryTest {
     private String ingredient = "고구마";
 
     private Recipe recipe;
+    private Recipe findRecipe;
     private List<Recipe> recipeList;
     private List<Long> recipeIdList = new ArrayList<>();
     private List<Long> idList = new ArrayList<>();
@@ -48,8 +49,8 @@ class RecipeRepositoryTest {
         recipeList = recipeRepository.findByIngredientsContaining(ingredient);
 
         // then
-        recipe = recipeList.get(0);
-        assertTrue(recipe.getIngredients().contains(ingredient));
+        findRecipe = recipeList.get(0);
+        assertTrue(findRecipe.getIngredients().contains(ingredient));
     }
 
     @Test
@@ -58,8 +59,8 @@ class RecipeRepositoryTest {
         recipeList = recipeRepository.findByNameContaining(ingredient);
 
         // then
-        recipe = recipeList.get(0);
-        assertTrue(recipe.getName().contains(ingredient));
+        findRecipe = recipeList.get(0);
+        assertTrue(findRecipe.getName().contains(ingredient));
     }
 
     @Test
@@ -71,8 +72,8 @@ class RecipeRepositoryTest {
         recipeList = recipeRepository.findByRecipeIdIn(recipeIdList);
 
         // then
-        recipe = recipeList.get(0);
-        assertEquals(recipe.getRecipeId(), recipeIdList.get(0));
+        findRecipe = recipeList.get(0);
+        assertEquals(findRecipe.getRecipeId(), recipeIdList.get(0));
     }
 
     @Test
@@ -84,16 +85,16 @@ class RecipeRepositoryTest {
         recipeList = recipeRepository.findByIdIn(idList);
 
         // then
-        recipe = recipeList.get(0);
-        assertEquals(recipe.getId(), idList.get(0));
+        findRecipe = recipeList.get(0);
+        assertEquals(findRecipe.getId(), idList.get(0));
     }
 
     @Test
     void 레시피아이디로조회() {
         // when
-        recipe = recipeRepository.findByRecipeId(RECIPE_ID).get();
+        findRecipe = recipeRepository.findByRecipeId(recipe.getRecipeId()).get();
 
         // then
-        assertEquals(recipe.getRecipeId(), RECIPE_ID);
+        assertEquals(findRecipe.getRecipeId(), RECIPE_ID);
     }
 }
