@@ -41,7 +41,7 @@ class AuthControllerTest {
 
     @BeforeEach
     public void setUp() {
-        user = new User(EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
         mockMvc = MockMvcBuilders.standaloneSetup(authController).build();
     }
 

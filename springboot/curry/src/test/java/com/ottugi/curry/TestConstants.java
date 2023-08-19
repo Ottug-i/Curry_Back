@@ -13,7 +13,7 @@ import java.time.Duration;
 public class TestConstants {
 
     // User
-    public static final Long USER_ID = 1L;
+    public static final Long USER_ID = 2L;
     public static final String EMAIL = "wn8925@gmail.com";
     public static final String NICKNAME = "가경";
     public static final String NEW_NICKNAME = "가경이";
@@ -27,9 +27,9 @@ public class TestConstants {
     public static final Long EXPIRED_TIME = Duration.ofDays(14).toMillis();;
 
     // Recipe
-    public static final Long EXIST_RECIPE_ID = 6842324L;
-    public static final Long NEW_RECIPE_ID = 1234L;
-    public static final String NAME = "고구마맛탕";
+    public static final Long ID = 12345L;
+    public static final Long RECIPE_ID = 1L;
+    public static final String NAME = "고구마맛탕탕";
     public static final String THUMBNAIL = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png";
     public static final Time TIME = Time.ofTime("60분 이내");
     public static final Difficulty DIFFICULTY = Difficulty.ofDifficulty("초급");
@@ -44,7 +44,6 @@ public class TestConstants {
     public static final int SIZE = 1;
 
     // Rank
-    public static final String EXIST_KEYWORD = "달걀";
-    public static final String NEW_KEYWORD = "망고";
+    public static final String KEYWORD = "망고";
     public static final int SCORE = 1;
 }

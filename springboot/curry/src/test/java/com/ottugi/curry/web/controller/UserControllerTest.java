@@ -38,8 +38,8 @@ public class UserControllerTest {
 
     @BeforeEach
     public void setUp() {
-        user = new User(EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        changingUser = new User(EMAIL, NEW_NICKNAME, FAVORITE_GENRE, ROLE);
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        changingUser = new User(USER_ID, EMAIL, NEW_NICKNAME, FAVORITE_GENRE, ROLE);
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
     }
 

@@ -28,7 +28,7 @@ class CommonServiceTest {
     private User user;
     private User findUser;
     private Recipe recipe;
-    private List<Long> recipeIdList = Arrays.asList(EXIST_RECIPE_ID);
+    private List<Long> recipeIdList = Arrays.asList(RECIPE_ID);
     private List<Long> idList = Arrays.asList(1L);
     private List<Recipe> recipes = List.of(recipe);
     private List<Recipe> findRecipes;
@@ -87,9 +87,9 @@ class CommonServiceTest {
     @Test
     void 레시피아이디로레시피조회() {
         // when
-        when(recipeRepository.findByRecipeId(EXIST_RECIPE_ID)).thenReturn(Optional.of(recipe));
+        when(recipeRepository.findByRecipeId(RECIPE_ID)).thenReturn(Optional.of(recipe));
 
-        findRecipe = commonService.findByRecipeId(EXIST_RECIPE_ID);
+        findRecipe = commonService.findByRecipeId(RECIPE_ID);
 
         // then
         assertNotNull(findRecipe);

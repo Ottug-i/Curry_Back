@@ -3,6 +3,7 @@ package com.ottugi.curry.domain.lately;
 import com.ottugi.curry.domain.recipe.*;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,24 @@ class LatelyRepositoryTest {
     @BeforeEach
     public void setUp() {
         // given
-        user = userRepository.findById(USER_ID).get();
-        recipe = recipeRepository.findByRecipeId(EXIST_RECIPE_ID).get();
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        user = userRepository.save(user);
+
+        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        recipe = recipeRepository.save(recipe);
+
+        lately = new Lately();
+        lately.setUser(user);
+        lately.setRecipe(recipe);
+        lately = latelyRepository.save(lately);
+    }
+
+    @AfterEach
+    public void clean() {
+        // clean
+        latelyRepository.deleteAll();
+        recipeRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -44,8 +61,8 @@ class LatelyRepositoryTest {
         lately = latelyRepository.findByUserIdAndRecipeId(user, recipe);
 
         // then
-        assertEquals(lately.getUserId().getId(), USER_ID);
-        assertEquals(lately.getRecipeId().getRecipeId(), EXIST_RECIPE_ID);
+        assertEquals(lately.getUserId().getId(), user.getId());
+        assertEquals(lately.getRecipeId().getId(), recipe.getId());
     }
 
     @Test
@@ -54,9 +71,9 @@ class LatelyRepositoryTest {
         List<Lately> latelyList = latelyRepository.findByUserIdOrderByIdDesc(user);
 
         // then
-        lately = latelyList.get(1);
-        assertEquals(lately.getUserId().getId(), USER_ID);
-        assertEquals(lately.getRecipeId().getRecipeId(), EXIST_RECIPE_ID);
+        lately = latelyList.get(0);
+        assertEquals(lately.getUserId().getId(), user.getId());
+        assertEquals(lately.getRecipeId().getId(), recipe.getId());
     }
 
     @Test
@@ -65,6 +82,6 @@ class LatelyRepositoryTest {
         int userIdCount = latelyRepository.countByUserId(user);
 
         // then
-        assertEquals(userIdCount, 2);
+        assertEquals(userIdCount, 1);
     }
 }

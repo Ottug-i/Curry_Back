@@ -46,7 +46,7 @@ class BookmarkControllerTest {
     @Test
     void 북마크추가및삭제() throws Exception {
         // given
-        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(USER_ID, EXIST_RECIPE_ID);
+        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(USER_ID, RECIPE_ID);
 
         // when
         when(bookmarkService.addOrRemoveBookmark(bookmarkRequestDto)).thenReturn(true);

@@ -10,10 +10,10 @@ class RecipeSaveRequestDtoTest {
     @Test
     void RecipeSaveRequestDto_롬복() {
         // when
-        RecipeSaveRequestDto recipeSaveRequestDto = new RecipeSaveRequestDto(EXIST_RECIPE_ID, NAME, COMPOSITION.getComposition(), INGREDIENTS, SERVINGS.getServings(), DIFFICULTY.getDifficulty(), THUMBNAIL, TIME.getTimeName(), ORDERS, PHOTO, GENRE);
+        RecipeSaveRequestDto recipeSaveRequestDto = new RecipeSaveRequestDto(RECIPE_ID, NAME, COMPOSITION.getComposition(), INGREDIENTS, SERVINGS.getServings(), DIFFICULTY.getDifficulty(), THUMBNAIL, TIME.getTimeName(), ORDERS, PHOTO, GENRE);
 
         // then
-        assertEquals(recipeSaveRequestDto.getRecipeId(), EXIST_RECIPE_ID);
+        assertEquals(recipeSaveRequestDto.getRecipeId(), RECIPE_ID);
         assertEquals(recipeSaveRequestDto.getName(), NAME);
         assertEquals(recipeSaveRequestDto.getComposition(), COMPOSITION);
         assertEquals(recipeSaveRequestDto.getIngredients(), INGREDIENTS);

@@ -15,13 +15,14 @@ class RecipeTest {
     @BeforeEach
     public void setUp() {
         // given
-        recipe = new Recipe(NEW_RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
     }
 
     @Test
     void 레시피추가() {
         // when, then
-        assertEquals(recipe.getRecipeId(), NEW_RECIPE_ID);
+        assertEquals(recipe.getId(), ID);
+        assertEquals(recipe.getRecipeId(), RECIPE_ID);
         assertEquals(recipe.getName(), NAME);
         assertEquals(recipe.getThumbnail(), THUMBNAIL);
         assertEquals(recipe.getTime(), TIME);

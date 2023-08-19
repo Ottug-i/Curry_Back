@@ -14,14 +14,14 @@ class RankResponseDtoTest {
     void RankResponseDto_롬복() {
         // given
         rank = Rank.builder()
-                .name(NEW_KEYWORD)
+                .name(KEYWORD)
                 .build();
 
         // when
         RankResponseDto rankResponseDto = new RankResponseDto(rank);
 
         // then
-        assertEquals(rankResponseDto.getName(), NEW_KEYWORD);
+        assertEquals(rankResponseDto.getName(), KEYWORD);
         assertEquals(rankResponseDto.getScore(), SCORE);
     }
 }

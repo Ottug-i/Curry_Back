@@ -47,8 +47,8 @@ class RecipeControllerTest {
 
     @BeforeEach
     public void setUp() {
-        recipe1 = new Recipe(recipeId1, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        recipe2 = new Recipe(recipeId2, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        recipe1 = new Recipe(ID, recipeId1, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        recipe2 = new Recipe(12346L, recipeId2, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
         mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
     }
 

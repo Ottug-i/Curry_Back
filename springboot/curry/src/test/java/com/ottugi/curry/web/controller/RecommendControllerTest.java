@@ -56,8 +56,8 @@ class RecommendControllerTest {
 
     @BeforeEach
     public void setUp() {
-        recipe1 = new Recipe(recipeId1, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        recipe2 = new Recipe(recipeId2, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        recipe1 = new Recipe(ID, recipeId1, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        recipe2 = new Recipe(12346L, recipeId2, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
         mockMvc = MockMvcBuilders.standaloneSetup(recommendController).build();
     }
 
@@ -81,12 +81,12 @@ class RecommendControllerTest {
         RatingResponseDto ratingRequestDto = new RatingResponseDto(ratingInfo);
 
         // when
-        when(recommendService.getUserRating(USER_ID, EXIST_RECIPE_ID)).thenReturn(ratingRequestDto);
+        when(recommendService.getUserRating(USER_ID, RECIPE_ID)).thenReturn(ratingRequestDto);
 
         // then
         mockMvc.perform(get("/api/recommend/rating")
                     .param("userId", String.valueOf(USER_ID))
-                    .param("recipeId", String.valueOf(EXIST_RECIPE_ID)))
+                    .param("recipeId", String.valueOf(RECIPE_ID)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(1))
                 .andExpect(jsonPath("$.recipeId").value(6846342))
@@ -113,12 +113,12 @@ class RecommendControllerTest {
     @Test
     void 레시피평점삭제() throws Exception {
         // when
-        when(recommendService.deleteUserRating(USER_ID, EXIST_RECIPE_ID)).thenReturn(true);
+        when(recommendService.deleteUserRating(USER_ID, RECIPE_ID)).thenReturn(true);
 
         // then
         mockMvc.perform(delete("/api/recommend/rating")
                         .param("userId", String.valueOf(USER_ID))
-                        .param("recipeId", String.valueOf(EXIST_RECIPE_ID)))
+                        .param("recipeId", String.valueOf(RECIPE_ID)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value(true));
     }
@@ -157,13 +157,13 @@ class RecommendControllerTest {
         List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
 
         // when
-        when(recommendService.getRecommendBookmarkId(EXIST_RECIPE_ID, PAGE)).thenReturn(recipeIdList);
+        when(recommendService.getRecommendBookmarkId(RECIPE_ID, PAGE)).thenReturn(recipeIdList);
         when(recommendService.getBookmarkOrRatingRecommendList(recommendRequestDto)).thenReturn(recipeListResponseDtoList);
 
         // then
         mockMvc.perform(get("/api/recommend/bookmark/list")
                         .param("userId", String.valueOf(USER_ID))
-                        .param("recipeId", String.valueOf(EXIST_RECIPE_ID))
+                        .param("recipeId", String.valueOf(RECIPE_ID))
                         .param("page", String.valueOf(PAGE)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(recipeListResponseDtoList.size())));

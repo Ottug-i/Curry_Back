@@ -1,5 +1,6 @@
 package com.ottugi.curry.domain.token;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,13 @@ public class TokenRepositoryTest {
     public void setUp() {
         // given
         token = new Token(EMAIL, VALUE, EXPIRED_TIME);
-        tokenRepository.save(token);
+        token = tokenRepository.save(token);
+    }
+
+    @AfterEach
+    public void clean() {
+        // clean
+        tokenRepository.deleteAll();
     }
 
     @Test

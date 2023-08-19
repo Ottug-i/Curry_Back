@@ -48,12 +48,12 @@ class LatelyServiceTest {
     void 최근본레시피추가() {
         // when
         when(commonService.findByUserId(USER_ID)).thenReturn(user);
-        when(commonService.findByRecipeId(EXIST_RECIPE_ID)).thenReturn(recipe);
+        when(commonService.findByRecipeId(RECIPE_ID)).thenReturn(recipe);
         when(latelyRepository.findByUserIdAndRecipeId(user, recipe)).thenReturn(null);
         when(latelyRepository.save(lately)).thenReturn(lately);
 
         // then
-        assertTrue(latelyService.addLately(USER_ID, EXIST_RECIPE_ID));
+        assertTrue(latelyService.addLately(USER_ID, RECIPE_ID));
         verify(latelyRepository, times(1)).save(lately);
     }
 

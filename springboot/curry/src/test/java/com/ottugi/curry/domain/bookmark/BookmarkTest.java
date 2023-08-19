@@ -19,8 +19,8 @@ class BookmarkTest {
     @BeforeEach
     public void setUp() {
         // given
-        user = new User(EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        recipe = new Recipe(NEW_RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
         bookmark = new Bookmark();
     }
 

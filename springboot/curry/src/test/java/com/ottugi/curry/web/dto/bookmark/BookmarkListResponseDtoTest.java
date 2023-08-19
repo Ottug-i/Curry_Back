@@ -15,7 +15,7 @@ class BookmarkListResponseDtoTest {
     void BookmarkListResponseDto_롬복() {
         // given
         recipe = Recipe.builder()
-                .recipeId(NEW_RECIPE_ID)
+                .recipeId(RECIPE_ID)
                 .name(NAME)
                 .thumbnail(THUMBNAIL)
                 .time(TIME)
@@ -32,7 +32,7 @@ class BookmarkListResponseDtoTest {
         BookmarkListResponseDto bookmarkListResponseDto = new BookmarkListResponseDto(recipe, isBookmark);
 
         // then
-        assertEquals(bookmarkListResponseDto.getRecipeId(), NEW_RECIPE_ID);
+        assertEquals(bookmarkListResponseDto.getRecipeId(), RECIPE_ID);
         assertEquals(bookmarkListResponseDto.getName(), NAME);
         assertEquals(bookmarkListResponseDto.getThumbnail(), THUMBNAIL);
         assertEquals(bookmarkListResponseDto.getTime(), TIME);

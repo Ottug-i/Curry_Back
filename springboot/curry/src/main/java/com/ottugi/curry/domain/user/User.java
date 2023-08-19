@@ -41,7 +41,8 @@ public class User extends BaseTime {
     private List<Lately> latelyList = new ArrayList<>();
 
     @Builder
-    public User(String email, String nickName, String favoriteGenre, Role role) {
+    public User(Long id, String email, String nickName, String favoriteGenre, Role role) {
+        this.id = id;
         this.email = email;
         this.nickName = nickName;
         this.favoriteGenre = favoriteGenre;

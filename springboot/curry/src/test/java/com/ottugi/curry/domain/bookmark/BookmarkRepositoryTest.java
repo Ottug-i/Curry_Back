@@ -3,6 +3,7 @@ package com.ottugi.curry.domain.bookmark;
 import com.ottugi.curry.domain.recipe.*;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,25 @@ class BookmarkRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        // given (이미 DB에 저장되어있는 데이터 사용)
-        user = userRepository.findById(USER_ID).get();
-        recipe = recipeRepository.findByRecipeId(EXIST_RECIPE_ID).get();
+        // given
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        user = userRepository.save(user);
+
+        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        recipe = recipeRepository.save(recipe);
+
+        bookmark = new Bookmark();
+        bookmark.setUser(user);
+        bookmark.setRecipe(recipe);
+        bookmark = bookmarkRepository.save(bookmark);
+    }
+
+    @AfterEach
+    public void clean() {
+        // clean
+        bookmarkRepository.deleteAll();
+        recipeRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -44,8 +61,8 @@ class BookmarkRepositoryTest {
         bookmark = bookmarkRepository.findByUserIdAndRecipeId(user, recipe);
 
         // then
-        assertEquals(bookmark.getUserId().getId(), USER_ID);
-        assertEquals(bookmark.getRecipeId().getRecipeId(), EXIST_RECIPE_ID);
+        assertEquals(bookmark.getUserId().getId(), user.getId());
+        assertEquals(bookmark.getRecipeId().getId(), recipe.getId());
     }
 
     @Test
@@ -55,7 +72,7 @@ class BookmarkRepositoryTest {
 
         // then
         bookmark = bookmarkList.get(0);
-        assertEquals(bookmark.getUserId().getId(), USER_ID);
-        assertEquals(bookmark.getRecipeId().getRecipeId(), EXIST_RECIPE_ID);
+        assertEquals(bookmark.getUserId().getId(), user.getId());
+        assertEquals(bookmark.getRecipeId().getId(), recipe.getId());
     }
 }

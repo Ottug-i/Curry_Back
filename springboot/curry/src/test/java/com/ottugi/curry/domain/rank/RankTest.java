@@ -15,13 +15,13 @@ class RankTest {
     @BeforeEach
     public void setUp() {
         // given
-        rank = new Rank(NEW_KEYWORD);
+        rank = new Rank(KEYWORD);
     }
 
     @Test
     void 검색어랭킹추가() {
         // when, then
-        assertEquals(rank.getName(), NEW_KEYWORD);
+        assertEquals(rank.getName(), KEYWORD);
         assertEquals(rank.getScore(), SCORE);
     }
 
@@ -31,7 +31,7 @@ class RankTest {
         rank.incrementScore(SCORE);
 
         // then
-        assertEquals(rank.getName(), NEW_KEYWORD);
-        assertEquals(rank.getScore(), rank.getScore() + 1);
+        assertEquals(rank.getName(), KEYWORD);
+        assertEquals(rank.getScore(), SCORE + 1);
     }
 }

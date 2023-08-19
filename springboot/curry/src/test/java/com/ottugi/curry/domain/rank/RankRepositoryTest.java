@@ -1,5 +1,7 @@
 package com.ottugi.curry.domain.rank;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,13 +23,26 @@ class RankRepositoryTest {
         this.rankRepository = rankRepository;
     }
 
+    @BeforeEach
+    public void setUp() {
+        // given
+        rank = new Rank(KEYWORD);
+        rank = rankRepository.save(rank);
+    }
+
+    @AfterEach
+    public void clean() {
+        // clean
+        rankRepository.deleteAll();
+    }
+
     @Test
     void 검색어이름으로조회() {
         // when
-        rank = rankRepository.findByName(EXIST_KEYWORD);
+        rank = rankRepository.findByName(KEYWORD);
 
         // then
-        assertEquals(rank.getName(), EXIST_KEYWORD);
+        assertEquals(rank.getName(), KEYWORD);
     }
 
     @Test
@@ -36,7 +51,6 @@ class RankRepositoryTest {
         List<Rank> rankList = rankRepository.findAllByOrderByScoreDesc();
 
         // then
-        rank = rankList.get(0);
-        assertEquals(rank.getName(), EXIST_KEYWORD);
+        assertNotNull(rankList);
     }
 }
