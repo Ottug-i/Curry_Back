@@ -50,11 +50,11 @@ class BookmarkServiceTest {
     @Test
     void 북마크추가() {
         // given
-        bookmarkRequestDto = new BookmarkRequestDto(USER_ID, RECIPE_ID);
+        bookmarkRequestDto = new BookmarkRequestDto(USER_ID, NEW_RECIPE_ID);
 
         // when
         when(commonService.findByUserId(USER_ID)).thenReturn(user);
-        when(commonService.findByRecipeId(RECIPE_ID)).thenReturn(recipe);
+        when(commonService.findByRecipeId(NEW_RECIPE_ID)).thenReturn(recipe);
         when(commonService.isBookmarked(user, recipe)).thenReturn(false);
 
         // then
@@ -65,11 +65,11 @@ class BookmarkServiceTest {
     @Test
     void 북마크삭제() {
         // given
-        bookmarkRequestDto = new BookmarkRequestDto(USER_ID, RECIPE_ID);
+        bookmarkRequestDto = new BookmarkRequestDto(USER_ID, NEW_RECIPE_ID);
 
         // when
         when(commonService.findByUserId(USER_ID)).thenReturn(user);
-        when(commonService.findByRecipeId(RECIPE_ID)).thenReturn(recipe);
+        when(commonService.findByRecipeId(NEW_RECIPE_ID)).thenReturn(recipe);
         when(commonService.isBookmarked(user, recipe)).thenReturn(true);
 
         // then

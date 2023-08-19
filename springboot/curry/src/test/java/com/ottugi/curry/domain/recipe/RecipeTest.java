@@ -1,7 +1,5 @@
 package com.ottugi.curry.domain.recipe;
 
-import com.ottugi.curry.TestConstants;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,23 +8,20 @@ import static com.ottugi.curry.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@RequiredArgsConstructor
 class RecipeTest {
 
     private Recipe recipe;
 
-    private final TestConstants testConstants;
-
     @BeforeEach
     public void setUp() {
         // given
-        recipe = new Recipe(RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        recipe = new Recipe(NEW_RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
     }
 
     @Test
     void 레시피추가() {
         // when, then
-        assertEquals(recipe.getId(), RECIPE_ID);
+        assertEquals(recipe.getRecipeId(), NEW_RECIPE_ID);
         assertEquals(recipe.getName(), NAME);
         assertEquals(recipe.getThumbnail(), THUMBNAIL);
         assertEquals(recipe.getTime(), TIME);

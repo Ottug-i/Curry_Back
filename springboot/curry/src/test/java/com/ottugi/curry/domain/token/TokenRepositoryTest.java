@@ -1,27 +1,30 @@
 package com.ottugi.curry.domain.token;
 
-import com.ottugi.curry.TestConstants;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static com.ottugi.curry.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-@RequiredArgsConstructor
 public class TokenRepositoryTest {
 
     private Token token;
 
-    private final TestConstants testConstants;
-    private final TokenRepository tokenRepository;
+    private TokenRepository tokenRepository;
+
+    @Autowired
+    public TokenRepositoryTest(TokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
 
     @BeforeEach
     public void setUp() {
         // given
         token = new Token(EMAIL, VALUE, EXPIRED_TIME);
+        tokenRepository.save(token);
     }
 
     @Test

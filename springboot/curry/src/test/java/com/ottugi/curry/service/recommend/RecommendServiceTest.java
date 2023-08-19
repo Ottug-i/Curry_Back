@@ -92,13 +92,13 @@ class RecommendServiceTest {
     @Test
     void 평점조회() throws JsonProcessingException {
         // given
-        apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, USER_ID, RECIPE_ID);
+        apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, USER_ID, EXIST_RECIPE_ID);
         String response = objectMapper.writeValueAsString(ratings);
 
         // when
         when(restTemplate.getForObject(apiUrl, String.class)).thenReturn(response);
 
-        ratingResponseDto = recommendService.getUserRating(USER_ID, RECIPE_ID);
+        ratingResponseDto = recommendService.getUserRating(USER_ID, EXIST_RECIPE_ID);
 
         // then
         assertNotNull(ratingResponseDto);
@@ -129,14 +129,14 @@ class RecommendServiceTest {
     @Test
     void 평점삭제() {
         // given
-        apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, USER_ID, RECIPE_ID);
+        apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, USER_ID, EXIST_RECIPE_ID);
 
         ResponseEntity<Void> responseEntity = ResponseEntity.noContent().build();
 
         // when
         when(restTemplate.exchange(eq(apiUrl), eq(HttpMethod.DELETE), any(), eq(Void.class))).thenReturn(responseEntity);
 
-        boolean result = recommendService.deleteUserRating(USER_ID, RECIPE_ID);
+        boolean result = recommendService.deleteUserRating(USER_ID, EXIST_RECIPE_ID);
 
         // then
         assertTrue(result);
@@ -158,14 +158,14 @@ class RecommendServiceTest {
     @Test
     void 북마크추천아이디목록조회() throws JsonProcessingException {
         // given
-        apiUrl = String.format("%s/bookmark/recommend?recipe_id=%d&page=%d", FLASK_API_URL, RECIPE_ID, PAGE);
+        apiUrl = String.format("%s/bookmark/recommend?recipe_id=%d&page=%d", FLASK_API_URL, EXIST_RECIPE_ID, PAGE);
 
         String responseJson = objectMapper.writeValueAsString(recipeIdList);
 
         // when
         when(restTemplate.getForObject(apiUrl, String.class)).thenReturn(responseJson);
 
-        List<Long> response = recommendService.getRecommendBookmarkId(RECIPE_ID, PAGE);
+        List<Long> response = recommendService.getRecommendBookmarkId(EXIST_RECIPE_ID, PAGE);
 
         // then
         assertNotNull(response);

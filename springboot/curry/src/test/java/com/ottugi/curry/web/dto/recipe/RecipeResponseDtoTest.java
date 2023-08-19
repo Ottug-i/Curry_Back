@@ -14,7 +14,7 @@ class RecipeResponseDtoTest {
     void RecipeResponseDto_롬복() {
         // given
         Recipe recipe = Recipe.builder()
-                .recipeId(RECIPE_ID)
+                .recipeId(NEW_RECIPE_ID)
                 .name(NAME)
                 .thumbnail(THUMBNAIL)
                 .time(TIME)
@@ -31,7 +31,7 @@ class RecipeResponseDtoTest {
         RecipeResponseDto recipeResponseDto = new RecipeResponseDto(recipe, isBookmark);
 
         // then
-        assertEquals(recipeResponseDto.getRecipeId(), RECIPE_ID);
+        assertEquals(recipeResponseDto.getRecipeId(), NEW_RECIPE_ID);
         assertEquals(recipeResponseDto.getName(), NAME);
         assertEquals(recipeResponseDto.getThumbnail(), THUMBNAIL);
         assertEquals(recipeResponseDto.getTime(), TIME);

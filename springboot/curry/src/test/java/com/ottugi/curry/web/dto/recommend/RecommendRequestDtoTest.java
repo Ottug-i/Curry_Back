@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RecommendRequestDtoTest {
 
-    private List<Long> recipeIdList = Arrays.asList(RECIPE_ID);
+    private List<Long> recipeIdList = Arrays.asList(EXIST_RECIPE_ID);
 
     @Test
     void RecommendRequestDto_롬복() {
@@ -19,6 +19,6 @@ class RecommendRequestDtoTest {
 
         // then
         assertEquals(recommendRequestDto.getUserId(), USER_ID);
-        assertEquals(recommendRequestDto.getRecipeId().get(0), RECIPE_ID);
+        assertEquals(recommendRequestDto.getRecipeId().get(0), EXIST_RECIPE_ID);
     }
 }

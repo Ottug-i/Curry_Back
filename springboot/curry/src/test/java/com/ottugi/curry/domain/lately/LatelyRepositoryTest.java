@@ -1,12 +1,11 @@
 package com.ottugi.curry.domain.lately;
 
-import com.ottugi.curry.TestConstants;
 import com.ottugi.curry.domain.recipe.*;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
@@ -15,23 +14,28 @@ import static com.ottugi.curry.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@RequiredArgsConstructor
 class LatelyRepositoryTest {
 
     private User user;
     private Recipe recipe;
     private Lately lately;
 
-    private final TestConstants testConstants;
-    private final LatelyRepository latelyRepository;
-    private final UserRepository userRepository;
-    private final RecipeRepository recipeRepository;
+    private LatelyRepository latelyRepository;
+    private UserRepository userRepository;
+    private RecipeRepository recipeRepository;
+
+    @Autowired
+    LatelyRepositoryTest(LatelyRepository latelyRepository, UserRepository userRepository, RecipeRepository recipeRepository) {
+        this.latelyRepository = latelyRepository;
+        this.userRepository = userRepository;
+        this.recipeRepository = recipeRepository;
+    }
 
     @BeforeEach
     public void setUp() {
         // given
         user = userRepository.findById(USER_ID).get();
-        recipe = recipeRepository.findByRecipeId(RECIPE_ID).get();
+        recipe = recipeRepository.findByRecipeId(EXIST_RECIPE_ID).get();
     }
 
     @Test
@@ -41,7 +45,7 @@ class LatelyRepositoryTest {
 
         // then
         assertEquals(lately.getUserId().getId(), USER_ID);
-        assertEquals(lately.getRecipeId().getRecipeId(), RECIPE_ID);
+        assertEquals(lately.getRecipeId().getRecipeId(), EXIST_RECIPE_ID);
     }
 
     @Test
@@ -52,7 +56,7 @@ class LatelyRepositoryTest {
         // then
         lately = latelyList.get(1);
         assertEquals(lately.getUserId().getId(), USER_ID);
-        assertEquals(lately.getRecipeId().getRecipeId(), RECIPE_ID);
+        assertEquals(lately.getRecipeId().getRecipeId(), EXIST_RECIPE_ID);
     }
 
     @Test

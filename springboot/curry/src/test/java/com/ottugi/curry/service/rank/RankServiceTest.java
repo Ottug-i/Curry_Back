@@ -55,10 +55,10 @@ class RankServiceTest {
     @Test
     void 랭킹추가() {
         // when
-        when(rankRepository.findByName(KEYWORD)).thenReturn(null);
+        when(rankRepository.findByName(EXIST_KEYWORD)).thenReturn(null);
         when(rankRepository.save(rank)).thenReturn(rank);
 
-        rankService.updateOrAddRank(KEYWORD);
+        rankService.updateOrAddRank(EXIST_KEYWORD);
 
         // then
         verify(rankRepository, times(1)).save(rank);
@@ -67,9 +67,9 @@ class RankServiceTest {
     @Test
     void 랭킹증가() {
         // when
-        when(rankRepository.findByName(KEYWORD)).thenReturn(rank);
+        when(rankRepository.findByName(EXIST_KEYWORD)).thenReturn(rank);
 
-        rankService.updateOrAddRank(KEYWORD);
+        rankService.updateOrAddRank(EXIST_KEYWORD);
 
         // then
         verify(rankRepository, times(1)).save(rank);
@@ -94,7 +94,7 @@ class RankServiceTest {
         when(taskScheduler.schedule(any(Runnable.class), any(Date.class))).thenReturn(null);
 
         Instant instant = Instant.parse("2023-08-21T00:00:00Z");
-        ReflectionTestUtils.setField(rankService, KEYWORD, instant);
+        ReflectionTestUtils.setField(rankService, EXIST_KEYWORD, instant);
 
         rankService.weeklyRankingReset();
 

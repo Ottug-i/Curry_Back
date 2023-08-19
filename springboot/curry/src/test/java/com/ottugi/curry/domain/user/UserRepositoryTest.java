@@ -1,20 +1,24 @@
 package com.ottugi.curry.domain.user;
 
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@RequiredArgsConstructor
 class UserRepositoryTest {
 
     private String email = "wn8925@sookmyung.ac.kr";
     
     private User user;
     
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
+
+    @Autowired
+    UserRepositoryTest(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Test
     void 이메일로회원조회() {

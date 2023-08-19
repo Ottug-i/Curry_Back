@@ -46,7 +46,7 @@ class RecipeServiceTest {
     void 레시피상세조회() {
         // when
         when(commonService.findByUserId(USER_ID)).thenReturn(user);
-        when(commonService.findByRecipeId(RECIPE_ID)).thenReturn(recipe);
+        when(commonService.findByRecipeId(EXIST_RECIPE_ID)).thenReturn(recipe);
         when(commonService.isBookmarked(user, recipe)).thenReturn(true);
 
         RecipeResponseDto response = recipeService.getRecipeDetail(anyLong(), anyLong());

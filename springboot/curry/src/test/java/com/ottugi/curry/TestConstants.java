@@ -27,7 +27,8 @@ public class TestConstants {
     public static final Long EXPIRED_TIME = Duration.ofDays(14).toMillis();;
 
     // Recipe
-    public static final Long RECIPE_ID = 1234L;
+    public static final Long EXIST_RECIPE_ID = 6842324L;
+    public static final Long NEW_RECIPE_ID = 1234L;
     public static final String NAME = "고구마맛탕";
     public static final String THUMBNAIL = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png";
     public static final Time TIME = Time.ofTime("60분 이내");
@@ -43,6 +44,7 @@ public class TestConstants {
     public static final int SIZE = 1;
 
     // Rank
-    public static final String KEYWORD = "망고";
+    public static final String EXIST_KEYWORD = "달걀";
+    public static final String NEW_KEYWORD = "망고";
     public static final int SCORE = 1;
 }
