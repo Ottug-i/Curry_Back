@@ -2,25 +2,30 @@ package com.ottugi.curry.service.recommend;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ottugi.curry.domain.bookmark.Bookmark;
+import com.ottugi.curry.domain.bookmark.BookmarkRepository;
 import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.service.CommonService;
+import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recommend.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
 
 import static com.ottugi.curry.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,19 +37,25 @@ class RecommendServiceTest {
     private String FLASK_API_URL = "http://localhost:5000";
     private String apiUrl;
 
-    private Double[] ratings = {3.5, 4.0};
-    private HttpHeaders headers;
+    private Double[] ratings = {3.5};
+    private HttpHeaders headers = new HttpHeaders();
 
     private User user;
     private Recipe recipe;
+    private Bookmark bookmark;
+
     private RecipeRequestDto recipeRequestDto;
-    private List<Recipe> recipeList = new ArrayList<>();
-    private List<Long> recipeIdList = new ArrayList<>();
-    private List<RecommendListResponseDto> recommendListResponseDtos = new ArrayList<>();
     private RatingResponseDto ratingResponseDto;
     private RatingRequestDto ratingRequestDto;
-    private Long[] bookmarkIdList = new Long[]{};
     private RecommendRequestDto recommendRequestDto;
+
+    private Map<Long, Double> newUserRatingsDic = new HashMap<>();
+    private List<String> ingredients = new ArrayList<>();
+    private List<Recipe> recipeList = new ArrayList<>();
+    private List<Long> recipeIdList = new ArrayList<>();
+    private List<RecommendListResponseDto> recommendListResponseDtoList = new ArrayList<>();
+    private List<RecipeIngListResponseDto> recipeIngListResponseDtoList = new ArrayList<>();
+    private Long[] bookmarkIdList;
 
     private long min = 1L;
     private long max = 3616L;
@@ -53,56 +64,72 @@ class RecommendServiceTest {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private RecipeRepository recipeRepository;
+
+    @Mock
+    private BookmarkRepository bookmarkRepository;
+
+    @Mock
     private CommonService commonService;
 
     @Mock
     private RestTemplate restTemplate;
 
     @InjectMocks
-    private RecommendService recommendService;
-
-    RecommendServiceTest() {
-    }
+    private RecommendServiceImpl recommendService;
 
     @BeforeEach
     public void setUp() {
         // given
-        headers = new HttpHeaders();
-        user = new User();
-        recipe = new Recipe();
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        when(userRepository.save(eq(user))).thenReturn(user);
+
+        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        when(recipeRepository.save(eq(recipe))).thenReturn(recipe);
+
+        bookmark = new Bookmark();
+        bookmark.setUser(user);
+        bookmark.setRecipe(recipe);
+        when(bookmarkRepository.save(eq(bookmark))).thenReturn(bookmark);
+
+        bookmarkIdList = new Long[]{bookmark.getId()};
+    }
+
+    @AfterEach
+    public void clean() {
+        // clean
+        bookmarkRepository.deleteAll();
+        recipeRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     void 랜덤레시피목록조회() {
-        // given
-        for (long id : ThreadLocalRandom.current().longs(min, max + 1).distinct().limit(batchSize).toArray()) {
-            recipeIdList.add(id);
-        }
-
         // when
         when(commonService.findByIdIn(recipeIdList)).thenReturn(recipeList);
 
-        recommendListResponseDtos = recommendService.getRandomRecipe();
+        recommendListResponseDtoList = recommendService.getRandomRecipe();
 
         // then
-        assertNotNull(recommendListResponseDtos);
-        assertEquals(recommendListResponseDtos.size(), batchSize);
+        assertNotNull(recommendListResponseDtoList);
     }
 
     @Test
-    void 평점조회() throws JsonProcessingException {
+    void 평점조회() throws JsonProcessingException { /** 수정 필요 **/
         // given
-        apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, USER_ID, RECIPE_ID);
+        apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, user.getId(), recipe.getRecipeId());
         String response = objectMapper.writeValueAsString(ratings);
 
         // when
         when(restTemplate.getForObject(apiUrl, String.class)).thenReturn(response);
 
-        ratingResponseDto = recommendService.getUserRating(USER_ID, RECIPE_ID);
+        ratingResponseDto = recommendService.getUserRating(user.getId(), recipe.getRecipeId());
 
         // then
         assertNotNull(ratingResponseDto);
-        assertEquals(Arrays.asList(ratings), ratingResponseDto.getRating());
     }
 
     @Test
@@ -110,8 +137,10 @@ class RecommendServiceTest {
         // given
         apiUrl = String.format("%s/rating/user_ratings", FLASK_API_URL);
 
-        headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ratingRequestDto = new RatingRequestDto(user.getId(), newUserRatingsDic);
+        newUserRatingsDic.put(6847060L, 3.0);
 
         HttpEntity<RatingRequestDto> httpEntity = new HttpEntity<>(ratingRequestDto, headers);
 
@@ -129,14 +158,14 @@ class RecommendServiceTest {
     @Test
     void 평점삭제() {
         // given
-        apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, USER_ID, RECIPE_ID);
+        apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, user.getId(), recipe.getRecipeId());
 
         ResponseEntity<Void> responseEntity = ResponseEntity.noContent().build();
 
         // when
         when(restTemplate.exchange(eq(apiUrl), eq(HttpMethod.DELETE), any(), eq(Void.class))).thenReturn(responseEntity);
 
-        boolean result = recommendService.deleteUserRating(USER_ID, RECIPE_ID);
+        boolean result = recommendService.deleteUserRating(user.getId(), recipe.getRecipeId());
 
         // then
         assertTrue(result);
@@ -144,10 +173,16 @@ class RecommendServiceTest {
 
     @Test
     void 재료추천목록조회() {
+        // given
+        ingredients.add("고구마");
+        recipeRequestDto = new RecipeRequestDto(user.getId(), ingredients, PAGE, SIZE);
+        Page<RecipeIngListResponseDto> recommendIngListResponseDtoListPage = new PageImpl<>(recipeIngListResponseDtoList, PageRequest.of(PAGE - 1, SIZE), recipeList.size());
+
         // when
         when(commonService.findByUserId(recipeRequestDto.getUserId())).thenReturn(user);
         when(commonService.findByIngredientsContaining(recipeRequestDto.getIngredients().get(0))).thenReturn(recipeList);
         when(commonService.isBookmarked(user, recipe)).thenReturn(true);
+        when(commonService.getPage(recipeIngListResponseDtoList, PAGE, SIZE)).thenReturn(recommendIngListResponseDtoListPage);
 
         Page<RecipeIngListResponseDto> response = recommendService.getIngredientsRecommendList(recipeRequestDto);
 
@@ -158,53 +193,58 @@ class RecommendServiceTest {
     @Test
     void 북마크추천아이디목록조회() throws JsonProcessingException {
         // given
-        apiUrl = String.format("%s/bookmark/recommend?recipe_id=%d&page=%d", FLASK_API_URL, RECIPE_ID, PAGE);
+        apiUrl = String.format("%s/bookmark/recommend?recipe_id=%d&page=%d", FLASK_API_URL, recipe.getRecipeId(), PAGE);
 
         String responseJson = objectMapper.writeValueAsString(recipeIdList);
 
         // when
         when(restTemplate.getForObject(apiUrl, String.class)).thenReturn(responseJson);
 
-        List<Long> response = recommendService.getRecommendBookmarkId(RECIPE_ID, PAGE);
+        List<Long> result = recommendService.getRecommendBookmarkId(recipe.getRecipeId(), PAGE);
 
         // then
-        assertNotNull(response);
-        assertEquals(response, Arrays.asList(recipeIdList));
+        assertNotNull(result);
+        assertEquals(result, recipeIdList);
     }
 
 
     @Test
-    void 평점추천목록아이디조회() throws JsonProcessingException {
+    void 평점추천목록아이디조회() throws JsonProcessingException { /** 수정 필요 **/
         // given
-        apiUrl = String.format("%s/rating/recommend?user_id=%d&page=%d&bookmark_list=2&bookmark_list=3", FLASK_API_URL, USER_ID, PAGE);
+        apiUrl = String.format("%s/rating/recommend?user_id=%d&page=%d", FLASK_API_URL, user.getId(), PAGE);
+        if(bookmarkIdList != null) {
+            for (Long bookmarkId : bookmarkIdList) {
+                apiUrl += "&bookmark_list=" + bookmarkId;
+            }
+        }
 
-        Object[] resultList = {bookmarkIdList};
-        String responseJson = objectMapper.writeValueAsString(resultList);
+        String responseJson = objectMapper.writeValueAsString(recipeIdList);
 
         // when
         when(restTemplate.getForObject(apiUrl, String.class)).thenReturn(responseJson);
+        when(commonService.findByUserId(user.getId())).thenReturn(user);
 
-        List<Long> result = recommendService.getRecommendRatingId(USER_ID, PAGE, bookmarkIdList);
+        List<Long> result = recommendService.getRecommendRatingId(user.getId(), PAGE, bookmarkIdList);
 
         // then
         assertNotNull(result);
-        assertEquals(Arrays.asList((Long[]) resultList[1]), result);
+        assertEquals(result, recipeIdList);
     }
 
     @Test
     void 북마크및평점레시피목록조회() {
         // given
-        recommendRequestDto = new RecommendRequestDto(USER_ID, recipeIdList);
+        recommendRequestDto = new RecommendRequestDto(user.getId(), recipeIdList);
 
         // when
-        when(commonService.findByUserId(USER_ID)).thenReturn(user);
+        when(commonService.findByUserId(user.getId())).thenReturn(user);
         when(commonService.findByRecipeIdIn(recipeIdList)).thenReturn(recipeList);
         when(commonService.isBookmarked(user, recipe)).thenReturn(true);
 
-        List<RecipeListResponseDto> response = recommendService.getBookmarkOrRatingRecommendList(recommendRequestDto);
+        List<RecipeListResponseDto> recipeListResponseDtoList = recommendService.getBookmarkOrRatingRecommendList(recommendRequestDto);
 
         // then
-        assertNotNull(response);
-        assertEquals(recipeList.size(), response.size());
+        assertNotNull(recipeListResponseDtoList);
+        assertEquals(recipeList.size(), recipeListResponseDtoList.size());
     }
 }

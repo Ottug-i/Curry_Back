@@ -7,6 +7,7 @@ import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -14,7 +15,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,18 +28,22 @@ class CommonServiceTest {
 
     private User user;
     private User findUser;
+
     private Recipe recipe;
-    private List<Long> recipeIdList = Arrays.asList(RECIPE_ID);
-    private List<Long> idList = Arrays.asList(1L);
-    private List<Recipe> recipes = List.of(recipe);
-    private List<Recipe> findRecipes;
-    private RecipeListResponseDto recipeListResponseDto = new RecipeListResponseDto(recipe, true);
-    private List<RecipeListResponseDto> recipeListResponseDtos = List.of(recipeListResponseDto);;
     private Recipe findRecipe;
+
+    private List<Long> recipeIdList = new ArrayList<>();
+    private List<Long> idList = new ArrayList<>();
+    private List<Recipe> recipes = new ArrayList<>();
+    private List<Recipe> findRecipes = new ArrayList<>();
+
     private Bookmark bookmark;
     private Bookmark findBookmark;
-    private List<Bookmark> bookmarks = List.of(bookmark);
-    private List<Bookmark> findBookmarks;
+
+    private List<Bookmark> bookmarks = new ArrayList<>();
+    private List<Bookmark> findBookmarks = new ArrayList<>();
+
+    private List<RecipeListResponseDto> recipeListResponseDto = new ArrayList<>();
 
     @Mock
     private UserRepository userRepository;
@@ -55,17 +60,32 @@ class CommonServiceTest {
     @BeforeEach
     public void setUp() {
         // given
-        user = new User();
-        recipe = new Recipe();
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        when(userRepository.save(eq(user))).thenReturn(user);
+
+        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        when(recipeRepository.save(eq(recipe))).thenReturn(recipe);
+
         bookmark = new Bookmark();
+        bookmark.setUser(user);
+        bookmark.setRecipe(recipe);
+        when(bookmarkRepository.save(eq(bookmark))).thenReturn(bookmark);
+    }
+
+    @AfterEach
+    public void clean() {
+        // clean
+        bookmarkRepository.deleteAll();
+        recipeRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     void 회원기본키로회원조회() {
         // when
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
-        findUser = commonService.findByUserId(USER_ID);
+        findUser = commonService.findByUserId(user.getId());
 
         // then
         assertNotNull(findUser);
@@ -75,9 +95,9 @@ class CommonServiceTest {
     @Test
     void 회원이메일로회원조회() {
         // when
-        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
-        findUser = commonService.findByUserEmail(EMAIL);
+        findUser = commonService.findByUserEmail(user.getEmail());
 
         // then
         assertNotNull(findUser);
@@ -87,9 +107,9 @@ class CommonServiceTest {
     @Test
     void 레시피아이디로레시피조회() {
         // when
-        when(recipeRepository.findByRecipeId(RECIPE_ID)).thenReturn(Optional.of(recipe));
+        when(recipeRepository.findByRecipeId(recipe.getRecipeId())).thenReturn(Optional.of(recipe));
 
-        findRecipe = commonService.findByRecipeId(RECIPE_ID);
+        findRecipe = commonService.findByRecipeId(recipe.getRecipeId());
 
         // then
         assertNotNull(findRecipe);
@@ -98,6 +118,10 @@ class CommonServiceTest {
 
     @Test
     void 레시피아이디리스트로레시피조회() {
+        // given
+        recipeIdList.add(recipe.getRecipeId());
+        recipes.add(recipe);
+
         // when
         when(recipeRepository.findByRecipeIdIn(recipeIdList)).thenReturn(recipes);
 
@@ -110,6 +134,9 @@ class CommonServiceTest {
 
     @Test
     void 레시피재료로레시피조회() {
+        // given
+        recipes.add(recipe);
+
         // when
         when(recipeRepository.findByIngredientsContaining(INGREDIENTS)).thenReturn(recipes);
 
@@ -120,7 +147,11 @@ class CommonServiceTest {
     }
 
     @Test
-    void 레시피기본키로레시피조회() {
+    void 레시피기본키로레시피리스트조회() {
+        // given
+        idList.add(recipe.getId());
+        recipes.add(recipe);
+
         // when
         when(recipeRepository.findByIdIn(idList)).thenReturn(recipes);
 
@@ -164,6 +195,9 @@ class CommonServiceTest {
 
     @Test
     void 회원기본키로북마크목록조회() {
+        // given
+        bookmarks.add(bookmark);
+
         // when
         when(bookmarkRepository.findByUserId(user)).thenReturn(bookmarks);
 
@@ -175,11 +209,14 @@ class CommonServiceTest {
 
     @Test
     void 페이지처리() {
-        // when
-        Page<RecipeListResponseDto> response = commonService.getPage(recipeListResponseDtos, PAGE, SIZE);
+        // given
+        recipeListResponseDto.add(new RecipeListResponseDto(recipe, true));
 
-        assertNotNull(response);
-        assertEquals(response.getSize(), SIZE);
-        assertEquals(response.getTotalPages(), 1);
+        // when
+        Page<RecipeListResponseDto> recipePageResponseDto = commonService.getPage(recipeListResponseDto, PAGE, SIZE);
+
+        assertNotNull(recipePageResponseDto);
+        assertEquals(recipePageResponseDto.getSize(), SIZE);
+        assertEquals(recipePageResponseDto.getTotalPages(), 1);
     }
 }

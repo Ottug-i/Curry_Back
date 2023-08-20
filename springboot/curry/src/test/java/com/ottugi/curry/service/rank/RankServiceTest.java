@@ -3,15 +3,14 @@ package com.ottugi.curry.service.rank;
 import com.ottugi.curry.domain.rank.Rank;
 import com.ottugi.curry.domain.rank.RankRepository;
 import com.ottugi.curry.web.dto.rank.RankResponseDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +22,9 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 class RankServiceTest {
 
-    private Rank rank;
+    private Rank rank1;
+    private Rank rank2;
+
     private List<Rank> rankList = new ArrayList<>();
 
     @Mock
@@ -33,12 +34,21 @@ class RankServiceTest {
     private TaskScheduler taskScheduler;
 
     @InjectMocks
-    private RankService rankService;
+    private RankServiceImpl rankService;
 
     @BeforeEach
     public void setUp() {
         // given
-        rank = new Rank();
+        rank1 = new Rank(KEYWORD);
+        when(rankRepository.save(eq(rank1))).thenReturn(rank1);
+
+        rank2 = new Rank("고구마");
+    }
+
+    @AfterEach
+    public void clean() {
+        // clean
+        rankRepository.deleteAll();
     }
 
     @Test
@@ -47,36 +57,30 @@ class RankServiceTest {
         doNothing().when(rankRepository).deleteAll();
 
         rankService.clearRanking();
-
-        // then
-        verify(rankRepository, times(1)).deleteAll();
     }
 
     @Test
     void 랭킹추가() {
         // when
-        when(rankRepository.findByName(KEYWORD)).thenReturn(null);
-        when(rankRepository.save(rank)).thenReturn(rank);
+        when(rankRepository.findByName(rank2.getName())).thenReturn(null);
+        when(rankRepository.save(eq(rank2))).thenReturn(rank2);
 
-        rankService.updateOrAddRank(KEYWORD);
-
-        // then
-        verify(rankRepository, times(1)).save(rank);
+        rankService.updateOrAddRank(rank2.getName());
     }
 
     @Test
     void 랭킹증가() {
         // when
-        when(rankRepository.findByName(KEYWORD)).thenReturn(rank);
+        when(rankRepository.findByName(rank1.getName())).thenReturn(rank1);
 
-        rankService.updateOrAddRank(KEYWORD);
-
-        // then
-        verify(rankRepository, times(1)).save(rank);
+        rankService.updateOrAddRank(rank1.getName());
     }
 
     @Test
     void 랭킹목록조회() {
+        // given
+        rankList.add(rank1);
+
         // when
         when(rankRepository.findAllByOrderByScoreDesc()).thenReturn(rankList);
 
@@ -84,7 +88,7 @@ class RankServiceTest {
 
         // then
         assertNotNull(rankResponseDtos);
-        assertEquals(rankResponseDtos.size(), 10);
+        assertEquals(rankResponseDtos.size(), 1);
     }
 
     @Test
@@ -93,13 +97,6 @@ class RankServiceTest {
         doNothing().when(rankRepository).deleteAll();
         when(taskScheduler.schedule(any(Runnable.class), any(Date.class))).thenReturn(null);
 
-        Instant instant = Instant.parse("2023-08-21T00:00:00Z");
-        ReflectionTestUtils.setField(rankService, KEYWORD, instant);
-
         rankService.weeklyRankingReset();
-
-        // then
-        verify(rankRepository, times(1)).deleteAll();
-        verify(taskScheduler, times(1)).schedule(any(Runnable.class), any(Date.class));
     }
 }

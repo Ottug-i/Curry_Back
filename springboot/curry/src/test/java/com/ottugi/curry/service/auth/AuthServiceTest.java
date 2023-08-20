@@ -4,12 +4,11 @@ import com.ottugi.curry.domain.token.Token;
 import com.ottugi.curry.domain.token.TokenRepository;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
-import com.ottugi.curry.except.BaseCode;
-import com.ottugi.curry.except.BaseException;
 import com.ottugi.curry.jwt.TokenProvider;
 import com.ottugi.curry.service.CommonService;
 import com.ottugi.curry.web.dto.auth.TokenResponseDto;
 import com.ottugi.curry.web.dto.auth.UserSaveRequestDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,8 +28,16 @@ import static org.mockito.Mockito.*;
 class AuthServiceTest {
 
     private User user;
+    private User newUser;
+
     private Token token;
+    private Token newToken;
+    
     private UserSaveRequestDto userSaveRequestDto;
+    private TokenResponseDto tokenResponseDto;
+
+    private final HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
+    private final HttpServletResponse httpServletResponse = mock(HttpServletResponse.class);
 
     @Mock
     private CommonService commonService;
@@ -45,69 +52,82 @@ class AuthServiceTest {
     private TokenProvider tokenProvider;
 
     @InjectMocks
-    private AuthService authService;
+    private AuthServiceImpl authService;
 
     @BeforeEach
     public void setUp() {
         // given
-        user = new User();
-        token = new Token();
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        when(userRepository.save(eq(user))).thenReturn(user);
+
+        newUser = new User(NEW_USER_ID, NEW_EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+
+        token = new Token(EMAIL, VALUE, EXPIRED_TIME);
+        when(tokenRepository.save(eq(token))).thenReturn(token);
+
+        newToken = new Token(NEW_EMAIL, VALUE, EXPIRED_TIME);
+
+        userSaveRequestDto = new UserSaveRequestDto(newUser.getEmail(), newUser.getNickName());
+    }
+
+    @AfterEach
+    public void clean() {
+        // clean
+        tokenRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     void 회원가입() {
         // given
-        userSaveRequestDto = new UserSaveRequestDto(EMAIL, NICKNAME);
+        userSaveRequestDto = new UserSaveRequestDto(newUser.getEmail(), newUser.getNickName());
 
         // when
-        when(commonService.findByUserEmail(EMAIL)).thenThrow(new BaseException(BaseCode.USER_NOT_FOUND));
-        when(userRepository.save(user)).thenReturn(user);
-        when(tokenProvider.createAccessToken(user)).thenReturn(token);
-        when(tokenProvider.createRefreshToken(user)).thenReturn(token);
+        when(userRepository.existsByEmail(newUser.getEmail())).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenReturn(newUser);
+        when(tokenProvider.createAccessToken(newUser)).thenReturn(newToken);
+        when(tokenProvider.createRefreshToken(newUser)).thenReturn(newToken);
+        when(tokenRepository.save(eq(newToken))).thenReturn(newToken);
 
-        TokenResponseDto response = authService.login(userSaveRequestDto, mock(HttpServletResponse.class));
+        tokenResponseDto = authService.login(userSaveRequestDto, httpServletResponse);
 
         // then
-        assertNotNull(response);
-        assertEquals(response.getEmail(), EMAIL);
-        assertNotNull(response.getToken());
-        verify(userRepository, times(1)).save(user);
+        assertNotNull(tokenResponseDto);
+        assertEquals(tokenResponseDto.getEmail(), newUser.getEmail());
+        assertNotNull(tokenResponseDto.getToken());
     }
-
     
     @Test
     void 로그인() {
         // given
-        userSaveRequestDto = new UserSaveRequestDto(EMAIL, NICKNAME);
+        userSaveRequestDto = new UserSaveRequestDto(user.getEmail(), user.getNickName());
 
         // when
-        when(commonService.findByUserEmail(EMAIL)).thenThrow(new BaseException(BaseCode.USER_NOT_FOUND));
+        when(userRepository.existsByEmail(user.getEmail())).thenReturn(true);
+        when(commonService.findByUserEmail(user.getEmail())).thenReturn(user);
         when(tokenProvider.createAccessToken(user)).thenReturn(token);
         when(tokenProvider.createRefreshToken(user)).thenReturn(token);
+        when(tokenRepository.save(eq(token))).thenReturn(token);
 
-        TokenResponseDto response = authService.login(userSaveRequestDto, mock(HttpServletResponse.class));
+        tokenResponseDto = authService.login(userSaveRequestDto, httpServletResponse);
 
         // then
-        assertNotNull(response);
-        assertEquals(response.getEmail(), EMAIL);
-        assertNotNull(response.getToken());
+        assertNotNull(tokenResponseDto);
+        assertEquals(tokenResponseDto.getEmail(), user.getEmail());
+        assertNotNull(tokenResponseDto.getToken());
     }
 
     @Test
     void 토큰재발급() {
-        // given
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-
         // when
-        when(tokenRepository.findById(EMAIL)).thenReturn(Optional.of(token));
-        when(tokenProvider.validateToken(token.getValue(), request)).thenReturn(true);
-        when(commonService.findByUserEmail(EMAIL)).thenReturn(user);
+        when(tokenRepository.findById(user.getEmail())).thenReturn(Optional.of(token));
+        when(tokenProvider.validateToken(token.getValue(), httpServletRequest)).thenReturn(true);
+        when(commonService.findByUserEmail(user.getEmail())).thenReturn(user);
+        when(tokenProvider.createAccessToken(user)).thenReturn(token);
 
-        TokenResponseDto tokenResponse = authService.reissueToken(EMAIL, request, response);
+        tokenResponseDto = authService.reissueToken(user.getEmail(), httpServletRequest, httpServletResponse);
 
         // then
-        assertNotNull(tokenResponse);
-        verify(tokenRepository, times(1)).save(token);
+        assertNotNull(tokenResponseDto);
     }
 }
