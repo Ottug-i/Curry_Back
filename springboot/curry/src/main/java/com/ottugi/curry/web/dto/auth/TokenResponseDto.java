@@ -26,11 +26,15 @@ public class TokenResponseDto {
     @ApiModelProperty(notes = "회원 토큰", example = "secret")
     private String token;
 
-    public TokenResponseDto(User user, String token) {
+    @ApiModelProperty(notes = "새로운 가입 여부", example = "true")
+    private Boolean isNew;
+
+    public TokenResponseDto(User user, String token, Boolean isNew) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.nickName = user.getNickName();
         this.token = token;
         this.role = user.getRole().getRole();
+        this.isNew = isNew;
     }
 }
