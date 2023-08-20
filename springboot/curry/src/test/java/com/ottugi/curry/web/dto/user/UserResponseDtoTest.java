@@ -14,6 +14,7 @@ class UserResponseDtoTest {
     void UserResponseDto_롬복() {
         // given
         user = User.builder()
+                .id(USER_ID)
                 .email(EMAIL)
                 .nickName(NICKNAME)
                 .favoriteGenre(FAVORITE_GENRE)
@@ -23,7 +24,9 @@ class UserResponseDtoTest {
         UserResponseDto userResponseDto = new UserResponseDto(user);
 
         // then
-        assertEquals(userResponseDto.getEmail(), EMAIL);
-        assertEquals(userResponseDto.getNickName(), NICKNAME);
+        assertEquals(userResponseDto.getId(), user.getId());
+        assertEquals(userResponseDto.getEmail(), user.getEmail());
+        assertEquals(userResponseDto.getNickName(), user.getNickName());
+        assertEquals(userResponseDto.getRole(), user.getRole().getRole());
     }
 }

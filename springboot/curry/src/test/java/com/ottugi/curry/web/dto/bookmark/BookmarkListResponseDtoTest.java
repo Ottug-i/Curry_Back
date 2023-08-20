@@ -15,6 +15,7 @@ class BookmarkListResponseDtoTest {
     void BookmarkListResponseDto_롬복() {
         // given
         recipe = Recipe.builder()
+                .id(ID)
                 .recipeId(RECIPE_ID)
                 .name(NAME)
                 .thumbnail(THUMBNAIL)
@@ -32,13 +33,13 @@ class BookmarkListResponseDtoTest {
         BookmarkListResponseDto bookmarkListResponseDto = new BookmarkListResponseDto(recipe, isBookmark);
 
         // then
-        assertEquals(bookmarkListResponseDto.getRecipeId(), RECIPE_ID);
-        assertEquals(bookmarkListResponseDto.getName(), NAME);
-        assertEquals(bookmarkListResponseDto.getThumbnail(), THUMBNAIL);
-        assertEquals(bookmarkListResponseDto.getTime(), TIME);
-        assertEquals(bookmarkListResponseDto.getDifficulty(), DIFFICULTY);
-        assertEquals(bookmarkListResponseDto.getComposition(), COMPOSITION);
-        assertEquals(bookmarkListResponseDto.getIngredients(), INGREDIENTS);
+        assertEquals(bookmarkListResponseDto.getRecipeId(), recipe.getRecipeId());
+        assertEquals(bookmarkListResponseDto.getName(), recipe.getName());
+        assertEquals(bookmarkListResponseDto.getThumbnail(), recipe.getThumbnail());
+        assertEquals(bookmarkListResponseDto.getTime(), recipe.getTime().getTimeName());
+        assertEquals(bookmarkListResponseDto.getDifficulty(), recipe.getDifficulty().getDifficulty());
+        assertEquals(bookmarkListResponseDto.getComposition(), recipe.getComposition().getComposition());
+        assertEquals(bookmarkListResponseDto.getIngredients(), recipe.getIngredients());
         assertEquals(bookmarkListResponseDto.getIsBookmark(), isBookmark);
     }
 }

@@ -21,7 +21,7 @@ class RankResponseDtoTest {
         RankResponseDto rankResponseDto = new RankResponseDto(rank);
 
         // then
-        assertEquals(rankResponseDto.getName(), KEYWORD);
-        assertEquals(rankResponseDto.getScore(), SCORE);
+        assertEquals(rankResponseDto.getName(), rank.getName());
+        assertEquals(rankResponseDto.getScore(), rank.getScore());
     }
 }

@@ -15,12 +15,12 @@ class RecipeSaveRequestDtoTest {
         // then
         assertEquals(recipeSaveRequestDto.getRecipeId(), RECIPE_ID);
         assertEquals(recipeSaveRequestDto.getName(), NAME);
-        assertEquals(recipeSaveRequestDto.getComposition(), COMPOSITION);
+        assertEquals(recipeSaveRequestDto.getComposition(), COMPOSITION.getComposition());
         assertEquals(recipeSaveRequestDto.getIngredients(), INGREDIENTS);
-        assertEquals(recipeSaveRequestDto.getServings(), SERVINGS);
-        assertEquals(recipeSaveRequestDto.getDifficulty(), DIFFICULTY);
+        assertEquals(recipeSaveRequestDto.getServings(), SERVINGS.getServings());
+        assertEquals(recipeSaveRequestDto.getDifficulty(), DIFFICULTY.getDifficulty());
         assertEquals(recipeSaveRequestDto.getThumbnail(), THUMBNAIL);
-        assertEquals(recipeSaveRequestDto.getTime(), TIME);
+        assertEquals(recipeSaveRequestDto.getTime(), TIME.getTimeName());
         assertEquals(recipeSaveRequestDto.getOrders(), ORDERS);
         assertEquals(recipeSaveRequestDto.getPhoto(), PHOTO);
         assertEquals(recipeSaveRequestDto.getGenre(), GENRE);

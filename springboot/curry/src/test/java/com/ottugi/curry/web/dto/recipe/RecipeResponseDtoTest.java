@@ -14,6 +14,7 @@ class RecipeResponseDtoTest {
     void RecipeResponseDto_롬복() {
         // given
         Recipe recipe = Recipe.builder()
+                .id(ID)
                 .recipeId(RECIPE_ID)
                 .name(NAME)
                 .thumbnail(THUMBNAIL)
@@ -31,16 +32,16 @@ class RecipeResponseDtoTest {
         RecipeResponseDto recipeResponseDto = new RecipeResponseDto(recipe, isBookmark);
 
         // then
-        assertEquals(recipeResponseDto.getRecipeId(), RECIPE_ID);
-        assertEquals(recipeResponseDto.getName(), NAME);
-        assertEquals(recipeResponseDto.getThumbnail(), THUMBNAIL);
-        assertEquals(recipeResponseDto.getTime(), TIME);
-        assertEquals(recipeResponseDto.getDifficulty(), DIFFICULTY);
-        assertEquals(recipeResponseDto.getComposition(), COMPOSITION);
-        assertEquals(recipeResponseDto.getIngredients(), INGREDIENTS);
-        assertEquals(recipeResponseDto.getServings(), SERVINGS);
-        assertEquals(recipeResponseDto.getOrders(), ORDERS);
-        assertEquals(recipeResponseDto.getPhoto(), PHOTO);
+        assertEquals(recipeResponseDto.getRecipeId(), recipe.getRecipeId());
+        assertEquals(recipeResponseDto.getName(), recipe.getName());
+        assertEquals(recipeResponseDto.getThumbnail(), recipe.getThumbnail());
+        assertEquals(recipeResponseDto.getTime(), recipe.getTime().getTimeName());
+        assertEquals(recipeResponseDto.getDifficulty(), recipe.getDifficulty().getDifficulty());
+        assertEquals(recipeResponseDto.getComposition(), recipe.getComposition().getComposition());
+        assertEquals(recipeResponseDto.getIngredients(), recipe.getIngredients());
+        assertEquals(recipeResponseDto.getServings(), recipe.getServings().getServings());
+        assertEquals(recipeResponseDto.getOrders(), recipe.getOrders());
+        assertEquals(recipeResponseDto.getPhoto(), recipe.getPhoto());
         assertEquals(recipeResponseDto.getIsBookmark(), isBookmark);
     }
 }

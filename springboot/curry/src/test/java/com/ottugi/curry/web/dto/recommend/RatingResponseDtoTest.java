@@ -17,8 +17,8 @@ class RatingResponseDtoTest {
         RatingResponseDto ratingResponseDto = new RatingResponseDto(ratingInfo);
 
         // then
-        assertEquals(ratingResponseDto.getRecipeId(), 6846342);
-        assertEquals(ratingResponseDto.getUserId(), 1);
-        assertEquals(ratingResponseDto.getRating(), 4.0);
+        assertEquals(ratingResponseDto.getRecipeId(), ratingInfo.get(0));
+        assertEquals(ratingResponseDto.getUserId(), ratingInfo.get(1));
+        assertEquals(ratingResponseDto.getRating(), ratingInfo.get(2));
     }
 }

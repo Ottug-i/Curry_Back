@@ -14,6 +14,7 @@ class LatelyListResponseDtoTest {
     void LatelyListResponseDto_롬복() {
         // given
         recipe = Recipe.builder()
+                .id(ID)
                 .recipeId(RECIPE_ID)
                 .name(NAME)
                 .thumbnail(THUMBNAIL)
@@ -31,8 +32,8 @@ class LatelyListResponseDtoTest {
         LatelyListResponseDto latelyListResponseDto = new LatelyListResponseDto(recipe);
 
         // then
-        assertEquals(latelyListResponseDto.getRecipeId(), RECIPE_ID);
-        assertEquals(latelyListResponseDto.getName(), NAME);
-        assertEquals(latelyListResponseDto.getThumbnail(), THUMBNAIL);
+        assertEquals(latelyListResponseDto.getRecipeId(), recipe.getRecipeId());
+        assertEquals(latelyListResponseDto.getName(), recipe.getName());
+        assertEquals(latelyListResponseDto.getThumbnail(), recipe.getThumbnail());
     }
 }

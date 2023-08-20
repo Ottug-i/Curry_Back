@@ -14,6 +14,7 @@ class TokenResponseDtoTest {
     void TokenDto_롬복() {
         // given
         user = User.builder()
+                .id(USER_ID)
                 .email(EMAIL)
                 .nickName(NICKNAME)
                 .favoriteGenre(FAVORITE_GENRE)
@@ -24,10 +25,10 @@ class TokenResponseDtoTest {
         TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE);
 
         // then
-        assertEquals(tokenResponseDto.getId(), USER_ID);
-        assertEquals(tokenResponseDto.getEmail(), EMAIL);
-        assertEquals(tokenResponseDto.getNickName(), NICKNAME);
-        assertEquals(tokenResponseDto.getRole(), ROLE);
+        assertEquals(tokenResponseDto.getId(), user.getId());
+        assertEquals(tokenResponseDto.getEmail(), user.getEmail());
+        assertEquals(tokenResponseDto.getNickName(), user.getNickName());
+        assertEquals(tokenResponseDto.getRole(), user.getRole().getRole());
         assertEquals(tokenResponseDto.getToken(), VALUE);
     }
 }
