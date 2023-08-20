@@ -95,6 +95,7 @@ class AuthServiceTest {
         assertNotNull(tokenResponseDto);
         assertEquals(tokenResponseDto.getEmail(), newUser.getEmail());
         assertNotNull(tokenResponseDto.getToken());
+        assertEquals(tokenResponseDto.getIsNew(), IS_NEW);
     }
     
     @Test
@@ -115,6 +116,7 @@ class AuthServiceTest {
         assertNotNull(tokenResponseDto);
         assertEquals(tokenResponseDto.getEmail(), user.getEmail());
         assertNotNull(tokenResponseDto.getToken());
+        assertEquals(tokenResponseDto.getIsNew(), !IS_NEW);
     }
 
     @Test

@@ -50,7 +50,7 @@ class AuthControllerTest {
     void 회원가입_로그인() throws Exception {
         // given
         UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(user.getEmail(), user.getNickName());
-        TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE);
+        TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE, IS_NEW);
 
         // when
         when(authService.login(any(UserSaveRequestDto.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
@@ -64,13 +64,14 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.email").value(user.getEmail()))
                 .andExpect(jsonPath("$.nickName").value(user.getNickName()))
                 .andExpect(jsonPath("$.role").value(user.getRole().getRole()))
-                .andExpect(jsonPath("$.token").value(VALUE));
+                .andExpect(jsonPath("$.token").value(VALUE))
+                .andExpect(jsonPath("$.isNew").value(IS_NEW));
     }
 
     @Test
     void 토큰재발급() throws Exception {
         // given
-        TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE);
+        TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE, !IS_NEW);
 
         // when
         when(authService.reissueToken(anyString(), any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
@@ -83,6 +84,7 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.email").value(user.getEmail()))
                 .andExpect(jsonPath("$.nickName").value(user.getNickName()))
                 .andExpect(jsonPath("$.role").value(user.getRole().getRole()))
-                .andExpect(jsonPath("$.token").value(VALUE));
+                .andExpect(jsonPath("$.token").value(VALUE))
+                .andExpect(jsonPath("$.isNew").value(!IS_NEW));
     }
 }

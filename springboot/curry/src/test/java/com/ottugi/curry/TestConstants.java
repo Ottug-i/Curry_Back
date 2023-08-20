@@ -23,6 +23,7 @@ public class TestConstants {
     public static final String NEW_FAVORITE_GENRE = "ing16";
     public static final Role ROLE = Role.ofRole("일반 사용자");
     public static final Role NEW_ROLE = Role.ofRole("관리자");
+    public static final Boolean IS_NEW = true;
 
     // Token
     public static final String VALUE = "token";

@@ -22,7 +22,7 @@ class TokenResponseDtoTest {
                 .build();
 
         // when
-        TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE);
+        TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE, IS_NEW);
 
         // then
         assertEquals(tokenResponseDto.getId(), user.getId());
@@ -30,5 +30,6 @@ class TokenResponseDtoTest {
         assertEquals(tokenResponseDto.getNickName(), user.getNickName());
         assertEquals(tokenResponseDto.getRole(), user.getRole().getRole());
         assertEquals(tokenResponseDto.getToken(), VALUE);
+        assertEquals(tokenResponseDto.getIsNew(), IS_NEW);
     }
 }
