@@ -2,6 +2,7 @@ package com.ottugi.curry.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.service.recommend.RecommendService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
@@ -22,6 +23,7 @@ import java.util.*;
 
 import static com.ottugi.curry.TestConstants.*;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -30,12 +32,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class RecommendControllerTest {
 
-    private Recipe recipe1;
-    private Recipe recipe2;
-    private List<String> ingredients = Arrays.asList("고구마", "올리고당");
+    private User user;
+    private Recipe recipe;
 
-    private Long recipeId1 = 1234L;
-    private Long recipeId2 = 1235L;
+    private List<String> ingredients = Arrays.asList("고구마", "올리고당");
 
     private List<Long> recipeIdList = new ArrayList<>();
 
@@ -56,8 +56,8 @@ class RecommendControllerTest {
 
     @BeforeEach
     public void setUp() {
-        recipe1 = new Recipe(ID, recipeId1, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        recipe2 = new Recipe(12346L, recipeId2, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
         mockMvc = MockMvcBuilders.standaloneSetup(recommendController).build();
     }
 
@@ -72,7 +72,7 @@ class RecommendControllerTest {
         // then
         mockMvc.perform(get("/api/recommend/initial"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(10)));
+                .andExpect(jsonPath("$", hasSize(recommendListResponseDtoList.size())));
     }
 
     @Test
@@ -81,12 +81,12 @@ class RecommendControllerTest {
         RatingResponseDto ratingRequestDto = new RatingResponseDto(ratingInfo);
 
         // when
-        when(recommendService.getUserRating(USER_ID, RECIPE_ID)).thenReturn(ratingRequestDto);
+        when(recommendService.getUserRating(anyLong(), anyLong())).thenReturn(ratingRequestDto);
 
         // then
         mockMvc.perform(get("/api/recommend/rating")
-                    .param("userId", String.valueOf(USER_ID))
-                    .param("recipeId", String.valueOf(RECIPE_ID)))
+                    .param("userId", String.valueOf(user.getId()))
+                    .param("recipeId", String.valueOf(recipe.getRecipeId())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(1))
                 .andExpect(jsonPath("$.recipeId").value(6846342))
@@ -97,50 +97,44 @@ class RecommendControllerTest {
     void 레시피평점추가또는수정() throws Exception {
         // given
         newUserRatingsDic.put(6847060L, 3.0);
-        RatingRequestDto ratingRequestDto = new RatingRequestDto(USER_ID, newUserRatingsDic);
+        RatingRequestDto ratingRequestDto = new RatingRequestDto(user.getId(), newUserRatingsDic);
 
         // when
-        when(recommendService.updateUserRating(ratingRequestDto)).thenReturn(true);
+        when(recommendService.updateUserRating(any(RatingRequestDto.class))).thenReturn(true);
 
         // then
         mockMvc.perform(post("/api/recommend/rating")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(ratingRequestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value(true));
+                .andExpect(jsonPath("$").value(true));
     }
 
     @Test
     void 레시피평점삭제() throws Exception {
         // when
-        when(recommendService.deleteUserRating(USER_ID, RECIPE_ID)).thenReturn(true);
+        when(recommendService.deleteUserRating(user.getId(), recipe.getRecipeId())).thenReturn(true);
 
         // then
         mockMvc.perform(delete("/api/recommend/rating")
-                        .param("userId", String.valueOf(USER_ID))
-                        .param("recipeId", String.valueOf(RECIPE_ID)))
+                        .param("userId", String.valueOf(user.getId()))
+                        .param("recipeId", String.valueOf(recipe.getRecipeId())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value(true));
+                .andExpect(jsonPath("$").value(true));
     }
 
     @Test
     void 재료추천레시피리스트조회() throws Exception {
         // given
-        RecipeRequestDto recipeRequestDto = RecipeRequestDto.builder()
-                .userId(USER_ID)
-                .ingredients(Arrays.asList("고구마", "올리고당"))
-                .page(PAGE)
-                .size(SIZE)
-                .build();
+        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(user.getId(), Arrays.asList("고구마", "올리고당"), PAGE, SIZE);
         
         List<RecipeIngListResponseDto> recipeListResponseDtoList = new ArrayList<>();
-        recipeListResponseDtoList.add(new RecipeIngListResponseDto(ingredients, recipe1, isBookmark));
-        recipeListResponseDtoList.add(new RecipeIngListResponseDto(ingredients, recipe2, isBookmark));
+        recipeListResponseDtoList.add(new RecipeIngListResponseDto(ingredients, recipe, isBookmark));
 
         Page<RecipeIngListResponseDto> pagedRecipeList = new PageImpl<>(recipeListResponseDtoList);
 
         // when
-        when(recommendService.getIngredientsRecommendList(recipeRequestDto)).thenReturn(pagedRecipeList);
+        when(recommendService.getIngredientsRecommendList(any(RecipeRequestDto.class))).thenReturn(pagedRecipeList);
 
         // then
         mockMvc.perform(post("/api/recommend/ingredients/list")
@@ -153,37 +147,36 @@ class RecommendControllerTest {
     @Test
     void 북마크추천레시피리스트조회() throws Exception {
         // given
-        RecommendRequestDto recommendRequestDto = new RecommendRequestDto(USER_ID, recipeIdList);
         List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
 
         // when
-        when(recommendService.getRecommendBookmarkId(RECIPE_ID, PAGE)).thenReturn(recipeIdList);
-        when(recommendService.getBookmarkOrRatingRecommendList(recommendRequestDto)).thenReturn(recipeListResponseDtoList);
+        when(recommendService.getRecommendBookmarkId(anyLong(), anyInt())).thenReturn(recipeIdList);
+        when(recommendService.getBookmarkOrRatingRecommendList(any(RecommendRequestDto.class))).thenReturn(recipeListResponseDtoList);
 
         // then
         mockMvc.perform(get("/api/recommend/bookmark/list")
-                        .param("userId", String.valueOf(USER_ID))
-                        .param("recipeId", String.valueOf(RECIPE_ID))
+                        .param("userId", String.valueOf(user.getId()))
+                        .param("recipeId", String.valueOf(recipe.getRecipeId()))
                         .param("page", String.valueOf(PAGE)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(recipeListResponseDtoList.size())));
+                .andExpect(jsonPath("$", hasSize(recipeListResponseDtoList.size())));
     }
 
     @Test
     void 평점추천레시피리스트조회() throws Exception {
         // given
-        RecommendRequestDto recommendRequestDto = new RecommendRequestDto(USER_ID, recipeIdList);
         List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
 
         // when
-        when(recommendService.getRecommendRatingId(USER_ID, PAGE, bookmarkList)).thenReturn(recipeIdList);
-        when(recommendService.getBookmarkOrRatingRecommendList(recommendRequestDto)).thenReturn(recipeListResponseDtoList);
+        when(recommendService.getRecommendRatingId(anyLong(), anyInt(), eq(bookmarkList))).thenReturn(recipeIdList);
+        when(recommendService.getBookmarkOrRatingRecommendList(any(RecommendRequestDto.class))).thenReturn(recipeListResponseDtoList);
 
         // then
         mockMvc.perform(get("/api/recommend/bookmark/list")
-                        .param("userId", String.valueOf(USER_ID))
+                        .param("userId", String.valueOf(user.getId()))
                         .param("page", String.valueOf(PAGE))
                         .param("bookmarkList", "6842324", "6845721"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(recipeListResponseDtoList.size())));    }
+                .andExpect(jsonPath("$", hasSize(recipeListResponseDtoList.size())));
+    }
 }

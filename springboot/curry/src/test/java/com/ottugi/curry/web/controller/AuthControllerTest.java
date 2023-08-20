@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static com.ottugi.curry.TestConstants.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -48,21 +49,21 @@ class AuthControllerTest {
     @Test
     void 회원가입_로그인() throws Exception {
         // given
-        UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(EMAIL, NICKNAME);
+        UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(user.getEmail(), user.getNickName());
         TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE);
 
         // when
-        when(authService.login(userSaveRequestDto, any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
+        when(authService.login(any(UserSaveRequestDto.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
 
         // then
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userSaveRequestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(USER_ID))
-                .andExpect(jsonPath("$.email").value(EMAIL))
-                .andExpect(jsonPath("$.nickName").value(NICKNAME))
-                .andExpect(jsonPath("$.role").value(ROLE))
+                .andExpect(jsonPath("$.id").value(user.getId()))
+                .andExpect(jsonPath("$.email").value(user.getEmail()))
+                .andExpect(jsonPath("$.nickName").value(user.getNickName()))
+                .andExpect(jsonPath("$.role").value(user.getRole().getRole()))
                 .andExpect(jsonPath("$.token").value(VALUE));
     }
 
@@ -72,16 +73,16 @@ class AuthControllerTest {
         TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE);
 
         // when
-        when(authService.reissueToken(EMAIL, any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
+        when(authService.reissueToken(anyString(), any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
 
         // then
         mockMvc.perform(post("/auth/reissue")
-                        .param("email", EMAIL))
+                        .param("email", user.getEmail()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(USER_ID))
-                .andExpect(jsonPath("$.email").value(EMAIL))
-                .andExpect(jsonPath("$.nickName").value(NICKNAME))
-                .andExpect(jsonPath("$.role").value(ROLE))
+                .andExpect(jsonPath("$.id").value(user.getId()))
+                .andExpect(jsonPath("$.email").value(user.getEmail()))
+                .andExpect(jsonPath("$.nickName").value(user.getNickName()))
+                .andExpect(jsonPath("$.role").value(user.getRole().getRole()))
                 .andExpect(jsonPath("$.token").value(VALUE));
     }
 }

@@ -15,6 +15,8 @@ import org.springframework.http.*;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -49,27 +51,27 @@ public class UserControllerTest {
         UserResponseDto userResponseDto = new UserResponseDto(user);
 
         // when
-        when(userService.getProfile(USER_ID)).thenReturn(userResponseDto);
+        when(userService.getProfile(anyLong())).thenReturn(userResponseDto);
 
         // Then
         mockMvc.perform(get("/api/user")
-                        .param("id", String.valueOf(USER_ID)))
+                        .param("id", String.valueOf(user.getId())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(user.getId()))
-                .andExpect(jsonPath("$.email").value(EMAIL))
-                .andExpect(jsonPath("$.nickName").value(NICKNAME))
-                .andExpect(jsonPath("$.role").value(ROLE));
+                .andExpect(jsonPath("$.email").value(user.getEmail()))
+                .andExpect(jsonPath("$.nickName").value(user.getNickName()))
+                .andExpect(jsonPath("$.role").value(user.getRole().getRole()));
     }
 
     @Test
     void 회원수정() throws Exception {
         // given
-        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(USER_ID, NEW_NICKNAME);
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(changingUser.getId(), NEW_NICKNAME);
 
         UserResponseDto userResponseDto = new UserResponseDto(changingUser);
 
         // when
-        when(userService.updateProfile(userUpdateRequestDto)).thenReturn(userResponseDto);
+        when(userService.updateProfile(any(UserUpdateRequestDto.class))).thenReturn(userResponseDto);
 
         // then
         mockMvc.perform(put("/api/user")
@@ -77,9 +79,9 @@ public class UserControllerTest {
                         .content(new ObjectMapper().writeValueAsString(userUpdateRequestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(changingUser.getId()))
-                .andExpect(jsonPath("$.email").value(EMAIL))
-                .andExpect(jsonPath("$.nickName").value(NEW_NICKNAME))
-                .andExpect(jsonPath("$.role").value(ROLE));
+                .andExpect(jsonPath("$.email").value(changingUser.getEmail()))
+                .andExpect(jsonPath("$.nickName").value(changingUser.getNickName()))
+                .andExpect(jsonPath("$.role").value(changingUser.getRole().getRole()));
     }
 
     @Test
@@ -89,7 +91,7 @@ public class UserControllerTest {
 
         // then
         mockMvc.perform(delete("/api/user/withdraw")
-                        .param("id", String.valueOf(USER_ID)))
+                        .param("id", String.valueOf(user.getId())))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
     }
