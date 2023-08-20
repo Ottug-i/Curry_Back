@@ -33,10 +33,10 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponseDto login(UserSaveRequestDto userSaveRequestDto, HttpServletResponse response) {
         if(isDuplicatedUser(userSaveRequestDto.getEmail())) {
             User user = commonService.findByUserEmail(userSaveRequestDto.getEmail());
-            return createToken(user, response);
+            return createToken(user, response, false);
         } else {
             User newUser = userRepository.save(userSaveRequestDto.toEntity());
-            return createToken(newUser, response);
+            return createToken(newUser, response, true);
         }
     }
 
@@ -48,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
             Token refreshToken = findToken(email);
             validateToken(refreshToken, request);
             User user = commonService.findByUserEmail(email);
-            return createToken(user, response);
+            return createToken(user, response, false);
         } catch (ExpiredJwtException e) {
             throw new BaseException(BaseCode.JWT_REFRESH_TOKEN_EXPIRED);
         }
@@ -76,11 +76,11 @@ public class AuthServiceImpl implements AuthService {
 
     // 토큰 생성 및 저장
     @Transactional
-    private TokenResponseDto createToken(User user, HttpServletResponse response) {
+    private TokenResponseDto createToken(User user, HttpServletResponse response, Boolean isNew) {
         Token accessToken = tokenProvider.createAccessToken(user);
         Token refreshToken = tokenProvider.createRefreshToken(user);
         tokenProvider.setHeaderAccessToken(response, accessToken.getValue());
         tokenRepository.save(refreshToken);
-        return new TokenResponseDto(user, accessToken.getValue());
+        return new TokenResponseDto(user, accessToken.getValue(), isNew);
     }
 }
