@@ -13,7 +13,7 @@ class BookmarkRequestDtoTest {
         BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(USER_ID, RECIPE_ID);
 
         // then
-        assertEquals(bookmarkRequestDto.getUserId(), USER_ID);
-        assertEquals(bookmarkRequestDto.getRecipeId(), RECIPE_ID);
+        assertEquals(USER_ID, bookmarkRequestDto.getUserId());
+        assertEquals(RECIPE_ID, bookmarkRequestDto.getRecipeId());
     }
 }

@@ -21,7 +21,7 @@ class RatingRequestDtoTest {
         RatingRequestDto ratingRequestDto = new RatingRequestDto(USER_ID, newUserRatingsDic);
 
         // then
-        assertEquals(ratingRequestDto.getUserId(), USER_ID);
-        assertEquals(ratingRequestDto.getNewUserRatingsDic(), newUserRatingsDic);
+        assertEquals(USER_ID, ratingRequestDto.getUserId());
+        assertEquals(newUserRatingsDic, ratingRequestDto.getNewUserRatingsDic());
     }
 }

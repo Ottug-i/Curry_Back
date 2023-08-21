@@ -13,7 +13,7 @@ class UserSaveRequestDtoTest {
         UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(EMAIL, NICKNAME);
 
         // then
-        assertEquals(userSaveRequestDto.getEmail(), EMAIL);
-        assertEquals(userSaveRequestDto.getNickName(), NICKNAME);
+        assertEquals(EMAIL, userSaveRequestDto.getEmail());
+        assertEquals(NICKNAME, userSaveRequestDto.getNickName());
     }
 }

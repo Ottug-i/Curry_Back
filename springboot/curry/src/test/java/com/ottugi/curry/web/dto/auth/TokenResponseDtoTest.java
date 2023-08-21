@@ -25,11 +25,11 @@ class TokenResponseDtoTest {
         TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE, IS_NEW);
 
         // then
-        assertEquals(tokenResponseDto.getId(), user.getId());
-        assertEquals(tokenResponseDto.getEmail(), user.getEmail());
-        assertEquals(tokenResponseDto.getNickName(), user.getNickName());
-        assertEquals(tokenResponseDto.getRole(), user.getRole().getRole());
-        assertEquals(tokenResponseDto.getToken(), VALUE);
-        assertEquals(tokenResponseDto.getIsNew(), IS_NEW);
+        assertEquals(user.getId(), tokenResponseDto.getId());
+        assertEquals(user.getEmail(), tokenResponseDto.getEmail());
+        assertEquals(user.getNickName(), tokenResponseDto.getNickName());
+        assertEquals(user.getRole().getRole(), tokenResponseDto.getRole());
+        assertEquals(VALUE, tokenResponseDto.getToken());
+        assertEquals(IS_NEW, tokenResponseDto.getIsNew());
     }
 }

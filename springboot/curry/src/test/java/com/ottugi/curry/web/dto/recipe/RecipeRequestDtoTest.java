@@ -21,11 +21,11 @@ class RecipeRequestDtoTest {
         RecipeRequestDto recipeRequestDto = new RecipeRequestDto(USER_ID, ingredients, PAGE, SIZE);
 
         // then
-        assertEquals(recipeRequestDto.getUserId(), USER_ID);
-        assertEquals(recipeRequestDto.getIngredients().size(), 2);
-        assertEquals(recipeRequestDto.getIngredients().get(0), ingredients1);
-        assertEquals(recipeRequestDto.getIngredients().get(1), ingredients2);
-        assertEquals(recipeRequestDto.getPage(), PAGE);
-        assertEquals(recipeRequestDto.getSize(), SIZE);
+        assertEquals(USER_ID, recipeRequestDto.getUserId());
+        assertEquals(2, recipeRequestDto.getIngredients().size());
+        assertEquals(ingredients1, recipeRequestDto.getIngredients().get(0));
+        assertEquals(ingredients2, recipeRequestDto.getIngredients().get(1));
+        assertEquals(PAGE, recipeRequestDto.getPage());
+        assertEquals(SIZE, recipeRequestDto.getSize());
     }
 }

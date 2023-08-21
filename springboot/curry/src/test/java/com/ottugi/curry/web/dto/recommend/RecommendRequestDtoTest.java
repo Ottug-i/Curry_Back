@@ -18,7 +18,7 @@ class RecommendRequestDtoTest {
         RecommendRequestDto recommendRequestDto = new RecommendRequestDto(USER_ID, recipeIdList);
 
         // then
-        assertEquals(recommendRequestDto.getUserId(), USER_ID);
-        assertEquals(recommendRequestDto.getRecipeId().get(0), RECIPE_ID);
+        assertEquals(USER_ID, recommendRequestDto.getUserId());
+        assertEquals(RECIPE_ID, recommendRequestDto.getRecipeId().get(0));
     }
 }

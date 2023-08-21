@@ -32,8 +32,8 @@ class LatelyListResponseDtoTest {
         LatelyListResponseDto latelyListResponseDto = new LatelyListResponseDto(recipe);
 
         // then
-        assertEquals(latelyListResponseDto.getRecipeId(), recipe.getRecipeId());
-        assertEquals(latelyListResponseDto.getName(), recipe.getName());
-        assertEquals(latelyListResponseDto.getThumbnail(), recipe.getThumbnail());
+        assertEquals(recipe.getRecipeId(), latelyListResponseDto.getRecipeId());
+        assertEquals(recipe.getName(), latelyListResponseDto.getName());
+        assertEquals(recipe.getThumbnail(), latelyListResponseDto.getThumbnail());
     }
 }

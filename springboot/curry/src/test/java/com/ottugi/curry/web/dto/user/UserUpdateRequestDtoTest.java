@@ -13,7 +13,7 @@ class UserUpdateRequestDtoTest {
         UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(USER_ID, NICKNAME);
 
         // then
-        assertEquals(userUpdateRequestDto.getId(), USER_ID);
-        assertEquals(userUpdateRequestDto.getNickName(), NICKNAME);
+        assertEquals(USER_ID, userUpdateRequestDto.getId());
+        assertEquals(NICKNAME, userUpdateRequestDto.getNickName());
     }
 }

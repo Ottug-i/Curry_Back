@@ -24,9 +24,9 @@ class UserResponseDtoTest {
         UserResponseDto userResponseDto = new UserResponseDto(user);
 
         // then
-        assertEquals(userResponseDto.getId(), user.getId());
-        assertEquals(userResponseDto.getEmail(), user.getEmail());
-        assertEquals(userResponseDto.getNickName(), user.getNickName());
-        assertEquals(userResponseDto.getRole(), user.getRole().getRole());
+        assertEquals(user.getId(), userResponseDto.getId());
+        assertEquals(user.getEmail(), userResponseDto.getEmail());
+        assertEquals(user.getNickName(), userResponseDto.getNickName());
+        assertEquals(user.getRole().getRole(), userResponseDto.getRole());
     }
 }

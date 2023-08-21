@@ -32,12 +32,12 @@ class RecommendListResponseDtoTest {
         RecommendListResponseDto recommendListResponseDto = new RecommendListResponseDto(recipe);
 
         // then
-        assertEquals(recommendListResponseDto.getRecipeId(), recipe.getRecipeId());
-        assertEquals(recommendListResponseDto.getName(), recipe.getName());
-        assertEquals(recommendListResponseDto.getThumbnail(), recipe.getThumbnail());
-        assertEquals(recommendListResponseDto.getTime(), recipe.getTime().getTimeName());
-        assertEquals(recommendListResponseDto.getDifficulty(), recipe.getDifficulty().getDifficulty());
-        assertEquals(recommendListResponseDto.getComposition(), recipe.getComposition().getComposition());
-        assertEquals(recommendListResponseDto.getIngredients(), recipe.getIngredients());
+        assertEquals(recipe.getRecipeId(), recommendListResponseDto.getRecipeId());
+        assertEquals(recipe.getName(), recommendListResponseDto.getName());
+        assertEquals(recipe.getThumbnail(), recommendListResponseDto.getThumbnail());
+        assertEquals(recipe.getTime().getTimeName(), recommendListResponseDto.getTime());
+        assertEquals(recipe.getDifficulty().getDifficulty(), recommendListResponseDto.getDifficulty());
+        assertEquals(recipe.getComposition().getComposition(), recommendListResponseDto.getComposition());
+        assertEquals(recipe.getIngredients(), recommendListResponseDto.getIngredients());
     }
 }

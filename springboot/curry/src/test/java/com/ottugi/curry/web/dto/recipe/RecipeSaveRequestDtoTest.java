@@ -13,16 +13,16 @@ class RecipeSaveRequestDtoTest {
         RecipeSaveRequestDto recipeSaveRequestDto = new RecipeSaveRequestDto(RECIPE_ID, NAME, COMPOSITION.getComposition(), INGREDIENTS, SERVINGS.getServings(), DIFFICULTY.getDifficulty(), THUMBNAIL, TIME.getTimeName(), ORDERS, PHOTO, GENRE);
 
         // then
-        assertEquals(recipeSaveRequestDto.getRecipeId(), RECIPE_ID);
-        assertEquals(recipeSaveRequestDto.getName(), NAME);
-        assertEquals(recipeSaveRequestDto.getComposition(), COMPOSITION.getComposition());
-        assertEquals(recipeSaveRequestDto.getIngredients(), INGREDIENTS);
-        assertEquals(recipeSaveRequestDto.getServings(), SERVINGS.getServings());
-        assertEquals(recipeSaveRequestDto.getDifficulty(), DIFFICULTY.getDifficulty());
-        assertEquals(recipeSaveRequestDto.getThumbnail(), THUMBNAIL);
-        assertEquals(recipeSaveRequestDto.getTime(), TIME.getTimeName());
-        assertEquals(recipeSaveRequestDto.getOrders(), ORDERS);
-        assertEquals(recipeSaveRequestDto.getPhoto(), PHOTO);
-        assertEquals(recipeSaveRequestDto.getGenre(), GENRE);
+        assertEquals(RECIPE_ID, recipeSaveRequestDto.getRecipeId());
+        assertEquals(NAME, recipeSaveRequestDto.getName());
+        assertEquals(COMPOSITION.getComposition(), recipeSaveRequestDto.getComposition());
+        assertEquals(INGREDIENTS, recipeSaveRequestDto.getIngredients());
+        assertEquals(SERVINGS.getServings(), recipeSaveRequestDto.getServings());
+        assertEquals(DIFFICULTY.getDifficulty(), recipeSaveRequestDto.getDifficulty());
+        assertEquals(THUMBNAIL, recipeSaveRequestDto.getThumbnail());
+        assertEquals(TIME.getTimeName(), recipeSaveRequestDto.getTime());
+        assertEquals(ORDERS, recipeSaveRequestDto.getOrders());
+        assertEquals(PHOTO, recipeSaveRequestDto.getPhoto());
+        assertEquals(GENRE, recipeSaveRequestDto.getGenre());
     }
 }
