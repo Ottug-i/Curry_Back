@@ -21,17 +21,17 @@ class RecipeTest {
     @Test
     void 레시피추가() {
         // when, then
-        assertEquals(recipe.getId(), ID);
-        assertEquals(recipe.getRecipeId(), RECIPE_ID);
-        assertEquals(recipe.getName(), NAME);
-        assertEquals(recipe.getThumbnail(), THUMBNAIL);
-        assertEquals(recipe.getTime(), TIME);
-        assertEquals(recipe.getDifficulty(), DIFFICULTY);
-        assertEquals(recipe.getComposition(), COMPOSITION);
-        assertEquals(recipe.getIngredients(), INGREDIENTS);
-        assertEquals(recipe.getServings(), SERVINGS);
-        assertEquals(recipe.getOrders(), ORDERS);
-        assertEquals(recipe.getPhoto(), PHOTO);
-        assertEquals(recipe.getGenre(), GENRE);
+        assertEquals(ID, recipe.getId());
+        assertEquals(RECIPE_ID, recipe.getRecipeId());
+        assertEquals(NAME, recipe.getName());
+        assertEquals(THUMBNAIL, recipe.getThumbnail());
+        assertEquals(TIME, recipe.getTime());
+        assertEquals(DIFFICULTY, recipe.getDifficulty());
+        assertEquals(COMPOSITION, recipe.getComposition());
+        assertEquals(INGREDIENTS, recipe.getIngredients());
+        assertEquals(SERVINGS, recipe.getServings());
+        assertEquals(ORDERS, recipe.getOrders());
+        assertEquals(PHOTO, recipe.getPhoto());
+        assertEquals(GENRE, recipe.getGenre());
     }
 }

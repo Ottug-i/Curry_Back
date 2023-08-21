@@ -15,15 +15,16 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class RecipeRepositoryTest {
 
-    private String ingredient = "고구마";
-
     private Recipe recipe;
-    private Recipe findRecipe;
-    private List<Recipe> recipeList;
-    private List<Long> recipeIdList = new ArrayList<>();
+
+    private String ingredient = "고구마";
     private List<Long> idList = new ArrayList<>();
+    private List<Long> recipeIdList = new ArrayList<>();
+    private List<Recipe> recipeList;
 
     private RecipeRepository recipeRepository;
+
+    private Recipe testRecipe;
 
     @Autowired
     RecipeRepositoryTest(RecipeRepository recipeRepository) {
@@ -49,8 +50,8 @@ class RecipeRepositoryTest {
         recipeList = recipeRepository.findByIngredientsContaining(ingredient);
 
         // then
-        findRecipe = recipeList.get(0);
-        assertTrue(findRecipe.getIngredients().contains(ingredient));
+        testRecipe = recipeList.get(0);
+        assertTrue(testRecipe.getIngredients().contains(ingredient));
     }
 
     @Test
@@ -59,8 +60,8 @@ class RecipeRepositoryTest {
         recipeList = recipeRepository.findByNameContaining(ingredient);
 
         // then
-        findRecipe = recipeList.get(0);
-        assertTrue(findRecipe.getName().contains(ingredient));
+        testRecipe = recipeList.get(0);
+        assertTrue(testRecipe.getName().contains(ingredient));
     }
 
     @Test
@@ -72,8 +73,8 @@ class RecipeRepositoryTest {
         recipeList = recipeRepository.findByRecipeIdIn(recipeIdList);
 
         // then
-        findRecipe = recipeList.get(0);
-        assertEquals(findRecipe.getRecipeId(), recipeIdList.get(0));
+        testRecipe = recipeList.get(0);
+        assertEquals(recipeIdList.get(0), testRecipe.getRecipeId());
     }
 
     @Test
@@ -85,16 +86,16 @@ class RecipeRepositoryTest {
         recipeList = recipeRepository.findByIdIn(idList);
 
         // then
-        findRecipe = recipeList.get(0);
-        assertEquals(findRecipe.getId(), idList.get(0));
+        testRecipe = recipeList.get(0);
+        assertEquals(idList.get(0), testRecipe.getId());
     }
 
     @Test
     void 레시피아이디로조회() {
         // when
-        findRecipe = recipeRepository.findByRecipeId(recipe.getRecipeId()).get();
+        testRecipe = recipeRepository.findByRecipeId(recipe.getRecipeId()).get();
 
         // then
-        assertEquals(findRecipe.getRecipeId(), RECIPE_ID);
+        assertEquals(recipe.getRecipeId(), testRecipe.getRecipeId());
     }
 }

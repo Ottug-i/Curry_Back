@@ -20,11 +20,12 @@ class BookmarkRepositoryTest {
     private User user;
     private Recipe recipe;
     private Bookmark bookmark;
-    private Bookmark findBookmark;
 
     private BookmarkRepository bookmarkRepository;
     private UserRepository userRepository;
     private RecipeRepository recipeRepository;
+
+    private Bookmark testBookmark;
 
     @Autowired
     BookmarkRepositoryTest(BookmarkRepository bookmarkRepository, UserRepository userRepository, RecipeRepository recipeRepository) {
@@ -59,11 +60,11 @@ class BookmarkRepositoryTest {
     @Test
     void 북마크유저이름과레시피아이디로조회() {
         // when
-        findBookmark = bookmarkRepository.findByUserIdAndRecipeId(user, recipe);
+        testBookmark = bookmarkRepository.findByUserIdAndRecipeId(user, recipe);
 
         // then
-        assertEquals(findBookmark.getUserId().getId(), user.getId());
-        assertEquals(findBookmark.getRecipeId().getId(), recipe.getId());
+        assertEquals(user.getId(), testBookmark.getUserId().getId());
+        assertEquals(recipe.getId(), testBookmark.getRecipeId().getId());
     }
 
     @Test
@@ -72,8 +73,8 @@ class BookmarkRepositoryTest {
         List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(user);
 
         // then
-        findBookmark = bookmarkList.get(0);
-        assertEquals(findBookmark.getUserId().getId(), user.getId());
-        assertEquals(findBookmark.getRecipeId().getId(), recipe.getId());
+        testBookmark = bookmarkList.get(0);
+        assertEquals(user.getId(), testBookmark.getUserId().getId());
+        assertEquals(recipe.getId(), testBookmark.getRecipeId().getId());
     }
 }

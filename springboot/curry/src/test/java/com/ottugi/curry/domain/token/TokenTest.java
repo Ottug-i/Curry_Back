@@ -21,7 +21,7 @@ public class TokenTest {
     @Test
     void 토큰추가() {
         // when, then
-        assertEquals(token.getKey(), EMAIL);
-        assertEquals(token.getValue(), VALUE);
+        assertEquals(EMAIL, token.getKey());
+        assertEquals(VALUE, token.getValue());
     }
 }

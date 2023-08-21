@@ -21,8 +21,8 @@ class RankTest {
     @Test
     void 검색어랭킹추가() {
         // when, then
-        assertEquals(rank.getName(), KEYWORD);
-        assertEquals(rank.getScore(), SCORE);
+        assertEquals(KEYWORD, rank.getName());
+        assertEquals(SCORE, rank.getScore());
     }
 
     @Test
@@ -31,7 +31,7 @@ class RankTest {
         rank.incrementScore(SCORE);
 
         // then
-        assertEquals(rank.getName(), KEYWORD);
-        assertEquals(rank.getScore(), SCORE + 1);
+        assertEquals(KEYWORD, rank.getName());
+        assertEquals(SCORE + 1, rank.getScore());
     }
 }

@@ -12,9 +12,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserRepositoryTest {
 
     private User user;
-    private User findUser;
-    
+
     private UserRepository userRepository;
+
+    private User testUser;
 
     @Autowired
     UserRepositoryTest(UserRepository userRepository) {
@@ -31,10 +32,10 @@ class UserRepositoryTest {
     @Test
     void 이메일로회원조회() {
         // when
-        findUser = userRepository.findByEmail(user.getEmail()).get();
+        testUser = userRepository.findByEmail(user.getEmail()).get();
 
         // then
-        assertEquals(findUser.getEmail(), EMAIL);
+        assertEquals(user.getEmail(), testUser.getEmail());
     }
 
     @Test
@@ -52,6 +53,6 @@ class UserRepositoryTest {
         int userEmailCount = userRepository.countByEmail(user.getEmail());
 
         // then
-        assertEquals(userEmailCount, 1);
+        assertEquals(1, userEmailCount);
     }
 }

@@ -21,10 +21,10 @@ class UserTest {
     @Test
     void 회원추가() {
         // when, then
-        assertEquals(user.getEmail(), EMAIL);
-        assertEquals(user.getNickName(), NICKNAME);
-        assertEquals(user.getFavoriteGenre(), FAVORITE_GENRE);
-        assertEquals(user.getRole(), ROLE);
+        assertEquals(EMAIL, user.getEmail());
+        assertEquals(NICKNAME, user.getNickName());
+        assertEquals(FAVORITE_GENRE, user.getFavoriteGenre());
+        assertEquals(ROLE, user.getRole());
     }
 
     @Test
@@ -33,7 +33,7 @@ class UserTest {
         user.updateProfile(NEW_NICKNAME);
 
         // then
-        assertEquals(user.getNickName(), NEW_NICKNAME);
+        assertEquals(NEW_NICKNAME, user.getNickName());
     }
 
     @Test
@@ -42,7 +42,7 @@ class UserTest {
         user.updateGenre(NEW_FAVORITE_GENRE);
 
         // then
-        assertEquals(user.getFavoriteGenre(), NEW_FAVORITE_GENRE);
+        assertEquals(NEW_FAVORITE_GENRE, user.getFavoriteGenre());
     }
 
     @Test
@@ -51,6 +51,6 @@ class UserTest {
         user.updateRole(NEW_ROLE);
 
         // then
-        assertEquals(user.getRole(), NEW_ROLE);
+        assertEquals(NEW_ROLE, user.getRole());
     }
 }

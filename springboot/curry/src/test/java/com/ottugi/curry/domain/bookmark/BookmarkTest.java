@@ -31,7 +31,7 @@ class BookmarkTest {
         bookmark.setRecipe(recipe);
 
         // when, then
-        assertEquals(bookmark.getUserId(), user);
-        assertEquals(bookmark.getRecipeId(), recipe);
+        assertEquals(user, bookmark.getUserId());
+        assertEquals(recipe, bookmark.getRecipeId());
     }
 }

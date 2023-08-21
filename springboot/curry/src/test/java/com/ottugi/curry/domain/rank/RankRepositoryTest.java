@@ -15,9 +15,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class RankRepositoryTest {
 
     private Rank rank;
-    private Rank findRank;
 
     private RankRepository rankRepository;
+
+    private Rank testRank;
 
     @Autowired
     RankRepositoryTest(RankRepository rankRepository) {
@@ -40,10 +41,10 @@ class RankRepositoryTest {
     @Test
     void 검색어이름으로조회() {
         // when
-        findRank = rankRepository.findByName(rank.getName());
+        testRank = rankRepository.findByName(rank.getName());
 
         // then
-        assertEquals(findRank.getName(), rank.getName());
+        assertEquals(rank.getName(), testRank.getName());
     }
 
     @Test

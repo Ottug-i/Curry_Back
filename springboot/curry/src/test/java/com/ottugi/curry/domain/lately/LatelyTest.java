@@ -31,7 +31,7 @@ class LatelyTest {
         lately.setRecipe(recipe);
 
         // when, then
-        assertEquals(lately.getUserId(), user);
-        assertEquals(lately.getRecipeId(), recipe);
+        assertEquals(user, lately.getUserId());
+        assertEquals(recipe, lately.getRecipeId());
     }
 }

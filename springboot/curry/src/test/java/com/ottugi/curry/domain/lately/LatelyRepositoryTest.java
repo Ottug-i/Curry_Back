@@ -20,11 +20,12 @@ class LatelyRepositoryTest {
     private User user;
     private Recipe recipe;
     private Lately lately;
-    private Lately findLately;
 
     private LatelyRepository latelyRepository;
     private UserRepository userRepository;
     private RecipeRepository recipeRepository;
+
+    private Lately testLately;
 
     @Autowired
     LatelyRepositoryTest(LatelyRepository latelyRepository, UserRepository userRepository, RecipeRepository recipeRepository) {
@@ -59,11 +60,11 @@ class LatelyRepositoryTest {
     @Test
     void 최근본레시피유저이름과레시피이름으로검색() {
         // when
-        findLately = latelyRepository.findByUserIdAndRecipeId(user, recipe);
+        testLately = latelyRepository.findByUserIdAndRecipeId(user, recipe);
 
         // then
-        assertEquals(findLately.getUserId().getId(), user.getId());
-        assertEquals(findLately.getRecipeId().getId(), recipe.getId());
+        assertEquals(user.getId(), testLately.getUserId().getId());
+        assertEquals(recipe.getId(), testLately.getRecipeId().getId());
     }
 
     @Test
@@ -72,9 +73,9 @@ class LatelyRepositoryTest {
         List<Lately> latelyList = latelyRepository.findByUserIdOrderByIdDesc(user);
 
         // then
-        findLately = latelyList.get(0);
-        assertEquals(findLately.getUserId().getId(), user.getId());
-        assertEquals(findLately.getRecipeId().getId(), recipe.getId());
+        testLately = latelyList.get(0);
+        assertEquals(user.getId(), testLately.getUserId().getId());
+        assertEquals(recipe.getId(), testLately.getRecipeId().getId());
     }
 
     @Test
@@ -83,6 +84,6 @@ class LatelyRepositoryTest {
         int userIdCount = latelyRepository.countByUserId(user);
 
         // then
-        assertEquals(userIdCount, 1);
+        assertEquals(1, userIdCount);
     }
 }
