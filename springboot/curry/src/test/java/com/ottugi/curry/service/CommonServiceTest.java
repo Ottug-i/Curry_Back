@@ -27,23 +27,18 @@ import static org.mockito.Mockito.*;
 class CommonServiceTest {
 
     private User user;
-    private User findUser;
-
     private Recipe recipe;
-    private Recipe findRecipe;
-
-    private List<Long> recipeIdList = new ArrayList<>();
-    private List<Long> idList = new ArrayList<>();
-    private List<Recipe> recipes = new ArrayList<>();
-    private List<Recipe> findRecipes = new ArrayList<>();
-
     private Bookmark bookmark;
-    private Bookmark findBookmark;
 
-    private List<Bookmark> bookmarks = new ArrayList<>();
-    private List<Bookmark> findBookmarks = new ArrayList<>();
+    private Boolean isBookmark = true;
 
-    private List<RecipeListResponseDto> recipeListResponseDto = new ArrayList<>();
+    private String ingredient = "고구마";
+    private List<Long> idList = new ArrayList<>();
+    private List<Long> recipeIdList = new ArrayList<>();
+    private List<Recipe> recipeList = new ArrayList<>();
+    private List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
+
+    private List<Bookmark> bookmarkList = new ArrayList<>();
 
     @Mock
     private UserRepository userRepository;
@@ -61,15 +56,20 @@ class CommonServiceTest {
     public void setUp() {
         // given
         user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        when(userRepository.save(eq(user))).thenReturn(user);
-
         recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        when(recipeRepository.save(eq(recipe))).thenReturn(recipe);
-
         bookmark = new Bookmark();
         bookmark.setUser(user);
         bookmark.setRecipe(recipe);
-        when(bookmarkRepository.save(eq(bookmark))).thenReturn(bookmark);
+
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe);
+        when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(bookmark);
+
+        idList.add(recipe.getId());
+        recipeIdList.add(recipe.getRecipeId());
+        recipeList.add(recipe);
+        bookmarkList.add(bookmark);
+        recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, isBookmark));
     }
 
     @AfterEach
@@ -82,141 +82,133 @@ class CommonServiceTest {
 
     @Test
     void 회원기본키로회원조회() {
-        // when
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        // given
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
-        findUser = commonService.findByUserId(user.getId());
+        // when
+        User testUser = commonService.findByUserId(user.getId());
 
         // then
-        assertNotNull(findUser);
-        assertEquals(findUser, user);
+        assertNotNull(testUser);
+        assertEquals(user, testUser);
     }
 
     @Test
     void 회원이메일로회원조회() {
-        // when
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        // given
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
 
-        findUser = commonService.findByUserEmail(user.getEmail());
+        // when
+        User testUser = commonService.findByUserEmail(user.getEmail());
 
         // then
-        assertNotNull(findUser);
-        assertEquals(findUser, user);
+        assertNotNull(testUser);
+        assertEquals(user, testUser);
     }
 
     @Test
     void 레시피아이디로레시피조회() {
-        // when
-        when(recipeRepository.findByRecipeId(recipe.getRecipeId())).thenReturn(Optional.of(recipe));
+        // given
+        when(recipeRepository.findByRecipeId(anyLong())).thenReturn(Optional.of(recipe));
 
-        findRecipe = commonService.findByRecipeId(recipe.getRecipeId());
+        // when
+        Recipe testRecipe = commonService.findByRecipeId(recipe.getRecipeId());
 
         // then
-        assertNotNull(findRecipe);
-        assertEquals(findRecipe, recipe);
+        assertNotNull(testRecipe);
+        assertEquals(recipe, testRecipe);
     }
 
     @Test
     void 레시피아이디리스트로레시피조회() {
         // given
-        recipeIdList.add(recipe.getRecipeId());
-        recipes.add(recipe);
+        when(recipeRepository.findByRecipeIdIn(anyList())).thenReturn(recipeList);
 
         // when
-        when(recipeRepository.findByRecipeIdIn(recipeIdList)).thenReturn(recipes);
-
-        findRecipes = commonService.findByRecipeIdIn(recipeIdList);
+        List<Recipe> testRecipeList = commonService.findByRecipeIdIn(recipeIdList);
 
         // then
-        assertNotNull(findRecipes);
-        assertEquals(findRecipes.size(), 1);
+        assertNotNull(testRecipeList);
+        assertEquals(recipeList.size(), testRecipeList.size());
     }
 
     @Test
     void 레시피재료로레시피조회() {
         // given
-        recipes.add(recipe);
+        when(recipeRepository.findByIngredientsContaining(anyString())).thenReturn(recipeList);
 
-        // when
-        when(recipeRepository.findByIngredientsContaining(INGREDIENTS)).thenReturn(recipes);
-
-        findRecipes = commonService.findByIngredientsContaining(INGREDIENTS);
+        List<Recipe> testRecipeList = commonService.findByIngredientsContaining(ingredient);
 
         // then
-        assertNotNull(findRecipes);
+        assertNotNull(testRecipeList);
+        assertTrue(testRecipeList.get(0).getIngredients().contains(ingredient));
     }
 
     @Test
     void 레시피기본키로레시피리스트조회() {
         // given
-        idList.add(recipe.getId());
-        recipes.add(recipe);
+        when(recipeRepository.findByIdIn(anyList())).thenReturn(recipeList);
 
-        // when
-        when(recipeRepository.findByIdIn(idList)).thenReturn(recipes);
-
-        findRecipes = commonService.findByIdIn(idList);
+        List<Recipe> testRecipeList = commonService.findByIdIn(idList);
 
         // then
-        assertNotNull(findRecipes);
+        assertNotNull(testRecipeList);
+        assertEquals(recipeList.size(), testRecipeList.size());
     }
 
     @Test
     void 레시피조건일치여부조회() {
         // when
-        recipe.setTime(TIME);
-        recipe.setDifficulty(DIFFICULTY);
-        recipe.setComposition(COMPOSITION);
+        Boolean testResponse = commonService.isRecipeMatching(recipe, TIME.getTimeName(), DIFFICULTY.getDifficulty(), COMPOSITION.getComposition());
 
         // then
-        assertTrue(commonService.isRecipeMatching(recipe, TIME.getTimeName(), DIFFICULTY.getDifficulty(), COMPOSITION.getComposition()));
+        assertTrue(testResponse);
     }
 
     @Test
     void 북마크여부조회() {
+        // given
+        when(bookmarkRepository.findByUserIdAndRecipeId(any(User.class), any(Recipe.class))).thenReturn(bookmark);
+
         // when
-        when(bookmarkRepository.findByUserIdAndRecipeId(user, recipe)).thenReturn(bookmark);
+        Boolean testResponse = commonService.isBookmarked(user, recipe);
 
         // then
-        assertTrue(commonService.isBookmarked(user, recipe));
+        assertTrue(testResponse);
     }
 
     @Test
     void 회원기본키와레시피아이디로북마크조회() {
-        // when
-        when(bookmarkRepository.findByUserIdAndRecipeId(user, recipe)).thenReturn(bookmark);
+        // given
+        when(bookmarkRepository.findByUserIdAndRecipeId(any(User.class), any(Recipe.class))).thenReturn(bookmark);
 
-        findBookmark = commonService.findBookmarkByUserAndRecipe(user, recipe);
+        // when
+        Bookmark testBookmark = commonService.findBookmarkByUserAndRecipe(user, recipe);
 
         // then
-        assertNotNull(findBookmark);
-        assertEquals(findBookmark, bookmark);
+        assertNotNull(testBookmark);
+        assertEquals(bookmark, testBookmark);
     }
 
     @Test
     void 회원기본키로북마크목록조회() {
         // given
-        bookmarks.add(bookmark);
+        when(bookmarkRepository.findByUserId(any(User.class))).thenReturn(bookmarkList);
 
         // when
-        when(bookmarkRepository.findByUserId(user)).thenReturn(bookmarks);
-
-        findBookmarks = commonService.findBookmarkByUser(user);
+        List<Bookmark> testBookmarkList = commonService.findBookmarkByUser(user);
 
         // then
-        assertNotNull(findBookmarks);
+        assertNotNull(testBookmarkList);
+        assertEquals(bookmarkList.size(), testBookmarkList.size());
     }
 
     @Test
     void 페이지처리() {
-        // given
-        recipeListResponseDto.add(new RecipeListResponseDto(recipe, true));
-
         // when
-        Page<RecipeListResponseDto> recipePageResponseDto = commonService.getPage(recipeListResponseDto, PAGE, SIZE);
+        Page<RecipeListResponseDto> recipeListPageResponseDto = commonService.getPage(recipeListResponseDtoList, PAGE, SIZE);
 
-        assertNotNull(recipePageResponseDto);
-        assertEquals(recipePageResponseDto.getSize(), SIZE);
-        assertEquals(recipePageResponseDto.getTotalPages(), 1);
+        assertNotNull(recipeListPageResponseDto);
+        assertEquals(recipeListResponseDtoList.size(), recipeListPageResponseDto.getSize());
     }
 }

@@ -29,11 +29,13 @@ import static org.mockito.Mockito.*;
 class RecipeServiceTest {
 
     private User user;
-
     private Recipe recipe;
+
+    private Boolean isBookmark = true;
 
     private List<Recipe> recipeList = new ArrayList<>();
     private List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
+    private Page<RecipeListResponseDto> recipeListResponseDtoListPage;
 
     @Mock
     private CommonService commonService;
@@ -57,10 +59,13 @@ class RecipeServiceTest {
     public void setUp() {
         // given
         user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        when(userRepository.save(eq(user))).thenReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(user);
 
         recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        when(recipeRepository.save(eq(recipe))).thenReturn(recipe);
+
+        recipeList.add(recipe);
+        recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, isBookmark));
+        recipeListResponseDtoListPage = new PageImpl<>(recipeListResponseDtoList, PageRequest.of(PAGE - 1, SIZE), recipeListResponseDtoList.size());
     }
 
     @AfterEach
@@ -72,34 +77,45 @@ class RecipeServiceTest {
 
     @Test
     void 레시피상세조회() {
-        // when
-        when(commonService.findByUserId(user.getId())).thenReturn(user);
-        when(commonService.findByRecipeId(recipe.getRecipeId())).thenReturn(recipe);
-        when(latelyService.addLately(user.getId(), recipe.getRecipeId())).thenReturn(true);
-        when(commonService.isBookmarked(user, recipe)).thenReturn(true);
+        // given
+        when(commonService.findByUserId(anyLong())).thenReturn(user);
+        when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe);
+        when(commonService.findByRecipeId(anyLong())).thenReturn(recipe);
+        when(latelyService.addLately(anyLong(), anyLong())).thenReturn(true);
+        when(commonService.isBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
 
-        RecipeResponseDto recipeResponseDto = recipeService.getRecipeDetail(user.getId(), recipe.getRecipeId());
+        // when
+        RecipeResponseDto testRecipeResponseDto = recipeService.getRecipeDetail(user.getId(), recipe.getRecipeId());
 
         // then
-        assertNotNull(recipeResponseDto);
+        assertNotNull(testRecipeResponseDto);
+        assertEquals(recipe.getRecipeId(), testRecipeResponseDto.getRecipeId());
+        assertEquals(recipe.getName(), testRecipeResponseDto.getName());
+        assertEquals(recipe.getThumbnail(), testRecipeResponseDto.getThumbnail());
+        assertEquals(recipe.getTime().getTimeName(), testRecipeResponseDto.getTime());
+        assertEquals(recipe.getDifficulty().getDifficulty(), testRecipeResponseDto.getDifficulty());
+        assertEquals(recipe.getComposition().getComposition(), testRecipeResponseDto.getComposition());
+        assertEquals(recipe.getIngredients(), testRecipeResponseDto.getIngredients());
+        assertEquals(recipe.getServings().getServings(), testRecipeResponseDto.getServings());
+        assertEquals(recipe.getOrders(), testRecipeResponseDto.getOrders());
+        assertEquals(recipe.getPhoto(), testRecipeResponseDto.getPhoto());
+        assertEquals(isBookmark, testRecipeResponseDto.getIsBookmark());
     }
 
     @Test
     void 레시피검색() {
         // given
-        recipeList.add(recipe);
-        Page<RecipeListResponseDto> recipeListResponseDtoListPage = new PageImpl<>(recipeListResponseDtoList, PageRequest.of(PAGE - 1, SIZE), 1);
+        when(commonService.findByUserId(anyLong())).thenReturn(user);
+        when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe);
+        when(recipeRepository.findByNameContaining(anyString())).thenReturn(recipeList);
+        when(commonService.isBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
+        doNothing().when(rankService).updateOrAddRank(anyString());
+        doReturn(recipeListResponseDtoListPage).when(commonService).getPage(anyList(), anyInt(), anyInt());
 
         // when
-        when(commonService.findByUserId(user.getId())).thenReturn(new User());
-        when(recipeRepository.findByNameContaining(recipe.getName())).thenReturn(recipeList);
-        when(commonService.isBookmarked(user, recipe)).thenReturn(true);
-        doNothing().when(rankService).updateOrAddRank(recipe.getName());
-        when(commonService.getPage(recipeListResponseDtoList, PAGE, SIZE)).thenReturn(recipeListResponseDtoListPage);
-
-        Page<RecipeListResponseDto> recipeListResponseDtoPage = recipeService.searchByBox(user.getId(), PAGE, SIZE, NAME, TIME.getTimeName(), DIFFICULTY.getDifficulty(), COMPOSITION.getComposition());
+        Page<RecipeListResponseDto> testRecipeListPageResponseDto = recipeService.searchByBox(user.getId(), PAGE, SIZE, NAME, TIME.getTimeName(), DIFFICULTY.getDifficulty(), COMPOSITION.getComposition());
 
         // then
-        assertEquals(recipeListResponseDtoPage.getTotalElements(), 1);
+        assertEquals(recipeListResponseDtoListPage.getTotalElements(), testRecipeListPageResponseDto.getTotalElements());
     }
 }

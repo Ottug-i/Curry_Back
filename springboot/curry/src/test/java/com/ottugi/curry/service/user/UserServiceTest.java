@@ -22,8 +22,6 @@ class UserServiceTest {
 
     private User user;
 
-    private UserUpdateRequestDto userUpdateRequestDto;
-
     @Mock
     private CommonService commonService;
 
@@ -37,7 +35,7 @@ class UserServiceTest {
     public void setUp() {
         // given
         user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        when(userRepository.save(eq(user))).thenReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(user);
     }
 
     @AfterEach
@@ -48,35 +46,46 @@ class UserServiceTest {
 
     @Test
     void 회원조회() {
-        // when
-        when(commonService.findByUserId(user.getId())).thenReturn(user);
+        // given
+        when(commonService.findByUserId(anyLong())).thenReturn(user);
 
-        UserResponseDto response = userService.getProfile(user.getId());
+        // when
+        UserResponseDto testUserResponseDto = userService.getProfile(user.getId());
 
         // then
-        assertEquals(response.getId(), user.getId());
+        assertNotNull(testUserResponseDto);
+        assertEquals(user.getId(), testUserResponseDto.getId());
+        assertEquals(user.getEmail(), testUserResponseDto.getEmail());
+        assertEquals(user.getNickName(), testUserResponseDto.getNickName());
+        assertEquals(user.getRole().getRole(), testUserResponseDto.getRole());
     }
 
     @Test
     void 회원수정() {
         // given
-        userUpdateRequestDto = new UserUpdateRequestDto(user.getId(), NEW_NICKNAME);
+        when(commonService.findByUserId(anyLong())).thenReturn(user);
 
         // when
-        when(commonService.findByUserId(user.getId())).thenReturn(user);
-
-        UserResponseDto response = userService.updateProfile(userUpdateRequestDto);
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(user.getId(), NEW_NICKNAME);
+        UserResponseDto testUserResponseDto = userService.updateProfile(userUpdateRequestDto);
 
         // then
-        assertEquals(response.getNickName(), NEW_NICKNAME);
+        assertNotNull(testUserResponseDto);
+        assertEquals(user.getId(), testUserResponseDto.getId());
+        assertEquals(user.getEmail(), testUserResponseDto.getEmail());
+        assertEquals(user.getNickName(), NEW_NICKNAME);
+        assertEquals(user.getRole().getRole(), testUserResponseDto.getRole());
     }
 
     @Test
     void 탈퇴() {
+        // given
+        when(commonService.findByUserId(anyLong())).thenReturn(user);
+
         // when
-        when(commonService.findByUserId(user.getId())).thenReturn(user);
+        Boolean testResponse = userService.setWithdraw(user.getId());
 
         // then
-        assertTrue(userService.setWithdraw(user.getId()));
+        assertTrue(testResponse);
     }
 }

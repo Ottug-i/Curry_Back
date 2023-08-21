@@ -22,8 +22,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 class RankServiceTest {
 
-    private Rank rank1;
-    private Rank rank2;
+    private Rank rank;
 
     private List<Rank> rankList = new ArrayList<>();
 
@@ -39,10 +38,9 @@ class RankServiceTest {
     @BeforeEach
     public void setUp() {
         // given
-        rank1 = new Rank(KEYWORD);
-        when(rankRepository.save(eq(rank1))).thenReturn(rank1);
+        rank = new Rank(KEYWORD);
 
-        rank2 = new Rank("고구마");
+        rankList.add(rank);
     }
 
     @AfterEach
@@ -53,50 +51,56 @@ class RankServiceTest {
 
     @Test
     void 랭킹초기화() {
-        // when
+        // given
+        when(rankRepository.save(any(Rank.class))).thenReturn(rank);
         doNothing().when(rankRepository).deleteAll();
 
+        // when
         rankService.clearRanking();
     }
 
     @Test
     void 랭킹추가() {
-        // when
-        when(rankRepository.findByName(rank2.getName())).thenReturn(null);
-        when(rankRepository.save(eq(rank2))).thenReturn(rank2);
+        // given
+        when(rankRepository.findByName(anyString())).thenReturn(null);
+        when(rankRepository.save(any(Rank.class))).thenReturn(rank);
 
-        rankService.updateOrAddRank(rank2.getName());
+        // when
+        rankService.updateOrAddRank(rank.getName());
     }
 
     @Test
     void 랭킹증가() {
-        // when
-        when(rankRepository.findByName(rank1.getName())).thenReturn(rank1);
+        // given
+        when(rankRepository.save(any(Rank.class))).thenReturn(rank);
+        when(rankRepository.findByName(rank.getName())).thenReturn(rank);
 
-        rankService.updateOrAddRank(rank1.getName());
+        // when
+        rankService.updateOrAddRank(rank.getName());
     }
 
     @Test
     void 랭킹목록조회() {
         // given
-        rankList.add(rank1);
-
-        // when
+        when(rankRepository.save(any(Rank.class))).thenReturn(rank);
         when(rankRepository.findAllByOrderByScoreDesc()).thenReturn(rankList);
 
-        List<RankResponseDto> rankResponseDtos = rankService.getRankList();
+        // when
+        List<RankResponseDto> testRankResponseDtoList = rankService.getRankList();
 
         // then
-        assertNotNull(rankResponseDtos);
-        assertEquals(rankResponseDtos.size(), 1);
+        assertNotNull(testRankResponseDtoList);
+        assertEquals(rankList.size(), testRankResponseDtoList.size());
     }
 
     @Test
     void 일주일마다랭킹초기화() {
-        // when
+        // given
+        when(rankRepository.save(any(Rank.class))).thenReturn(rank);
         doNothing().when(rankRepository).deleteAll();
         when(taskScheduler.schedule(any(Runnable.class), any(Date.class))).thenReturn(null);
 
+        // when
         rankService.weeklyRankingReset();
     }
 }

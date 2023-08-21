@@ -14,9 +14,7 @@ public class TestConstants {
 
     // User
     public static final Long USER_ID = 2L;
-    public static final Long NEW_USER_ID = 3L;
     public static final String EMAIL = "wn8925@gmail.com";
-    public static final String NEW_EMAIL = "wn8926@gmail.com";
     public static final String NICKNAME = "가경";
     public static final String NEW_NICKNAME = "가경이";
     public static final String FAVORITE_GENRE = "ing15";

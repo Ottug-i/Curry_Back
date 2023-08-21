@@ -25,12 +25,8 @@ import static org.mockito.Mockito.*;
 class LatelyServiceTest {
 
     private User user;
-
-    private Recipe recipe1;
-    private Recipe recipe2;
-
-    private Lately lately1;
-    private Lately lately2;
+    private Recipe recipe;
+    private Lately lately;
 
     private List<Lately> latelyList = new ArrayList<>();
 
@@ -53,22 +49,15 @@ class LatelyServiceTest {
     public void setUp() {
         // given
         user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        when(userRepository.save(eq(user))).thenReturn(user);
+        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe);
 
-        recipe1 = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        when(recipeRepository.save(eq(recipe1))).thenReturn(recipe1);
+        lately = new Lately();
+        lately.setUser(user);
+        lately.setRecipe(recipe);
 
-        recipe2 = new Recipe(12346L, 2L, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        when(recipeRepository.save(eq(recipe2))).thenReturn(recipe2);
-
-        lately1 = new Lately();
-        lately1.setUser(user);
-        lately1.setRecipe(recipe1);
-        when(latelyRepository.save(eq(lately1))).thenReturn(lately1);
-
-        lately2 = new Lately();
-        lately2.setUser(user);
-        lately2.setRecipe(recipe2);
+        latelyList.add(lately);
     }
 
     @AfterEach
@@ -81,28 +70,30 @@ class LatelyServiceTest {
 
     @Test
     void 최근본레시피추가() {
+        // given
+        when(commonService.findByUserId(anyLong())).thenReturn(user);
+        when(commonService.findByRecipeId(anyLong())).thenReturn(recipe);
+        when(latelyRepository.findByUserIdAndRecipeId(any(User.class), any(Recipe.class))).thenReturn(null);
+        when(latelyRepository.save(any(Lately.class))).thenReturn(lately);
+
         // when
-        when(commonService.findByUserId(user.getId())).thenReturn(user);
-        when(commonService.findByRecipeId(recipe2.getRecipeId())).thenReturn(recipe2);
-        when(latelyRepository.findByUserIdAndRecipeId(user, recipe2)).thenReturn(null);
-        when(latelyRepository.save(any(Lately.class))).thenReturn(lately2);
+        Boolean testResponse = latelyService.addLately(user.getId(), recipe.getRecipeId());
 
         // then
-        assertTrue(latelyService.addLately(user.getId(), recipe2.getRecipeId()));
+        assertTrue(testResponse);
     }
 
     @Test
     void 최근본레시피리스트조회() {
         // given
-        latelyList.add(lately1);
+        when(latelyRepository.save(any(Lately.class))).thenReturn(lately);
+        when(commonService.findByUserId(anyLong())).thenReturn(user);
+        when(latelyRepository.findByUserIdOrderByIdDesc(any(User.class))).thenReturn(latelyList);
 
         // when
-        when(commonService.findByUserId(user.getId())).thenReturn(user);
-        when(latelyRepository.findByUserIdOrderByIdDesc(user)).thenReturn(latelyList);
-
-        List<LatelyListResponseDto> response = latelyService.getLatelyAll(user.getId());
+        List<LatelyListResponseDto> testLatelyListResponseDtoList = latelyService.getLatelyAll(user.getId());
 
         // then
-        assertEquals(response.size(), 1);
+        assertEquals(latelyList.size(), testLatelyListResponseDtoList.size());
     }
 }

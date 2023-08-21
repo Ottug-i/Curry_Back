@@ -113,7 +113,7 @@ public class RecommendServiceImpl implements RecommendService {
         try {
             String apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, userId, recipeId);
 
-             restTemplate.delete(apiUrl);
+            restTemplate.delete(apiUrl);
 
             return true;
         } catch (RestClientException e) {
