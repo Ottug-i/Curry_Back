@@ -16,7 +16,7 @@ class RecipeIngListResponseDtoTest {
     private List<String> ingredients = Arrays.asList("고구마");
 
     @Test
-    void RecipeIngListResponseDto_롬복() {
+    void 재료로_레시피_목록_응답_Dto_롬복() {
         // given
         recipe = Recipe.builder()
                 .id(ID)

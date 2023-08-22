@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserSaveRequestDtoTest {
 
     @Test
-    void UserSaveRequestDto_롬복() {
+    void 회원_저장_요청_Dto_롬복() {
         // when
         UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(EMAIL, NICKNAME);
 

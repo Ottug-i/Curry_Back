@@ -11,7 +11,7 @@ class UserResponseDtoTest {
     private User user;
 
     @Test
-    void UserResponseDto_롬복() {
+    void 회원_응답_Dto_롬복() {
         // given
         user = User.builder()
                 .id(USER_ID)

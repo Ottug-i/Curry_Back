@@ -12,7 +12,7 @@ class BookmarkListResponseDtoTest {
     private Boolean isBookmark = true;
 
     @Test
-    void BookmarkListResponseDto_롬복() {
+    void 북마크_목록_응답_Dto_롬복() {
         // given
         recipe = Recipe.builder()
                 .id(ID)

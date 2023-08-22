@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BookmarkRequestDtoTest {
 
     @Test
-    void BookmarkRequestDto_롬복() {
+    void 북마크_요청_Dto_롬복() {
         // when
         BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(USER_ID, RECIPE_ID);
 

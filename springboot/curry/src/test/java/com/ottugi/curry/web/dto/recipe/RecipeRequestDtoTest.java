@@ -16,7 +16,7 @@ class RecipeRequestDtoTest {
     private List<String> ingredients = Arrays.asList(ingredients1, ingredients2);
 
     @Test
-    void RecipeRequestDto_롬복() {
+    void 레시피_요청_Dto_롬복() {
         // when
         RecipeRequestDto recipeRequestDto = new RecipeRequestDto(USER_ID, ingredients, PAGE, SIZE);
 

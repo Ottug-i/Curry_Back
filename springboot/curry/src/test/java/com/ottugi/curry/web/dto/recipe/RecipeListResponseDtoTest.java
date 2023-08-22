@@ -11,7 +11,7 @@ class RecipeListResponseDtoTest {
     private Boolean isBookmark = true;
 
     @Test
-    void RecipeListResponseDto_롬복() {
+    void 레시피_목록_응답_Dto_롬복() {
         // given
         Recipe recipe = Recipe.builder()
                 .id(ID)

@@ -11,7 +11,7 @@ class RecommendListResponseDtoTest {
     private Recipe recipe;
 
     @Test
-    void RecommendListResponseDto_롬복() {
+    void 추천_레시피_목록_Dto_롬복() {
         // given
         recipe = Recipe.builder()
                 .id(ID)

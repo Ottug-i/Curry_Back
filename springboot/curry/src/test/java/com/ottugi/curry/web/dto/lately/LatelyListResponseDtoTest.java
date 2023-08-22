@@ -11,7 +11,7 @@ class LatelyListResponseDtoTest {
     private Recipe recipe;
 
     @Test
-    void LatelyListResponseDto_롬복() {
+    void 최근_본_레시피_응답_Dto_롬복() {
         // given
         recipe = Recipe.builder()
                 .id(ID)

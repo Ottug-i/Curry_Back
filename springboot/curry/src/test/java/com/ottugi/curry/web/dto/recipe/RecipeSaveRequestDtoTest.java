@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RecipeSaveRequestDtoTest {
 
     @Test
-    void RecipeSaveRequestDto_롬복() {
+    void 레시피_저장_요청_Dto_롬복() {
         // when
         RecipeSaveRequestDto recipeSaveRequestDto = new RecipeSaveRequestDto(RECIPE_ID, NAME, COMPOSITION.getComposition(), INGREDIENTS, SERVINGS.getServings(), DIFFICULTY.getDifficulty(), THUMBNAIL, TIME.getTimeName(), ORDERS, PHOTO, GENRE);
 

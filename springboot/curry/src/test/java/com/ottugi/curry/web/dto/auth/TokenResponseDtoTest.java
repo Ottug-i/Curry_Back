@@ -11,7 +11,7 @@ class TokenResponseDtoTest {
     private User user;
 
     @Test
-    void TokenDto_롬복() {
+    void 토큰_응답_Dto_롬복() {
         // given
         user = User.builder()
                 .id(USER_ID)

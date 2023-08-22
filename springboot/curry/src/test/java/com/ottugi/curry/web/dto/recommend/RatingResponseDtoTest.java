@@ -12,7 +12,7 @@ class RatingResponseDtoTest {
     private List<Double> ratingInfo = Arrays.asList(6846342.0, 1.0, 4.0);
 
     @Test
-    void RatingResponseDto_롬복() {
+    void 평점_응답_Dto_롬복() {
         // when
         RatingResponseDto ratingResponseDto = new RatingResponseDto(ratingInfo);
 

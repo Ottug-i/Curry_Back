@@ -11,7 +11,7 @@ class RankResponseDtoTest {
     private Rank rank;
 
     @Test
-    void RankResponseDto_롬복() {
+    void 검색어_응답_Dto_롬복() {
         // given
         rank = Rank.builder()
                 .name(KEYWORD)

@@ -13,7 +13,7 @@ class RecommendRequestDtoTest {
     private List<Long> recipeIdList = Arrays.asList(RECIPE_ID);
 
     @Test
-    void RecommendRequestDto_롬복() {
+    void 추천_레시피_요청_Dto_롬복() {
         // when
         RecommendRequestDto recommendRequestDto = new RecommendRequestDto(USER_ID, recipeIdList);
 

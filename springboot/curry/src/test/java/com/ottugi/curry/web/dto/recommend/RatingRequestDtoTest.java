@@ -13,7 +13,7 @@ class RatingRequestDtoTest {
     private Map<Long, Double> newUserRatingsDic = new HashMap<>();
 
     @Test
-    void RatingRequestDto_롬복() {
+    void 평점_요청_Dto_롬복() {
         // given
         newUserRatingsDic.put(6847060L, 3.0);
 
