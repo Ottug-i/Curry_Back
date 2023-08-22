@@ -1,52 +1,50 @@
 package com.ottugi.curry.service.recipe;
 
-import com.ottugi.curry.domain.bookmark.BookmarkRepository;
 import com.ottugi.curry.domain.recipe.*;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
+import com.ottugi.curry.service.CommonService;
 import com.ottugi.curry.service.lately.LatelyService;
+import com.ottugi.curry.service.rank.RankService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
-import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+import static com.ottugi.curry.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class RecipeServiceTest {
 
-    private final Long userId = 1L;
-    private final String email = "wn8925@sookmyung.ac.kr";
-    private final String nickName = "가경";
-
-    private final Long recipeId1 = 1234L;
-    private final Long recipeId2 = 1235L;
-    private final String name = "고구마맛탕";
-    private final String thumbnail = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png";
-    private final Time time = Time.ofTime("60분 이내");
-    private final Difficulty difficulty = Difficulty.ofDifficulty("초급");
-    private final Composition composition = Composition.ofComposition("가볍게");
-    private final String ingredients = "[재료] 고구마| 식용유| 황설탕| 올리고당| 견과류| 물";
-    private final Servings servings = Servings.ofServings("2인분");
-    private final String orders = "|1. 바삭하게 튀기는 꿀팁|2. 달콤한 소스 꿀팁|3. 더 건강하게 먹는 꿀팁";
-    private final String photo = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg";
-
-    private final int page = 1;
-    private final int size = 10;
-
     private User user;
-    private Recipe recipe1;
-    private Recipe recipe2;
+    private Recipe recipe;
+
+    private Boolean isBookmark = true;
+
+    private List<Recipe> recipeList = new ArrayList<>();
+    private List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
+    private Page<RecipeListResponseDto> recipeListResponseDtoListPage;
+
+    @Mock
+    private CommonService commonService;
+
+    @Mock
+    private LatelyService latelyService;
+
+    @Mock
+    private RankService rankService;
 
     @Mock
     private RecipeRepository recipeRepository;
@@ -54,71 +52,70 @@ class RecipeServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private BookmarkRepository bookmarkRepository;
-
-    @Mock
-    private LatelyService latelyService;
-
     @InjectMocks
     private RecipeServiceImpl recipeService;
 
     @BeforeEach
     public void setUp() {
-
         // given
-        user = new User(email, nickName);
-        recipe1 = new Recipe(recipeId1, name, thumbnail, time, difficulty, composition, ingredients, servings, orders, photo);
-        recipe2 = new Recipe(recipeId2, name, thumbnail, time, difficulty, composition, ingredients, servings, orders, photo);
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+
+        recipeList.add(recipe);
+        recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, isBookmark));
+        recipeListResponseDtoListPage = new PageImpl<>(recipeListResponseDtoList, PageRequest.of(PAGE - 1, SIZE), recipeListResponseDtoList.size());
+    }
+
+    @AfterEach
+    public void clean() {
+        // clean
+        recipeRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
-    void 재료로레시피리스트조회() {
+    void 레시피_조회() {
+        // given
+        when(commonService.findByUserId(anyLong())).thenReturn(user);
+        when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe);
+        when(commonService.findByRecipeId(anyLong())).thenReturn(recipe);
+        when(latelyService.addLately(anyLong(), anyLong())).thenReturn(true);
+        when(commonService.isBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
 
         // when
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(recipeRepository.findByIngredientsContaining("고구마")).thenReturn(Arrays.asList(recipe1));
-        when(recipeRepository.findByIngredientsContaining("올리고당")).thenReturn(Arrays.asList(recipe2));
-        RecipeRequestDto recipeRequestDto = RecipeRequestDto.builder()
-                .userId(userId)
-                .ingredients(Arrays.asList("고구마", "올리고당"))
-                .page(1)
-                .size(10)
-                .build();
-
-        Page<RecipeListResponseDto> pagedRecipeList = recipeService.getRecipeList(recipeRequestDto);
-
-        List<RecipeListResponseDto> recipeListResponseDtoList = pagedRecipeList.getContent();
+        RecipeResponseDto testRecipeResponseDto = recipeService.getRecipeDetail(user.getId(), recipe.getRecipeId());
 
         // then
-        assertNotNull(recipeListResponseDtoList);
+        assertNotNull(testRecipeResponseDto);
+        assertEquals(recipe.getRecipeId(), testRecipeResponseDto.getRecipeId());
+        assertEquals(recipe.getName(), testRecipeResponseDto.getName());
+        assertEquals(recipe.getThumbnail(), testRecipeResponseDto.getThumbnail());
+        assertEquals(recipe.getTime().getTimeName(), testRecipeResponseDto.getTime());
+        assertEquals(recipe.getDifficulty().getDifficulty(), testRecipeResponseDto.getDifficulty());
+        assertEquals(recipe.getComposition().getComposition(), testRecipeResponseDto.getComposition());
+        assertEquals(recipe.getIngredients(), testRecipeResponseDto.getIngredients());
+        assertEquals(recipe.getServings().getServings(), testRecipeResponseDto.getServings());
+        assertEquals(recipe.getOrders(), testRecipeResponseDto.getOrders());
+        assertEquals(recipe.getPhoto(), testRecipeResponseDto.getPhoto());
+        assertEquals(isBookmark, testRecipeResponseDto.getIsBookmark());
     }
 
     @Test
-    void 레시피상세조회() {
+    void 레시피_검색() {
+        // given
+        when(commonService.findByUserId(anyLong())).thenReturn(user);
+        when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe);
+        when(recipeRepository.findByNameContaining(anyString())).thenReturn(recipeList);
+        when(commonService.isBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
+        doNothing().when(rankService).updateOrAddRank(anyString());
+        doReturn(recipeListResponseDtoListPage).when(commonService).getPage(anyList(), anyInt(), anyInt());
 
         // when
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(recipeRepository.findByRecipeId(recipeId1)).thenReturn(Optional.of(recipe1));
-
-        RecipeResponseDto recipeResponseDto = recipeService.getRecipeDetail(userId, recipeId1);
+        Page<RecipeListResponseDto> testRecipeListPageResponseDto = recipeService.searchByBox(user.getId(), PAGE, SIZE, NAME, TIME.getTimeName(), DIFFICULTY.getDifficulty(), COMPOSITION.getComposition());
 
         // then
-        assertNotNull(recipeResponseDto);
-        assertEquals(recipeResponseDto.getRecipeId(), recipeId1);
-    }
-
-    @Test
-    void 검색창으로레시피리스트조회() {
-
-        // when
-        List<Recipe> recipeList = Arrays.asList(recipe1, recipe2);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(recipeRepository.findByNameContaining("고구마")).thenReturn(recipeList);
-
-        Page<RecipeListResponseDto> recipeListResponseDtoPage = recipeService.searchByBox(userId, page, size, name, "60분 이내", "초급", "가볍게");
-
-        // then
-        assertNotNull(recipeListResponseDtoPage);
+        assertEquals(recipeListResponseDtoListPage.getTotalElements(), testRecipeListPageResponseDto.getTotalElements());
     }
 }

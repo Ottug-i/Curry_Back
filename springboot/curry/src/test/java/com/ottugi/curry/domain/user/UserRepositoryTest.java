@@ -1,37 +1,58 @@
 package com.ottugi.curry.domain.user;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static com.ottugi.curry.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UserRepositoryTest {
 
-    // 이미 DB에 저장되어있는 데이터 사용
-    private final String email = "wn8925@sookmyung.ac.kr";
+    private User user;
 
-    @Autowired
     private UserRepository userRepository;
 
-    @Test
-    void 이메일로회원조회() {
+    private User testUser;
 
-        // when
-        User findUser = userRepository.findByEmail(email);
+    @Autowired
+    UserRepositoryTest(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-        // then
-        assertEquals(findUser.getEmail(), email);
+    @BeforeEach
+    public void setUp() {
+        // given
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        user = userRepository.save(user);
     }
 
     @Test
-    void 이메일로회원수조회() {
-
+    void 이메일로_회원_조회() {
         // when
-        int userEmailCount = userRepository.countByEmail(email);
+        testUser = userRepository.findByEmail(user.getEmail()).get();
 
         // then
-        assertEquals(userEmailCount, 1);
+        assertEquals(user.getEmail(), testUser.getEmail());
+    }
+
+    @Test
+    void 이메일로_회원_존재_조회() {
+        // when
+        Boolean existUser = userRepository.existsByEmail(user.getEmail());
+
+        // then
+        assertNotNull(existUser);
+    }
+
+    @Test
+    void 이메일로_회원_수_조회() {
+        // when
+        int userEmailCount = userRepository.countByEmail(user.getEmail());
+
+        // then
+        assertEquals(1, userEmailCount);
     }
 }

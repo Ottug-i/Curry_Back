@@ -1,7 +1,10 @@
 package com.ottugi.curry.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ottugi.curry.service.bookmark.BookmarkServiceImpl;
+import com.ottugi.curry.domain.bookmark.Bookmark;
+import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.service.bookmark.BookmarkService;
 import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,60 +23,59 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import static com.ottugi.curry.TestConstants.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class BookmarkControllerTest {
 
-    private final Long userId = 1L;
+    private User user;
+    private Recipe recipe;
+    private Bookmark bookmark;
 
-    private final Long recipeId = 1234L;
-    private final String name = "고구마맛탕";
-    private final String time = "60분 이내";
-    private final String difficulty = "초급";
-    private final String composition = "가볍게";
-
-    private final int page = 1;
-    private final int size = 10;
+    private final Boolean isBookmark = true;
 
     private MockMvc mockMvc;
 
     @Mock
-    private BookmarkServiceImpl bookmarkService;
+    private BookmarkService bookmarkService;
 
     @InjectMocks
     private BookmarkController bookmarkController;
 
     @BeforeEach
     public void setUp() {
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        bookmark = new Bookmark();
+        bookmark.setUser(user);
+        bookmark.setRecipe(recipe);
         mockMvc = MockMvcBuilders.standaloneSetup(bookmarkController).build();
     }
 
     @Test
-    void 북마크추가및삭제() throws Exception {
-
+    void 북마크_추가_및_삭제() throws Exception {
         // given
-        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(userId, recipeId);
-
-        // when
         when(bookmarkService.addOrRemoveBookmark(any(BookmarkRequestDto.class))).thenReturn(true);
 
-        // then
-        mockMvc.perform(post("/api/bookmark/addAndRemoveBookmark")
+        // when, then
+        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(user.getId(), recipe.getRecipeId());
+        mockMvc.perform(post("/api/bookmark")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(bookmarkRequestDto)))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
 
-        // when
+        // given
         when(bookmarkService.addOrRemoveBookmark(any(BookmarkRequestDto.class))).thenReturn(false);
 
-        // then
-        mockMvc.perform(post("/api/bookmark/addAndRemoveBookmark")
+        // when, then
+        mockMvc.perform(post("/api/bookmark")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(bookmarkRequestDto)))
                 .andExpect(status().isOk())
@@ -81,66 +83,42 @@ class BookmarkControllerTest {
     }
 
     @Test
-    void 북마크리스트조회() throws Exception {
-
+    void 북마크_목록_조회() throws Exception {
         // given
         List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
+        bookmarkListResponseDtoList.add(new BookmarkListResponseDto(bookmark.getRecipeId(), isBookmark));
         Page<BookmarkListResponseDto> bookmarkListResponseDtoPage = new PageImpl<>(bookmarkListResponseDtoList);
+        when(bookmarkService.getBookmarkAll(anyLong(), anyInt(), anyInt())).thenReturn(bookmarkListResponseDtoPage);
 
-        // when
-        when(bookmarkService.getBookmarkAll(userId, page, size)).thenReturn(bookmarkListResponseDtoPage);
-
-        // then
-        mockMvc.perform(get("/api/bookmark/getBookmarkAll")
-                        .param("userId", String.valueOf(userId))
-                        .param("page", String.valueOf(page))
-                        .param("size", String.valueOf(size))
+        // when, then
+        mockMvc.perform(get("/api/bookmark/list")
+                        .param("userId", String.valueOf(user.getId()))
+                        .param("page", String.valueOf(PAGE))
+                        .param("size", String.valueOf(SIZE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(0)));
+                .andExpect(jsonPath("$.content", hasSize(bookmarkListResponseDtoPage.getSize())));
     }
 
     @Test
-    void 이름으로북마크조회() throws Exception {
-
+    void 북마크_레시피_검색() throws Exception {
         // given
         List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
+        bookmarkListResponseDtoList.add(new BookmarkListResponseDto(bookmark.getRecipeId(), isBookmark));
         Page<BookmarkListResponseDto> bookmarkListResponseDtoPage = new PageImpl<>(bookmarkListResponseDtoList);
+        when(bookmarkService.searchBookmark(anyLong(), anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString())).thenReturn(bookmarkListResponseDtoPage);
 
-        // when
-        when(bookmarkService.searchByName(userId, page, size, name)).thenReturn(bookmarkListResponseDtoPage);
-
-        // then
-        mockMvc.perform(get("/api/bookmark/searchByName")
-                        .param("userId", String.valueOf(userId))
-                        .param("page", String.valueOf(page))
-                        .param("size", String.valueOf(size))
-                        .param("name", name)
+        // when, then
+        mockMvc.perform(get("/api/bookmark/search")
+                        .param("userId", String.valueOf(user.getId()))
+                        .param("page", String.valueOf(PAGE))
+                        .param("size", String.valueOf(SIZE))
+                        .param("name", recipe.getName())
+                        .param("time", recipe.getTime().getTimeName())
+                        .param("difficulty", recipe.getDifficulty().getDifficulty())
+                        .param("composition", recipe.getComposition().getComposition())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(0)));
-    }
-
-    @Test
-    void 옵션으로북마크조회() throws Exception {
-
-        // given
-        List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
-        Page<BookmarkListResponseDto> bookmarkListResponseDtoPage = new PageImpl<>(bookmarkListResponseDtoList);
-
-        // when
-        when(bookmarkService.searchByOption(userId, page, size, time, difficulty, composition)).thenReturn(bookmarkListResponseDtoPage);
-
-        // then
-        mockMvc.perform(get("/api/bookmark/searchByOption")
-                        .param("userId", String.valueOf(userId))
-                        .param("page", String.valueOf(page))
-                        .param("size", String.valueOf(size))
-                        .param("time", time)
-                        .param("difficulty", difficulty)
-                        .param("composition", composition)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(0)));
+                .andExpect(jsonPath("$.content", hasSize(bookmarkListResponseDtoPage.getSize())));
     }
 }

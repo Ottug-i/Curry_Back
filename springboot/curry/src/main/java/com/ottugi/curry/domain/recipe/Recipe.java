@@ -64,7 +64,8 @@ public class Recipe extends BaseTime implements Serializable {
     private List<Lately> latelyList = new ArrayList<>();
 
     @Builder
-    public Recipe(Long recipeId, String name, String thumbnail, Time time, Difficulty difficulty, Composition composition, String ingredients, Servings servings, String orders, String photo, String genre) {
+    public Recipe(Long id, Long recipeId, String name, String thumbnail, Time time, Difficulty difficulty, Composition composition, String ingredients, Servings servings, String orders, String photo, String genre) {
+        this.id = id;
         this.recipeId = recipeId;
         this.name = name;
         this.thumbnail = thumbnail;

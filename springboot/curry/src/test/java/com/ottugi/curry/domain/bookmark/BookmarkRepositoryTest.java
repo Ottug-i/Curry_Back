@@ -3,6 +3,7 @@ package com.ottugi.curry.domain.bookmark;
 import com.ottugi.curry.domain.recipe.*;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,55 +11,70 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
+import static com.ottugi.curry.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class BookmarkRepositoryTest {
 
-    // 이미 DB에 저장되어있는 데이터 사용
-    private final Long userId = 1L;
-    private final Long recipeId = 6842324L;
-
     private User user;
     private Recipe recipe;
+    private Bookmark bookmark;
 
-    @Autowired
     private BookmarkRepository bookmarkRepository;
-
-    @Autowired
     private UserRepository userRepository;
+    private RecipeRepository recipeRepository;
+
+    private Bookmark testBookmark;
 
     @Autowired
-    private RecipeRepository recipeRepository;
+    BookmarkRepositoryTest(BookmarkRepository bookmarkRepository, UserRepository userRepository, RecipeRepository recipeRepository) {
+        this.bookmarkRepository = bookmarkRepository;
+        this.userRepository = userRepository;
+        this.recipeRepository = recipeRepository;
+    }
 
     @BeforeEach
     public void setUp() {
-
         // given
-        user = userRepository.findById(userId).orElseThrow();
-        recipe = recipeRepository.findByRecipeId(recipeId).orElseThrow();
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        user = userRepository.save(user);
+
+        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        recipe = recipeRepository.save(recipe);
+
+        bookmark = new Bookmark();
+        bookmark.setUser(user);
+        bookmark.setRecipe(recipe);
+        bookmark = bookmarkRepository.save(bookmark);
+    }
+
+    @AfterEach
+    public void clean() {
+        // clean
+        bookmarkRepository.deleteAll();
+        recipeRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
-    void 북마크유저이름과레시피아이디로조회() {
-
+    void 유저와_레시피로_북마크_조회() {
         // when
-        Bookmark findBookmark = bookmarkRepository.findByUserIdAndRecipeId(user, recipe);
+        testBookmark = bookmarkRepository.findByUserIdAndRecipeId(user, recipe);
 
         // then
-        assertEquals(findBookmark.getUserId().getId(), userId);
-        assertEquals(findBookmark.getRecipeId().getRecipeId(), recipeId);
+        assertEquals(user.getId(), testBookmark.getUserId().getId());
+        assertEquals(recipe.getId(), testBookmark.getRecipeId().getId());
     }
 
     @Test
-    void 북마크유저이름으로리스트조회() {
-
+    void 유저로_북마크_목록_조회() {
         // when
         List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(user);
 
         // then
-        Bookmark findBookmark = bookmarkList.get(0);
-        assertEquals(findBookmark.getUserId().getId(), userId);
-        assertEquals(findBookmark.getRecipeId().getRecipeId(), recipeId);
+        testBookmark = bookmarkList.get(0);
+        assertEquals(user.getId(), testBookmark.getUserId().getId());
+        assertEquals(recipe.getId(), testBookmark.getRecipeId().getId());
     }
 }

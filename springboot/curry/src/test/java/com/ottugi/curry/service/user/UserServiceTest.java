@@ -2,19 +2,17 @@ package com.ottugi.curry.service.user;
 
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
-import com.ottugi.curry.web.dto.auth.TokenResponseDto;
+import com.ottugi.curry.service.CommonService;
 import com.ottugi.curry.web.dto.user.UserResponseDto;
-import com.ottugi.curry.web.dto.auth.UserSaveRequestDto;
 import com.ottugi.curry.web.dto.user.UserUpdateRequestDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.mockito.ArgumentMatchers.any;
+import static com.ottugi.curry.TestConstants.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -22,9 +20,10 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 class UserServiceTest {
 
-    private final String email = "wn8925@gmail.com";
-    private final String nickName = "가경";
-    private final String newNickName = "가경이";
+    private User user;
+
+    @Mock
+    private CommonService commonService;
 
     @Mock
     private UserRepository userRepository;
@@ -32,91 +31,61 @@ class UserServiceTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    @Value("${jwt.secret}")
-    private String secret;
-
-    @Value("${jwt.expiration_time}")
-    private int expiration_time;
-
     @BeforeEach
     public void setUp() {
-        ReflectionTestUtils.setField(userService, "secret", secret);
-        ReflectionTestUtils.setField(userService, "expiration_time", expiration_time);
+        // given
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+    }
+
+    @AfterEach
+    public void clean() {
+        // clean
+        userRepository.deleteAll();
     }
 
     @Test
-    void 회원가입() {
-
+    void 회원_조회() {
         // given
-        UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(email, nickName);
-        User user = new User(userSaveRequestDto.getEmail(), userSaveRequestDto.getNickName());
+        when(commonService.findByUserId(anyLong())).thenReturn(user);
 
         // when
-        when(userRepository.countByEmail(any())).thenReturn(0);
-        when(userRepository.save(any())).thenReturn(user);
-        TokenResponseDto tokenResponseDto = userService.login(userSaveRequestDto);
+        UserResponseDto testUserResponseDto = userService.getProfile(user.getId());
 
         // then
-        assertNotNull(tokenResponseDto);
+        assertNotNull(testUserResponseDto);
+        assertEquals(user.getId(), testUserResponseDto.getId());
+        assertEquals(user.getEmail(), testUserResponseDto.getEmail());
+        assertEquals(user.getNickName(), testUserResponseDto.getNickName());
+        assertEquals(user.getRole().getRole(), testUserResponseDto.getRole());
     }
 
     @Test
-    void 로그인() {
-
+    void 회원_수정() {
         // given
-        UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(email, nickName);
-        User existingUser = new User(userSaveRequestDto.getEmail(), userSaveRequestDto.getNickName());
+        when(commonService.findByUserId(anyLong())).thenReturn(user);
 
         // when
-        when(userRepository.countByEmail(any())).thenReturn(1);
-        when(userRepository.findByEmail(any())).thenReturn(existingUser);
-        TokenResponseDto tokenResponseDto = userService.login(userSaveRequestDto);
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(user.getId(), NEW_NICKNAME);
+        UserResponseDto testUserResponseDto = userService.updateProfile(userUpdateRequestDto);
 
         // then
-        assertNotNull(tokenResponseDto);
+        assertNotNull(testUserResponseDto);
+        assertEquals(user.getId(), testUserResponseDto.getId());
+        assertEquals(user.getEmail(), testUserResponseDto.getEmail());
+        assertEquals(user.getNickName(), NEW_NICKNAME);
+        assertEquals(user.getRole().getRole(), testUserResponseDto.getRole());
     }
 
     @Test
-    void 회원조회() {
-
+    void 회원_탈퇴() {
         // given
-        User user = new User(email, nickName);
+        when(commonService.findByUserId(anyLong())).thenReturn(user);
 
         // when
-        when(userRepository.findById(user.getId())).thenReturn(java.util.Optional.of(user));
-        UserResponseDto userResponseDto = userService.getProfile(user.getId());
+        Boolean testResponse = userService.setWithdraw(user.getId());
 
         // then
-        assertNotNull(userResponseDto);
-    }
-
-    @Test
-    void 회원수정() {
-
-        // given
-        User existingUser = new User(email, nickName);
-        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(existingUser.getId(), newNickName);
-
-        // when
-        when(userRepository.findById(existingUser.getId())).thenReturn(java.util.Optional.of(existingUser));
-        UserResponseDto userResponseDto = userService.setProfile(userUpdateRequestDto);
-
-        // then
-        assertNotNull(userResponseDto);
-        assertEquals(userResponseDto.getId(), userUpdateRequestDto.getId());
-    }
-
-    @Test
-    void 탈퇴() {
-
-        // given
-        User user = new User(email, nickName);
-
-        // when
-        when(userRepository.findById(user.getId())).thenReturn(java.util.Optional.of(user));
-        Boolean isWithdraw = userService.setWithdraw(user.getId());
-
-        // then
-        assertTrue(isWithdraw);
+        assertTrue(testResponse);
     }
 }

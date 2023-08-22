@@ -59,7 +59,7 @@ public class RecommendServiceImpl implements RecommendService {
     // 유저 레시피 평점 조회
     @Override
     @Transactional
-    public RatingResponseDto getUserRating(Long userId, Long recipeId) throws JsonProcessingException {
+    public RatingResponseDto getUserRating(Long userId, Long recipeId) {
         try {
             String apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, userId, recipeId);
 
@@ -113,7 +113,7 @@ public class RecommendServiceImpl implements RecommendService {
         try {
             String apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, userId, recipeId);
 
-             restTemplate.delete(apiUrl);
+            restTemplate.delete(apiUrl);
 
             return true;
         } catch (RestClientException e) {
