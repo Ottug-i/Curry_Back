@@ -37,7 +37,7 @@ public class TokenRepositoryTest {
     }
 
     @Test
-    void 키로조회() {
+    void 키로_토큰_조회() {
         // when
         testToken = tokenRepository.findByKey(token.getKey()).get();
 

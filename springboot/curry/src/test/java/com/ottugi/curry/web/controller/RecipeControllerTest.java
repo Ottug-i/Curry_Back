@@ -52,7 +52,7 @@ class RecipeControllerTest {
     }
 
     @Test
-    void 레시피상세조회() throws Exception {
+    void 레시피_조회() throws Exception {
         // given
         RecipeResponseDto recipeResponseDto = new RecipeResponseDto(recipe, isBookmark);
         when(recipeService.getRecipeDetail(anyLong(), anyLong())).thenReturn(recipeResponseDto);
@@ -76,7 +76,7 @@ class RecipeControllerTest {
     }
 
     @Test
-    void 검색창으로레시피리스트조회() throws Exception {
+    void 레시피_검색() throws Exception {
         // given
         List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
         recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, isBookmark));

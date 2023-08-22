@@ -43,7 +43,7 @@ class RankControllerTest {
     }
 
     @Test
-    void 인기검색어조회() throws Exception {
+    void 검색어_순위_10개_목록_조회() throws Exception {
         // given
         List<RankResponseDto> rankResponseDtoList = new ArrayList<>();
         rankResponseDtoList.add(new RankResponseDto(rank));

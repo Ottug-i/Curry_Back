@@ -25,7 +25,7 @@ class LatelyTest {
     }
 
     @Test
-    void 최근본레시피추가() {
+    void 최근_본_레시피_추가() {
         // given
         lately.setUser(user);
         lately.setRecipe(recipe);

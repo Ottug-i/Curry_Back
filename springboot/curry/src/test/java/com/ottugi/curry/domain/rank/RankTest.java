@@ -19,14 +19,14 @@ class RankTest {
     }
 
     @Test
-    void 검색어랭킹추가() {
+    void 검색어_추가() {
         // when, then
         assertEquals(KEYWORD, rank.getName());
         assertEquals(SCORE, rank.getScore());
     }
 
     @Test
-    void 검색어랭킹증가() {
+    void 검색어_횟수_증가() {
         // when
         rank.incrementScore(SCORE);
 

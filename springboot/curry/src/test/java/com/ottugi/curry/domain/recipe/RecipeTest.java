@@ -19,7 +19,7 @@ class RecipeTest {
     }
 
     @Test
-    void 레시피추가() {
+    void 레시피_추가() {
         // when, then
         assertEquals(ID, recipe.getId());
         assertEquals(RECIPE_ID, recipe.getRecipeId());

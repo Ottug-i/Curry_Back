@@ -75,7 +75,7 @@ class RecommendControllerTest {
     }
 
     @Test
-    void 초기랜덤레시피평점() throws Exception {
+    void 랜덤_레시피_목록_조회() throws Exception {
         // given
         List<RecommendListResponseDto> recommendListResponseDtoList = new ArrayList<>();
         recommendListResponseDtoList.add(new RecommendListResponseDto(recipe));
@@ -88,7 +88,7 @@ class RecommendControllerTest {
     }
 
     @Test
-    void 레시피평점조회() throws Exception {
+    void 레시피_평점_조회() throws Exception {
         // given
         RatingResponseDto ratingRequestDto = new RatingResponseDto(ratingInfo);
         when(recommendService.getUserRating(anyLong(), anyLong())).thenReturn(ratingRequestDto);
@@ -104,7 +104,7 @@ class RecommendControllerTest {
     }
 
     @Test
-    void 레시피평점추가또는수정() throws Exception {
+    void 레시피_평점_조회_및_업데이트() throws Exception {
         // given
         when(recommendService.updateUserRating(any(RatingRequestDto.class))).thenReturn(true);
 
@@ -118,7 +118,7 @@ class RecommendControllerTest {
     }
 
     @Test
-    void 레시피평점삭제() throws Exception {
+    void 레시피_평점_삭제() throws Exception {
         // given
         when(recommendService.deleteUserRating(anyLong(), anyLong())).thenReturn(true);
 
@@ -131,7 +131,7 @@ class RecommendControllerTest {
     }
 
     @Test
-    void 재료추천레시피리스트조회() throws Exception {
+    void 재료로_레시피_목록_조회() throws Exception {
         // given
         List<RecipeIngListResponseDto> recipeListResponseDtoList = new ArrayList<>();
         recipeListResponseDtoList.add(new RecipeIngListResponseDto(ingredients, recipe, isBookmark));
@@ -148,7 +148,7 @@ class RecommendControllerTest {
     }
 
     @Test
-    void 북마크추천레시피리스트조회() throws Exception {
+    void 북마크_추천_레시피_목록_조회() throws Exception {
         // given
         List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
         recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, isBookmark));
@@ -165,7 +165,7 @@ class RecommendControllerTest {
     }
 
     @Test
-    void 평점추천레시피리스트조회() throws Exception {
+    void 평점_추천_레시피_목록_조회() throws Exception {
         // given
         List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
         recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, isBookmark));

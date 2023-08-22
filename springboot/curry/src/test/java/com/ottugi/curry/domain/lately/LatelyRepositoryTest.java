@@ -58,7 +58,7 @@ class LatelyRepositoryTest {
     }
 
     @Test
-    void 최근본레시피유저이름과레시피이름으로검색() {
+    void 유저와_레시피로_최근_본_레시피_조회() {
         // when
         testLately = latelyRepository.findByUserIdAndRecipeId(user, recipe);
 
@@ -68,7 +68,7 @@ class LatelyRepositoryTest {
     }
 
     @Test
-    void 최근본레시피리스트유저이름으로정렬하여검색() {
+    void 유저로_최근_본_레시피_목록_정렬_조회() {
         // when
         List<Lately> latelyList = latelyRepository.findByUserIdOrderByIdDesc(user);
 
@@ -79,7 +79,7 @@ class LatelyRepositoryTest {
     }
 
     @Test
-    void 유저이름으로최근본레시피횟수검색() {
+    void 유저로_최근_본_레시피_횟수_조회() {
         // when
         int userIdCount = latelyRepository.countByUserId(user);
 

@@ -81,7 +81,7 @@ class CommonServiceTest {
     }
 
     @Test
-    void 회원기본키로회원조회() {
+    void 회원_기본키로_회원_조회() {
         // given
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
@@ -94,7 +94,7 @@ class CommonServiceTest {
     }
 
     @Test
-    void 회원이메일로회원조회() {
+    void 회원_이메일로_회원_조회() {
         // given
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
 
@@ -107,7 +107,7 @@ class CommonServiceTest {
     }
 
     @Test
-    void 레시피아이디로레시피조회() {
+    void 레시피_아이디로_레시피_조회() {
         // given
         when(recipeRepository.findByRecipeId(anyLong())).thenReturn(Optional.of(recipe));
 
@@ -120,7 +120,7 @@ class CommonServiceTest {
     }
 
     @Test
-    void 레시피아이디리스트로레시피조회() {
+    void 레시피_아이디로_레시피_목록_조회() {
         // given
         when(recipeRepository.findByRecipeIdIn(anyList())).thenReturn(recipeList);
 
@@ -133,7 +133,7 @@ class CommonServiceTest {
     }
 
     @Test
-    void 레시피재료로레시피조회() {
+    void 재료로_레시피_목록_조회() {
         // given
         when(recipeRepository.findByIngredientsContaining(anyString())).thenReturn(recipeList);
 
@@ -145,7 +145,7 @@ class CommonServiceTest {
     }
 
     @Test
-    void 레시피기본키로레시피리스트조회() {
+    void 레시피_기본키로_레시피_목록_조회() {
         // given
         when(recipeRepository.findByIdIn(anyList())).thenReturn(recipeList);
 
@@ -157,7 +157,7 @@ class CommonServiceTest {
     }
 
     @Test
-    void 레시피조건일치여부조회() {
+    void 레시피_검색_조건_일치_여부_조회() {
         // when
         Boolean testResponse = commonService.isRecipeMatching(recipe, TIME.getTimeName(), DIFFICULTY.getDifficulty(), COMPOSITION.getComposition());
 
@@ -166,7 +166,7 @@ class CommonServiceTest {
     }
 
     @Test
-    void 북마크여부조회() {
+    void 북마크_조회() {
         // given
         when(bookmarkRepository.findByUserIdAndRecipeId(any(User.class), any(Recipe.class))).thenReturn(bookmark);
 
@@ -178,7 +178,7 @@ class CommonServiceTest {
     }
 
     @Test
-    void 회원기본키와레시피아이디로북마크조회() {
+    void 회원_기본키와_레시피_아이디로_북마크_조회() {
         // given
         when(bookmarkRepository.findByUserIdAndRecipeId(any(User.class), any(Recipe.class))).thenReturn(bookmark);
 
@@ -191,7 +191,7 @@ class CommonServiceTest {
     }
 
     @Test
-    void 회원기본키로북마크목록조회() {
+    void 회원_기본키로_북마크_목록_조회() {
         // given
         when(bookmarkRepository.findByUserId(any(User.class))).thenReturn(bookmarkList);
 
@@ -204,7 +204,7 @@ class CommonServiceTest {
     }
 
     @Test
-    void 페이지처리() {
+    void 리스트를_페이지로_처리() {
         // when
         Page<RecipeListResponseDto> recipeListPageResponseDto = commonService.getPage(recipeListResponseDtoList, PAGE, SIZE);
 

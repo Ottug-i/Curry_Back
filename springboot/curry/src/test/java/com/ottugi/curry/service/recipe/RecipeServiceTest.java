@@ -76,7 +76,7 @@ class RecipeServiceTest {
     }
 
     @Test
-    void 레시피상세조회() {
+    void 레시피_조회() {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
         when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe);
@@ -103,7 +103,7 @@ class RecipeServiceTest {
     }
 
     @Test
-    void 레시피검색() {
+    void 레시피_검색() {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
         when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe);

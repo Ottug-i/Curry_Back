@@ -36,6 +36,9 @@ class RecipeRepositoryTest {
         // given
         recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
         recipe = recipeRepository.save(recipe);
+
+        idList.add(recipe.getId());
+        recipeIdList.add(recipe.getRecipeId());
     }
 
     @AfterEach
@@ -45,7 +48,7 @@ class RecipeRepositoryTest {
     }
 
     @Test
-    void 레시피재료로조회() {
+    void 재료로_레시피_목록_조회() {
         // when
         recipeList = recipeRepository.findByIngredientsContaining(ingredient);
 
@@ -55,7 +58,7 @@ class RecipeRepositoryTest {
     }
 
     @Test
-    void 레시피이름으로조회() {
+    void 이름으로_레시피_목록_조회() {
         // when
         recipeList = recipeRepository.findByNameContaining(ingredient);
 
@@ -65,10 +68,7 @@ class RecipeRepositoryTest {
     }
 
     @Test
-    void 레시피아이디리스트로조회() {
-        // given
-        recipeIdList.add(recipe.getRecipeId());
-
+    void 레시피_아이디로_레시피_목록_조회() {
         // when
         recipeList = recipeRepository.findByRecipeIdIn(recipeIdList);
 
@@ -78,10 +78,7 @@ class RecipeRepositoryTest {
     }
 
     @Test
-    void 레시피기본키리스트로조회() {
-        // given
-        idList.add(recipe.getId());
-
+    void 레시피_기본키로_레시피_목록_조회() {
         // when
         recipeList = recipeRepository.findByIdIn(idList);
 
@@ -91,7 +88,7 @@ class RecipeRepositoryTest {
     }
 
     @Test
-    void 레시피아이디로조회() {
+    void 레시피_아이디로_레시피_조회() {
         // when
         testRecipe = recipeRepository.findByRecipeId(recipe.getRecipeId()).get();
 

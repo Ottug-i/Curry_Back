@@ -53,7 +53,7 @@ class LatelyControllerTest {
     }
 
     @Test
-    void 최근본레시피리스트조회() throws Exception {
+    void 최근_본_레시피_목록_조회() throws Exception {
         // given
         List<LatelyListResponseDto> latelyListResponseDtoList = new ArrayList<>();
         latelyListResponseDtoList.add(new LatelyListResponseDto(lately.getRecipeId()));
@@ -61,7 +61,7 @@ class LatelyControllerTest {
 
         // when, then
         mockMvc.perform(get("/api/lately/list")
-                        .param("userId", String.valueOf(USER_ID)))
+                        .param("userId", String.valueOf(user.getId())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(latelyListResponseDtoList.size())));
     }

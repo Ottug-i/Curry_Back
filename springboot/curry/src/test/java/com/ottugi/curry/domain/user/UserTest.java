@@ -19,7 +19,7 @@ class UserTest {
     }
 
     @Test
-    void 회원추가() {
+    void 회원_추가() {
         // when, then
         assertEquals(EMAIL, user.getEmail());
         assertEquals(NICKNAME, user.getNickName());
@@ -28,7 +28,7 @@ class UserTest {
     }
 
     @Test
-    void 회원닉네임수정() {
+    void 회원_닉네임_수정() {
         // when
         user.updateProfile(NEW_NICKNAME);
 
@@ -37,7 +37,7 @@ class UserTest {
     }
 
     @Test
-    void 회원장르수정() {
+    void 회원_좋아하는_레시피_장르_수정() {
         // when
         user.updateGenre(NEW_FAVORITE_GENRE);
 
@@ -46,7 +46,7 @@ class UserTest {
     }
 
     @Test
-    void 회원역할수정() {
+    void 회원_권한_수정() {
         // when
         user.updateRole(NEW_ROLE);
 

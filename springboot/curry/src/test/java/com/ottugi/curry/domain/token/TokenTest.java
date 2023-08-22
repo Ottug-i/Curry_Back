@@ -19,7 +19,7 @@ public class TokenTest {
     }
 
     @Test
-    void 토큰추가() {
+    void 토큰_추가() {
         // when, then
         assertEquals(EMAIL, token.getKey());
         assertEquals(VALUE, token.getValue());

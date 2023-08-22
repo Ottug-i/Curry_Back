@@ -102,7 +102,7 @@ class RecommendServiceTest {
     }
 
     @Test
-    void 랜덤레시피목록조회() {
+    void 랜덤_레시피_목록_조회() {
         // given
         when(commonService.findByIdIn(anyList())).thenReturn(recipeList);
 
@@ -115,7 +115,7 @@ class RecommendServiceTest {
     }
 
     @Test
-    void 평점조회() {
+    void 레시피_평점_조회() {
         // given
         String httpResponse = "[" + Double.valueOf(RECIPE_ID) + ", " + Double.valueOf(USER_ID) + ", " +  3.5 + "]";
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(httpResponse);
@@ -130,7 +130,7 @@ class RecommendServiceTest {
     }
 
     @Test
-    void 평점업데이트() {
+    void 레시피_평점_업데이트() {
         // given
         ResponseEntity<String> updateHttpResponseEntity = ResponseEntity.ok("true");
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(updateHttpResponseEntity);
@@ -144,7 +144,7 @@ class RecommendServiceTest {
     }
 
     @Test
-    void 평점삭제() {
+    void 레시피_평점_삭제() {
         // given
         ResponseEntity<Void> deleteHttpResponseEntity = ResponseEntity.noContent().build();
         when(restTemplate.exchange(anyString(), eq(HttpMethod.DELETE), any(), eq(Void.class))).thenReturn(deleteHttpResponseEntity);
@@ -157,7 +157,7 @@ class RecommendServiceTest {
     }
 
     @Test
-    void 재료추천목록조회() {
+    void 재료로_레시피_목록_조회() {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
         when(commonService.findByIngredientsContaining(anyString())).thenReturn(recipeList);
@@ -174,7 +174,7 @@ class RecommendServiceTest {
     }
 
     @Test
-    void 북마크추천아이디목록조회() throws JsonProcessingException {
+    void 북마크_추천_아이디_목록_조회() throws JsonProcessingException {
         // given
         String httpResponse = "[1]";
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(httpResponse);
@@ -188,7 +188,7 @@ class RecommendServiceTest {
 
 
     @Test
-    void 평점추천목록아이디조회() throws JsonProcessingException {
+    void 평점_추천_아이디_목록_조회() throws JsonProcessingException {
         // given
         String httpResponse = "[\"ing15\", [1]]";
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(httpResponse);
@@ -203,7 +203,7 @@ class RecommendServiceTest {
     }
 
     @Test
-    void 북마크및평점레시피목록조회() {
+    void 북마크_및_평점_추천_레시피_목록_조회() {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
         when(commonService.findByRecipeIdIn(anyList())).thenReturn(recipeList);

@@ -45,7 +45,7 @@ class UserServiceTest {
     }
 
     @Test
-    void 회원조회() {
+    void 회원_조회() {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
 
@@ -61,7 +61,7 @@ class UserServiceTest {
     }
 
     @Test
-    void 회원수정() {
+    void 회원_수정() {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
 
@@ -78,7 +78,7 @@ class UserServiceTest {
     }
 
     @Test
-    void 탈퇴() {
+    void 회원_탈퇴() {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
 

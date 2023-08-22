@@ -30,7 +30,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void 이메일로회원조회() {
+    void 이메일로_회원_조회() {
         // when
         testUser = userRepository.findByEmail(user.getEmail()).get();
 
@@ -39,7 +39,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void 이메일로회원존재조회() {
+    void 이메일로_회원_존재_조회() {
         // when
         Boolean existUser = userRepository.existsByEmail(user.getEmail());
 
@@ -48,7 +48,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void 이메일로회원수조회() {
+    void 이메일로_회원_수_조회() {
         // when
         int userEmailCount = userRepository.countByEmail(user.getEmail());
 

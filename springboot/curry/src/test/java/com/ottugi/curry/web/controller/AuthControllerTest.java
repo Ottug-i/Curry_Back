@@ -47,7 +47,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void 회원가입_로그인() throws Exception {
+    void 회원_가입_및_로그인() throws Exception {
         // given
         TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE, IS_NEW);
         when(authService.login(any(UserSaveRequestDto.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
@@ -67,7 +67,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void 토큰재발급() throws Exception {
+    void 토큰_재발급() throws Exception {
         // given
         TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE, !IS_NEW);
         when(authService.reissueToken(anyString(), any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);

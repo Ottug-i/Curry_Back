@@ -60,7 +60,7 @@ class RankServiceTest {
     }
 
     @Test
-    void 랭킹추가() {
+    void 검색어_추가() {
         // given
         when(rankRepository.findByName(anyString())).thenReturn(null);
         when(rankRepository.save(any(Rank.class))).thenReturn(rank);
@@ -70,7 +70,7 @@ class RankServiceTest {
     }
 
     @Test
-    void 랭킹증가() {
+    void 검색어_횟수_증가() {
         // given
         when(rankRepository.save(any(Rank.class))).thenReturn(rank);
         when(rankRepository.findByName(rank.getName())).thenReturn(rank);
@@ -80,7 +80,7 @@ class RankServiceTest {
     }
 
     @Test
-    void 랭킹목록조회() {
+    void 검색어_순위_10개_목록_조회() {
         // given
         when(rankRepository.save(any(Rank.class))).thenReturn(rank);
         when(rankRepository.findAllByOrderByScoreDesc()).thenReturn(rankList);
@@ -94,7 +94,7 @@ class RankServiceTest {
     }
 
     @Test
-    void 일주일마다랭킹초기화() {
+    void 일주일마다_검색어_순위_초기화() {
         // given
         when(rankRepository.save(any(Rank.class))).thenReturn(rank);
         doNothing().when(rankRepository).deleteAll();

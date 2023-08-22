@@ -39,7 +39,7 @@ class RankRepositoryTest {
     }
 
     @Test
-    void 검색어이름으로조회() {
+    void 이름으로_검색어_조회() {
         // when
         testRank = rankRepository.findByName(rank.getName());
 
@@ -48,7 +48,7 @@ class RankRepositoryTest {
     }
 
     @Test
-    void 검색어횟수내림차순으로조회() {
+    void 검색어_순위_내림차순_조회() {
         // when
         List<Rank> rankList = rankRepository.findAllByOrderByScoreDesc();
 

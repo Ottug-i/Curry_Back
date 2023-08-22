@@ -77,7 +77,7 @@ class BookmarkServiceTest {
     }
 
     @Test
-    void 북마크추가() {
+    void 북마크_추가() {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
         when(commonService.findByRecipeId(anyLong())).thenReturn(recipe);
@@ -93,7 +93,7 @@ class BookmarkServiceTest {
     }
 
     @Test
-    void 북마크삭제() {
+    void 북마크_삭제() {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
         when(commonService.findByRecipeId(anyLong())).thenReturn(recipe);
@@ -110,7 +110,7 @@ class BookmarkServiceTest {
     }
 
     @Test
-    void 북마크리스트조회() {
+    void 북마크_목록_조회() {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
         when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(bookmark);
@@ -125,7 +125,7 @@ class BookmarkServiceTest {
     }
 
     @Test
-    void 북마크검색() {
+    void 북마크_레시피_검색() {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
         when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(bookmark);

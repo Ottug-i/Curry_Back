@@ -58,7 +58,7 @@ class BookmarkRepositoryTest {
     }
 
     @Test
-    void 북마크유저이름과레시피아이디로조회() {
+    void 유저와_레시피로_북마크_조회() {
         // when
         testBookmark = bookmarkRepository.findByUserIdAndRecipeId(user, recipe);
 
@@ -68,7 +68,7 @@ class BookmarkRepositoryTest {
     }
 
     @Test
-    void 북마크유저이름으로리스트조회() {
+    void 유저로_북마크_목록_조회() {
         // when
         List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(user);
 

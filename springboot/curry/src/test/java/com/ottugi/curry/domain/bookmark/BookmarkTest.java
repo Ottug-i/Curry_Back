@@ -25,7 +25,7 @@ class BookmarkTest {
     }
 
     @Test
-    void 북마크추가() {
+    void 북마크_추가() {
         // given
         bookmark.setUser(user);
         bookmark.setRecipe(recipe);

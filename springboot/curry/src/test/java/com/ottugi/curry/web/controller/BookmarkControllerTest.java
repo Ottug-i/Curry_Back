@@ -59,7 +59,7 @@ class BookmarkControllerTest {
     }
 
     @Test
-    void 북마크추가및삭제() throws Exception {
+    void 북마크_추가_및_삭제() throws Exception {
         // given
         when(bookmarkService.addOrRemoveBookmark(any(BookmarkRequestDto.class))).thenReturn(true);
 
@@ -83,7 +83,7 @@ class BookmarkControllerTest {
     }
 
     @Test
-    void 북마크리스트조회() throws Exception {
+    void 북마크_목록_조회() throws Exception {
         // given
         List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
         bookmarkListResponseDtoList.add(new BookmarkListResponseDto(bookmark.getRecipeId(), isBookmark));
@@ -101,7 +101,7 @@ class BookmarkControllerTest {
     }
 
     @Test
-    void 북마크검색() throws Exception {
+    void 북마크_레시피_검색() throws Exception {
         // given
         List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
         bookmarkListResponseDtoList.add(new BookmarkListResponseDto(bookmark.getRecipeId(), isBookmark));

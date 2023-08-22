@@ -59,7 +59,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void 회원가입() {
+    void 회원_가입() {
         // given
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -81,7 +81,7 @@ class AuthServiceTest {
     }
     
     @Test
-    void 로그인() {
+    void 회원_로그인() {
         // given
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
@@ -104,7 +104,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void 토큰재발급() {
+    void 토큰_재발급() {
         // given
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(tokenRepository.findById(anyString())).thenReturn(Optional.of(token));

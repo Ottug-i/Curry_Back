@@ -44,7 +44,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void 회원조회() throws Exception {
+    void 회원_조회() throws Exception {
         // given
         UserResponseDto userResponseDto = new UserResponseDto(user);
         when(userService.getProfile(anyLong())).thenReturn(userResponseDto);
@@ -60,7 +60,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void 회원수정() throws Exception {
+    void 회원_수정() throws Exception {
         // given
         user.updateProfile(NEW_NICKNAME);
         UserResponseDto userResponseDto = new UserResponseDto(user);
@@ -79,7 +79,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void 탈퇴() throws Exception {
+    void 회원_탈퇴() throws Exception {
         // given
         when(userService.setWithdraw(anyLong())).thenReturn(true);
 

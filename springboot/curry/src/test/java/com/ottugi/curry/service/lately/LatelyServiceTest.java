@@ -69,7 +69,7 @@ class LatelyServiceTest {
     }
 
     @Test
-    void 최근본레시피추가() {
+    void 최근_본_레시피_추가() {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
         when(commonService.findByRecipeId(anyLong())).thenReturn(recipe);
@@ -84,7 +84,7 @@ class LatelyServiceTest {
     }
 
     @Test
-    void 최근본레시피리스트조회() {
+    void 최근_본_레시피_목록_조회() {
         // given
         when(latelyRepository.save(any(Lately.class))).thenReturn(lately);
         when(commonService.findByUserId(anyLong())).thenReturn(user);
