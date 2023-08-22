@@ -1,6 +1,7 @@
 package com.ottugi.curry.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.service.bookmark.BookmarkService;
@@ -35,6 +36,9 @@ class BookmarkControllerTest {
 
     private User user;
     private Recipe recipe;
+    private Bookmark bookmark;
+
+    private final Boolean isBookmark = true;
 
     private MockMvc mockMvc;
 
@@ -48,28 +52,29 @@ class BookmarkControllerTest {
     public void setUp() {
         user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
         recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        bookmark = new Bookmark();
+        bookmark.setUser(user);
+        bookmark.setRecipe(recipe);
         mockMvc = MockMvcBuilders.standaloneSetup(bookmarkController).build();
     }
 
     @Test
     void 북마크추가및삭제() throws Exception {
         // given
-        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(user.getId(), recipe.getRecipeId());
-
-        // when
         when(bookmarkService.addOrRemoveBookmark(any(BookmarkRequestDto.class))).thenReturn(true);
 
-        // then
+        // when, then
+        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(user.getId(), recipe.getRecipeId());
         mockMvc.perform(post("/api/bookmark")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(bookmarkRequestDto)))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
 
-        // when
+        // given
         when(bookmarkService.addOrRemoveBookmark(any(BookmarkRequestDto.class))).thenReturn(false);
 
-        // then
+        // when, then
         mockMvc.perform(post("/api/bookmark")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(bookmarkRequestDto)))
@@ -81,31 +86,29 @@ class BookmarkControllerTest {
     void 북마크리스트조회() throws Exception {
         // given
         List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
+        bookmarkListResponseDtoList.add(new BookmarkListResponseDto(bookmark.getRecipeId(), isBookmark));
         Page<BookmarkListResponseDto> bookmarkListResponseDtoPage = new PageImpl<>(bookmarkListResponseDtoList);
-
-        // when
         when(bookmarkService.getBookmarkAll(anyLong(), anyInt(), anyInt())).thenReturn(bookmarkListResponseDtoPage);
 
-        // then
+        // when, then
         mockMvc.perform(get("/api/bookmark/list")
                         .param("userId", String.valueOf(user.getId()))
                         .param("page", String.valueOf(PAGE))
                         .param("size", String.valueOf(SIZE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(0)));
+                .andExpect(jsonPath("$.content", hasSize(bookmarkListResponseDtoPage.getSize())));
     }
 
     @Test
     void 북마크검색() throws Exception {
         // given
         List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
+        bookmarkListResponseDtoList.add(new BookmarkListResponseDto(bookmark.getRecipeId(), isBookmark));
         Page<BookmarkListResponseDto> bookmarkListResponseDtoPage = new PageImpl<>(bookmarkListResponseDtoList);
-
-        // when
         when(bookmarkService.searchBookmark(anyLong(), anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString())).thenReturn(bookmarkListResponseDtoPage);
 
-        // then
+        // when, then
         mockMvc.perform(get("/api/bookmark/search")
                         .param("userId", String.valueOf(user.getId()))
                         .param("page", String.valueOf(PAGE))
@@ -116,6 +119,6 @@ class BookmarkControllerTest {
                         .param("composition", recipe.getComposition().getComposition())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(0)));
+                .andExpect(jsonPath("$.content", hasSize(bookmarkListResponseDtoPage.getSize())));
     }
 }

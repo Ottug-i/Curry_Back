@@ -1,6 +1,7 @@
 package com.ottugi.curry.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.service.recommend.RecommendService;
@@ -34,17 +35,16 @@ class RecommendControllerTest {
 
     private User user;
     private Recipe recipe;
-
-    private List<String> ingredients = Arrays.asList("고구마", "올리고당");
-
-    private List<Long> recipeIdList = new ArrayList<>();
-
-    private Map<Long, Double> newUserRatingsDic = new HashMap<>();
-    private List<Double> ratingInfo = Arrays.asList(6846342.0, 1.0, 4.0);
-
-    private Long[] bookmarkList = {6842324L, 6845721L};
+    private Bookmark bookmark;
 
     private final Boolean isBookmark = true;
+    private final String ingredient1 = "고구마";
+    private final String ingredient2 = "올리고당";
+    private List<String> ingredients = new ArrayList<>();
+    private List<Long> recipeIdList = new ArrayList<>();
+    private Long[] bookmarkList;
+    private List<Double> ratingInfo = new ArrayList<>();
+    private Map<Long, Double> newUserRatingsDic = new HashMap<>();
 
     private MockMvc mockMvc;
 
@@ -58,6 +58,19 @@ class RecommendControllerTest {
     public void setUp() {
         user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
         recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        bookmark = new Bookmark();
+        bookmark.setUser(user);
+        bookmark.setRecipe(recipe);
+
+        ingredients.add(ingredient1);
+        ingredients.add(ingredient2);
+        recipeIdList.add(recipe.getRecipeId());
+        bookmarkList = new Long[]{bookmark.getRecipeId().getRecipeId()};
+        ratingInfo.add(Double.valueOf(recipe.getRecipeId()));
+        ratingInfo.add(Double.valueOf(user.getId()));
+        ratingInfo.add(4.0);
+        newUserRatingsDic.put(recipe.getRecipeId(), 3.0);
+
         mockMvc = MockMvcBuilders.standaloneSetup(recommendController).build();
     }
 
@@ -65,11 +78,10 @@ class RecommendControllerTest {
     void 초기랜덤레시피평점() throws Exception {
         // given
         List<RecommendListResponseDto> recommendListResponseDtoList = new ArrayList<>();
-
-        // when
+        recommendListResponseDtoList.add(new RecommendListResponseDto(recipe));
         when(recommendService.getRandomRecipe()).thenReturn(recommendListResponseDtoList);
 
-        // then
+        // when, then
         mockMvc.perform(get("/api/recommend/initial"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(recommendListResponseDtoList.size())));
@@ -79,30 +91,25 @@ class RecommendControllerTest {
     void 레시피평점조회() throws Exception {
         // given
         RatingResponseDto ratingRequestDto = new RatingResponseDto(ratingInfo);
-
-        // when
         when(recommendService.getUserRating(anyLong(), anyLong())).thenReturn(ratingRequestDto);
 
-        // then
+        // when, then
         mockMvc.perform(get("/api/recommend/rating")
                     .param("userId", String.valueOf(user.getId()))
                     .param("recipeId", String.valueOf(recipe.getRecipeId())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(1))
-                .andExpect(jsonPath("$.recipeId").value(6846342))
+                .andExpect(jsonPath("$.userId").value(user.getId()))
+                .andExpect(jsonPath("$.recipeId").value(recipe.getRecipeId()))
                 .andExpect(jsonPath("$.rating").value(4.0));
     }
 
     @Test
     void 레시피평점추가또는수정() throws Exception {
         // given
-        newUserRatingsDic.put(6847060L, 3.0);
-        RatingRequestDto ratingRequestDto = new RatingRequestDto(user.getId(), newUserRatingsDic);
-
-        // when
         when(recommendService.updateUserRating(any(RatingRequestDto.class))).thenReturn(true);
 
-        // then
+        // when, then
+        RatingRequestDto ratingRequestDto = new RatingRequestDto(user.getId(), newUserRatingsDic);
         mockMvc.perform(post("/api/recommend/rating")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(ratingRequestDto)))
@@ -112,10 +119,10 @@ class RecommendControllerTest {
 
     @Test
     void 레시피평점삭제() throws Exception {
-        // when
-        when(recommendService.deleteUserRating(user.getId(), recipe.getRecipeId())).thenReturn(true);
+        // given
+        when(recommendService.deleteUserRating(anyLong(), anyLong())).thenReturn(true);
 
-        // then
+        // when, then
         mockMvc.perform(delete("/api/recommend/rating")
                         .param("userId", String.valueOf(user.getId()))
                         .param("recipeId", String.valueOf(recipe.getRecipeId())))
@@ -126,17 +133,13 @@ class RecommendControllerTest {
     @Test
     void 재료추천레시피리스트조회() throws Exception {
         // given
-        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(user.getId(), Arrays.asList("고구마", "올리고당"), PAGE, SIZE);
-        
         List<RecipeIngListResponseDto> recipeListResponseDtoList = new ArrayList<>();
         recipeListResponseDtoList.add(new RecipeIngListResponseDto(ingredients, recipe, isBookmark));
-
         Page<RecipeIngListResponseDto> pagedRecipeList = new PageImpl<>(recipeListResponseDtoList);
-
-        // when
         when(recommendService.getIngredientsRecommendList(any(RecipeRequestDto.class))).thenReturn(pagedRecipeList);
 
-        // then
+        // when, then
+        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(user.getId(), ingredients, PAGE, SIZE);
         mockMvc.perform(post("/api/recommend/ingredients/list")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(recipeRequestDto)))
@@ -148,12 +151,11 @@ class RecommendControllerTest {
     void 북마크추천레시피리스트조회() throws Exception {
         // given
         List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
-
-        // when
+        recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, isBookmark));
         when(recommendService.getRecommendBookmarkId(anyLong(), anyInt())).thenReturn(recipeIdList);
         when(recommendService.getBookmarkOrRatingRecommendList(any(RecommendRequestDto.class))).thenReturn(recipeListResponseDtoList);
 
-        // then
+        // when, then
         mockMvc.perform(get("/api/recommend/bookmark/list")
                         .param("userId", String.valueOf(user.getId()))
                         .param("recipeId", String.valueOf(recipe.getRecipeId()))
@@ -166,16 +168,15 @@ class RecommendControllerTest {
     void 평점추천레시피리스트조회() throws Exception {
         // given
         List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
-
-        // when
-        when(recommendService.getRecommendRatingId(anyLong(), anyInt(), eq(bookmarkList))).thenReturn(recipeIdList);
+        recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, isBookmark));
+        when(recommendService.getRecommendRatingId(anyLong(), anyInt(), any())).thenReturn(recipeIdList);
         when(recommendService.getBookmarkOrRatingRecommendList(any(RecommendRequestDto.class))).thenReturn(recipeListResponseDtoList);
 
-        // then
+        // when, then
         mockMvc.perform(get("/api/recommend/bookmark/list")
                         .param("userId", String.valueOf(user.getId()))
                         .param("page", String.valueOf(PAGE))
-                        .param("bookmarkList", "6842324", "6845721"))
+                        .param("bookmarkList", String.valueOf(bookmarkList[0])))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(recipeListResponseDtoList.size())));
     }

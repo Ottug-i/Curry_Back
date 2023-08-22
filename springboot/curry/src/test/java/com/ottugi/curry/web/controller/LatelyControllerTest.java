@@ -1,5 +1,8 @@
 package com.ottugi.curry.web.controller;
 
+import com.ottugi.curry.domain.lately.Lately;
+import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.service.lately.LatelyService;
 import com.ottugi.curry.web.dto.lately.LatelyListResponseDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +30,10 @@ import static com.ottugi.curry.TestConstants.*;
 @AutoConfigureMockMvc
 class LatelyControllerTest {
 
+    private User user;
+    private Recipe recipe;
+    private Lately lately;
+
     private MockMvc mockMvc;
 
     @Mock
@@ -37,6 +44,11 @@ class LatelyControllerTest {
 
     @BeforeEach
     public void setUp() {
+        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        lately = new Lately();
+        lately.setUser(user);
+        lately.setRecipe(recipe);
         mockMvc = MockMvcBuilders.standaloneSetup(latelyController).build();
     }
 
@@ -44,14 +56,13 @@ class LatelyControllerTest {
     void 최근본레시피리스트조회() throws Exception {
         // given
         List<LatelyListResponseDto> latelyListResponseDtoList = new ArrayList<>();
-
-        // when
+        latelyListResponseDtoList.add(new LatelyListResponseDto(lately.getRecipeId()));
         when(latelyService.getLatelyAll(anyLong())).thenReturn(latelyListResponseDtoList);
 
-        // then
+        // when, then
         mockMvc.perform(get("/api/lately/list")
                         .param("userId", String.valueOf(USER_ID)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
+                .andExpect(jsonPath("$", hasSize(latelyListResponseDtoList.size())));
     }
 }

@@ -28,7 +28,6 @@ import static com.ottugi.curry.TestConstants.*;
 public class UserControllerTest {
 
     private User user;
-    private User changingUser;
 
     private MockMvc mockMvc;
 
@@ -41,7 +40,6 @@ public class UserControllerTest {
     @BeforeEach
     public void setUp() {
         user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        changingUser = new User(USER_ID, EMAIL, NEW_NICKNAME, FAVORITE_GENRE, ROLE);
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
     }
 
@@ -49,11 +47,9 @@ public class UserControllerTest {
     void 회원조회() throws Exception {
         // given
         UserResponseDto userResponseDto = new UserResponseDto(user);
-
-        // when
         when(userService.getProfile(anyLong())).thenReturn(userResponseDto);
 
-        // Then
+        // when, then
         mockMvc.perform(get("/api/user")
                         .param("id", String.valueOf(user.getId())))
                 .andExpect(status().isOk())
@@ -66,30 +62,28 @@ public class UserControllerTest {
     @Test
     void 회원수정() throws Exception {
         // given
-        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(changingUser.getId(), NEW_NICKNAME);
-
-        UserResponseDto userResponseDto = new UserResponseDto(changingUser);
-
-        // when
+        user.updateProfile(NEW_NICKNAME);
+        UserResponseDto userResponseDto = new UserResponseDto(user);
         when(userService.updateProfile(any(UserUpdateRequestDto.class))).thenReturn(userResponseDto);
 
-        // then
+        // when, then
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(user.getId(), NEW_NICKNAME);
         mockMvc.perform(put("/api/user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userUpdateRequestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(changingUser.getId()))
-                .andExpect(jsonPath("$.email").value(changingUser.getEmail()))
-                .andExpect(jsonPath("$.nickName").value(changingUser.getNickName()))
-                .andExpect(jsonPath("$.role").value(changingUser.getRole().getRole()));
+                .andExpect(jsonPath("$.id").value(user.getId()))
+                .andExpect(jsonPath("$.email").value(user.getEmail()))
+                .andExpect(jsonPath("$.nickName").value(user.getNickName()))
+                .andExpect(jsonPath("$.role").value(user.getRole().getRole()));
     }
 
     @Test
     void 탈퇴() throws Exception {
-        // given, when
-        when(userService.setWithdraw(USER_ID)).thenReturn(true);
+        // given
+        when(userService.setWithdraw(anyLong())).thenReturn(true);
 
-        // then
+        // when, then
         mockMvc.perform(delete("/api/user/withdraw")
                         .param("id", String.valueOf(user.getId())))
                 .andExpect(status().isOk())

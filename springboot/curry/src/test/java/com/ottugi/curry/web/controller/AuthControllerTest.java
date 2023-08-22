@@ -49,13 +49,11 @@ class AuthControllerTest {
     @Test
     void 회원가입_로그인() throws Exception {
         // given
-        UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(user.getEmail(), user.getNickName());
         TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE, IS_NEW);
-
-        // when
         when(authService.login(any(UserSaveRequestDto.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
 
-        // then
+        // when, then
+        UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(user.getEmail(), user.getNickName());
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userSaveRequestDto)))
@@ -72,11 +70,9 @@ class AuthControllerTest {
     void 토큰재발급() throws Exception {
         // given
         TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE, !IS_NEW);
-
-        // when
         when(authService.reissueToken(anyString(), any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
 
-        // then
+        // when, then
         mockMvc.perform(post("/auth/reissue")
                         .param("email", user.getEmail()))
                 .andExpect(status().isOk())

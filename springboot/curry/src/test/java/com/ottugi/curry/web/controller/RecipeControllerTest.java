@@ -55,11 +55,9 @@ class RecipeControllerTest {
     void 레시피상세조회() throws Exception {
         // given
         RecipeResponseDto recipeResponseDto = new RecipeResponseDto(recipe, isBookmark);
-
-        // when
         when(recipeService.getRecipeDetail(anyLong(), anyLong())).thenReturn(recipeResponseDto);
 
-        // then
+        // when, then
         mockMvc.perform(get("/api/recipe")
                     .param("userId", String.valueOf(user.getId()))
                     .param("recipeId", String.valueOf(recipe.getRecipeId())))
@@ -81,12 +79,11 @@ class RecipeControllerTest {
     void 검색창으로레시피리스트조회() throws Exception {
         // given
         List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
+        recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, isBookmark));
         Page<RecipeListResponseDto> recipeListResponseDtoPage = new PageImpl<>(recipeListResponseDtoList);
-
-        // when
         when(recipeService.searchByBox(anyLong(), anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString())).thenReturn(recipeListResponseDtoPage);
 
-        // then
+        // when, then
         mockMvc.perform(get("/api/recipe/search")
                         .param("userId", String.valueOf(user.getId()))
                         .param("page", String.valueOf(PAGE))
