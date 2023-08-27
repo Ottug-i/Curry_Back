@@ -1,6 +1,7 @@
 package com.ottugi.curry.service.recommend;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ottugi.curry.config.GlobalConfig;
 import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.bookmark.BookmarkRepository;
 import com.ottugi.curry.domain.recipe.Recipe;
@@ -61,6 +62,9 @@ class RecommendServiceTest {
 
     @Mock
     private CommonService commonService;
+
+    @Mock
+    private GlobalConfig config;
 
     @Mock
     private RestTemplate restTemplate;

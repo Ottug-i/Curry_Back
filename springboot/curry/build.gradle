@@ -20,6 +20,7 @@ dependencies {
 
 	// db
 	runtimeOnly 'com.h2database:h2'
+	implementation 'mysql:mysql-connector-java'
 
 	// lombok
 	annotationProcessor'org.projectlombok:lombok'
@@ -49,6 +50,10 @@ dependencies {
 
 	// common
 	implementation 'org.apache.commons:commons-lang3'
+}
+
+jar {
+	enabled = false
 }
 
 tasks.named('test') {
