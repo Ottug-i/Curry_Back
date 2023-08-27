@@ -26,8 +26,12 @@ public class GlobalConfig {
     private String header;
     private String prefix;
 
-    private String host;
-    private int port;
+    private String redis_host;
+    private int redis_port;
+    private String redis_password;
+
+    private String flask_host;
+    private int flask_port;
 
     private boolean local;
     private boolean dev;
@@ -40,7 +44,7 @@ public class GlobalConfig {
         if (ObjectUtils.isNotEmpty(activeProfiles)) {
             activeProfile = activeProfiles[0];
         }
-        String resourcePath = String.format("classpath:globals/global-%s.properties", activeProfile);
+        String resourcePath = String.format("classpath:application-%s.properties", activeProfile);
         try {
             Resource resource = resourceLoader.getResource(resourcePath);
             Properties properties = PropertiesLoaderUtils.loadProperties(resource);
@@ -49,8 +53,12 @@ public class GlobalConfig {
             header = properties.getProperty("jwt.response.header");
             prefix = properties.getProperty("jwt.token.prefix");
 
-            host = properties.getProperty("spring.redis.host");
-            port = Integer.parseInt(properties.getProperty("spring.redis.port"));
+            redis_host = properties.getProperty("spring.redis.host");
+            redis_port = Integer.parseInt(properties.getProperty("spring.redis.port"));
+            redis_password = properties.getProperty("spring.redis.password");
+
+            flask_host = properties.getProperty("flask.host");
+            flask_port = Integer.parseInt(properties.getProperty("flask.port"));
 
             this.local = activeProfile.equals("local");
             this.dev = activeProfile.equals("dev");

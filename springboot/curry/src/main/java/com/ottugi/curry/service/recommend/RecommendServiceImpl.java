@@ -2,6 +2,7 @@ package com.ottugi.curry.service.recommend;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ottugi.curry.config.GlobalConfig;
 import com.ottugi.curry.except.BaseCode;
 import com.ottugi.curry.except.BaseException;
 import com.ottugi.curry.domain.recipe.Recipe;
@@ -14,7 +15,6 @@ import com.ottugi.curry.web.dto.recommend.RatingRequestDto;
 import com.ottugi.curry.web.dto.recommend.RatingResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
@@ -33,14 +33,24 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class RecommendServiceImpl implements RecommendService {
-
-    private final String FLASK_API_URL = "http://localhost:5000";
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final CommonService commonService;
+
+    private final String flask_host;
+    private final int flask_port;
+
+    private final String FLASK_API_URL;
+
+    public RecommendServiceImpl(RestTemplate restTemplate, CommonService commonService, GlobalConfig config) {
+        this.restTemplate = restTemplate;
+        this.commonService = commonService;
+        this.flask_host = config.getFlask_host();
+        this.flask_port = config.getFlask_port();
+        this.FLASK_API_URL = "http://" + flask_host + ":" + flask_port;
+    }
 
     // 랜덤 레시피 리스트 조회
     @Override
@@ -62,6 +72,7 @@ public class RecommendServiceImpl implements RecommendService {
     public RatingResponseDto getUserRating(Long userId, Long recipeId) {
         try {
             String apiUrl = String.format("%s/rating/user_ratings?user_id=%d&recipe_id=%d", FLASK_API_URL, userId, recipeId);
+            System.out.println(FLASK_API_URL);
 
             String response = restTemplate.getForObject(apiUrl, String.class);
             
@@ -140,7 +151,10 @@ public class RecommendServiceImpl implements RecommendService {
             }
             if (isAllIncluded) {
                 Map<Recipe, Integer> recipeMap = new HashMap<>();
-                if (recipe.getGenre().contains(user.getFavoriteGenre())) {
+                String favorite_genre = user.getFavoriteGenre();
+                if(favorite_genre == null)
+                    favorite_genre = "";
+                if (recipe.getGenre().contains(favorite_genre)) {
                     recipeMap.put(recipe, 1);
                 }
                 else {
