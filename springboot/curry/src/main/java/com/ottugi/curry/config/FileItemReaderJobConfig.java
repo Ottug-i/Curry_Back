@@ -37,7 +37,7 @@ public class FileItemReaderJobConfig {
                 .<RecipeSaveRequestDto, RecipeSaveRequestDto>chunk(chunkSize)
                 .reader(recipeCsvReader.csvFileItemReader())
                 .writer(recipeCsvWriter)
-                .allowStartIfComplete(false)
+                .allowStartIfComplete(true)
                 .build();
     }
 }
