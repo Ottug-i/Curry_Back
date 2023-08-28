@@ -18,14 +18,9 @@ jobs:
       with:
         distribution: 'adopt'
         java-version: '11'
-
-    - name: Change Working Directory to Project Root
-      run: cd ./springboot/curry
-
-    - name: Grant Execute Permission for gradlew  
-      run: chmod +x gradlew
       
     - name: SpringBoot Build
+      working-directory: springboot/curry
       run: ./gradlew clean build --exclude-task test
     
     - name: SpringBoot Docker Image Build
