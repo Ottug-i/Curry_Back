@@ -20,7 +20,7 @@ jobs:
         java-version: '11'
 
     - name: Change Working Directory to Project Root
-      run: cd springboot/curry
+      run: cd springboot/curry/gradlew
       
     - name: SpringBoot Build
       run: ./gradlew clean build --exclude-task test
