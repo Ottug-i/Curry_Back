@@ -1,0 +1,40 @@
+name: Spring Docker Image CI
+
+on:
+  push:
+    branches: ["master", "deploy"]
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: deploy
+      
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '11'
+
+    - name: Grant Execute Permission for gradlew  
+      run: chmod +x springboot/curry/gradlew
+      
+    - name: SpringBoot Build
+      working-directory: springboot/curry
+      run: ./gradlew clean build --exclude-task test
+    
+    - name: SpringBoot Docker Image Build
+      working-directory: springboot/curry
+      run: docker build . --file Dockerfile --tag kimgagyeong/curry:springboot
+
+    - name: Docker Login
+      uses: docker/login-action@v2
+      with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Docker Hub Push
+      run: docker push kimgagyeong/curry:springboot
