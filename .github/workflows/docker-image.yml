@@ -2,7 +2,7 @@ name: Spring Docker Image CI
 
 on:
   push:
-    branches: ["master"]
+    branches: ["master", "deploy"]
     
 jobs:
   build:
