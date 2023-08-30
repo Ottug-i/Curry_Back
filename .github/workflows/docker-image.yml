@@ -31,10 +31,11 @@ jobs:
     - name: Grant Execute Permission for gradlew  
       run: chmod +x springboot/curry/gradlew
 
-    - name: Replcae secrets in application.properites
+    - name: Replace secrets in application.properites
+      working-directory: springboot/curry/src/main/resources
       run: |
-          envsubst < springboot/curry/src/main/resources/application.properties > springboot/curry/src/main/resources/application.properties.tmp
-          mv springboot/curry/src/main/resources/application.properties.tmp springboot/curry/src/main/resources/application.properties
+          envsubst < application.properties > application.properties.tmp
+          mv application.properties.tmp application.properties
 
     - name: SpringBoot Build
       working-directory: springboot/curry
