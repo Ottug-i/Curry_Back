@@ -7,10 +7,10 @@ on:
 env:
   MYSQL_URL: ${{ secrets.MYSQL_URL }}
   MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
-  MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+  MYSQL_PW: ${{ secrets.MYSQL_PW }}
   JWT_SECURITY_KEY: ${{ secrets.JWT_SECURITY_KEY }}
   REDIS_URL: ${{ secrets.REDIS_URL }}
-  REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+  REDIS_PW: ${{ secrets.REDIS_PW }}
   FLASK_URL: ${{ secrets.FLASK_URL }}
   
 jobs:
@@ -31,10 +31,16 @@ jobs:
     - name: Grant Execute Permission for gradlew  
       run: chmod +x springboot/curry/gradlew
 
-    - name: Replcae secrets in application.properites
+    - name: Replace secrets in application.properites
+      working-directory: springboot/curry/src/main/resources
       run: |
-          envsubst < springboot/curry/src/main/resources/application.properties > springboot/curry/src/main/resources/application.properties.tmp
-          mv springboot/curry/src/main/resources/application.properties.tmp springboot/curry/src/main/resources/application.properties
+        sed -i "s|{MYSQL_URL}|${MYSQL_URL}|g" application-local.properties
+        sed -i "s|{MYSQL_USERNAME}|${MYSQL_USERNAME}|g" application-local.properties
+        sed -i "s|{MYSQL_PW}|${MYSQL_PW}|g" application-local.properties
+        sed -i "s|{JWT_SECURITY_KEY}|${JWT_SECURITY_KEY}|g" application-local.properties
+        sed -i "s|{REDIS_URL}|${REDIS_URL}|g" application-local.properties
+        sed -i "s|{REDIS_PW}|${REDIS_PW}|g" application-local.properties
+        sed -i "s|{FLASK_URL}|${FLASK_URL}|g" application-local.properties
 
     - name: SpringBoot Build
       working-directory: springboot/curry
