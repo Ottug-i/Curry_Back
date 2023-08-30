@@ -3,7 +3,16 @@ name: Spring Docker Image CI
 on:
   push:
     branches: ["deploy"]
-    
+
+env:
+  MYSQL_URL: ${{ secrets.MYSQL_URL }}
+  MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
+  MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+  JWT_SECURITY_KEY: ${{ secrets.JWT_SECURITY_KEY }}
+  REDIS_URL: ${{ secrets.REDIS_URL }}
+  REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+  FLASK_URL: ${{ secrets.FLASK_URL }}
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,7 +30,12 @@ jobs:
 
     - name: Grant Execute Permission for gradlew  
       run: chmod +x springboot/curry/gradlew
-      
+
+    - name: Replcae secrets in application.properites
+      run: |
+          envsubst < springboot/curry/src/main/resources/application.properties > springboot/curry/src/main/resources/application.properties.tmp
+          mv springboot/curry/src/main/resources/application.properties.tmp springboot/curry/src/main/resources/application.properties
+
     - name: SpringBoot Build
       working-directory: springboot/curry
       run: ./gradlew clean build --exclude-task test
