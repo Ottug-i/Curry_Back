@@ -42,6 +42,9 @@ jobs:
         sed -i "s|{REDIS_PASSWORD}|${REDIS_PASSWORD}|g" application.properties
         sed -i "s|{FLASK_URL}|${FLASK_URL}|g" application.properties
 
+    - name: Print modified application.properties
+      run: cat springboot/curry/src/main/resources/application.properties
+      
     - name: SpringBoot Build
       working-directory: springboot/curry
       run: ./gradlew clean build --exclude-task test
