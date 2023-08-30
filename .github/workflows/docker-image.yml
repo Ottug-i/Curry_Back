@@ -7,10 +7,10 @@ on:
 env:
   MYSQL_URL: ${{ secrets.MYSQL_URL }}
   MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
-  MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+  MYSQL_PW: ${{ secrets.MYSQL_PW }}
   JWT_SECURITY_KEY: ${{ secrets.JWT_SECURITY_KEY }}
   REDIS_URL: ${{ secrets.REDIS_URL }}
-  REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+  REDIS_PW: ${{ secrets.REDIS_PW }}
   FLASK_URL: ${{ secrets.FLASK_URL }}
   
 jobs:
@@ -36,15 +36,12 @@ jobs:
       run: |
         sed -i "s|{MYSQL_URL}|${MYSQL_URL}|g" application-local.properties
         sed -i "s|{MYSQL_USERNAME}|${MYSQL_USERNAME}|g" application-local.properties
-        sed -i "s|{MYSQL_PASSWORD}|${MYSQL_PASSWORD}|g" application-local.properties
+        sed -i "s|{MYSQL_PW}|${MYSQL_PW}|g" application-local.properties
         sed -i "s|{JWT_SECURITY_KEY}|${JWT_SECURITY_KEY}|g" application-local.properties
         sed -i "s|{REDIS_URL}|${REDIS_URL}|g" application-local.properties
-        sed -i "s|{REDIS_PASSWORD}|${REDIS_PASSWORD}|g" application-local.properties
+        sed -i "s|{REDIS_PW}|${REDIS_PW}|g" application-local.properties
         sed -i "s|{FLASK_URL}|${FLASK_URL}|g" application-local.properties
 
-    - name: Print modified application.properties
-      run: cat springboot/curry/src/main/resources/application-local.properties
-      
     - name: SpringBoot Build
       working-directory: springboot/curry
       run: ./gradlew clean build --exclude-task test
