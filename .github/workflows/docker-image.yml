@@ -75,7 +75,7 @@ jobs:
           
     - name: SSH into GCP Instance and Run Docker Compose
       run: |
-          gcloud compute ssh curry -- zone ${{ secrets.GCE_INSTANCE_ZONE}} \
+          gcloud compute ssh curry --zone ${{ secrets.GCE_INSTANCE_ZONE}} \
             --command="cd /home/smcurry2023 && docker-compose up -d && docker container prune -f && docker image prune -f"
       env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY }}
