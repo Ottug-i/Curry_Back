@@ -3,7 +3,7 @@ services:
   mysql:
     image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PW}
     ports:
       - "3306:3306"
     volumes:
@@ -12,17 +12,17 @@ services:
   redis:
     image: redis:latest
     command: >
-      --requirepass ${REDIS_PASSWORD}
+      --requirepass ${REDIS_PW}
     ports:
       - "6379:6379"
 
   flask:
-    image: gcr.io/${$PROJECT_ID}/flask:latest
+    image: gcr.io/${PROJECT_ID}/flask:latest
     ports:
       - "5000:5000"
 
   springboot:
-    image: gcr.io/${$PROJECT_ID}/springboot:latest
+    image: gcr.io/${PROJECT_ID}/springboot:latest
     ports:
       - "8080:8080"
     depends_on:
