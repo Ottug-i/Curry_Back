@@ -69,6 +69,7 @@ jobs:
 
     - name: SSH into GCP Instance and Run Docker Compose
       run: |
+          gcloud auth configure-docker
           gcloud compute ssh curry --zone ${{ secrets.GCE_INSTANCE_ZONE}} \
           --command="docker pull gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:latest && \
                      cd /home/smcurry2023 && \
