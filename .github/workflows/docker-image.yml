@@ -72,20 +72,15 @@ jobs:
         curl -O https://gist.githubusercontent.com/kurokobo/25e41503eb060fee8d8bec1dd859eff3/raw/0d7cd29472f0eaa26ce424071456ad84b24fb318/installer.sh
         bash ./installer.sh
         source ~/.bashrc
-
-    - name: Replace secrets in docker-compose.yml
-      working-directory: springboot/curry
-      run: |-
-        sed -i "s|${MYSQL_PW}|${MYSQL_PW}|g" docker-compose.yml
-        sed -i "s|${REDIS_PW}|${REDIS_PW}|g" docker-compose.yml
-        sed -i "s|${PROJECT_ID}|${PROJECT_ID}|g" docker-compose.yml
-
-    - name: Deploy to Google Compute Engine
-      working-directory: springboot/curry
-      run: |-
-          docker-compose -f docker-compose.yml up -d
-
-    - name: Clean up Docker containers and images
-      run: |
-          docker container prune -f
-          docker image prune -f
+          
+    - name: SSH into GCP Instance and Run Docker Compose
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+          host: ${{ secrets.GCE_INSTANCE }}
+          username: smcurry2023
+          key: ${{ secrets.GCP_SSH_KEY }}
+          script: |
+            cd /path/to/your/docker-compose/folder
+            docker-compose up -d
+            docker container prune -f
+            docker image prune -f
