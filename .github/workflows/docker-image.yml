@@ -61,14 +61,14 @@ jobs:
     
     - name: SpringBoot Docker Image Build
       working-directory: springboot/curry
-      run: docker build . --file Dockerfile --tag "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:$GITHUB_SHA"
+      run: docker build . --file Dockerfile --tag "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:latest"
 
     - name: SpringBoot Docker Image Push
       run: |-
-          docker push "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:$GITHUB_SHA"
+          docker push "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:latest"
 
     - name: Deploy to Google Compute Engine
       run: |-
           gcloud compute instances update-container "$GCE_INSTANCE" \
             --zone "$GCE_INSTANCE_ZONE" \
-            --container-image "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:$GITHUB_SHA"
+            --container-image "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:latest"
