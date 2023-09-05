@@ -1,0 +1,31 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:latest
+    command: >
+      --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+
+  flask:
+    image: gcr.io/${$PROJECT_ID}/flask:latest
+    ports:
+      - "5000:5000"
+
+  springboot:
+    image: gcr.io/${$PROJECT_ID}/springboot:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - redis
+      - flask
