@@ -67,7 +67,11 @@ jobs:
       run: |-
           docker push "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:latest"
 
-    - name: Replace secrets in docker-compse.yml
+    - name: SpringBoot Docker Image Pull
+      run: |-
+          docker pull "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:latest"
+
+    - name: Replace secrets in docker-compose.yml
       working-directory: springboot/curry
       run: |-
         sed -i "s|${MYSQL_PW}|${MYSQL_PW}|g" docker-compose.yml
