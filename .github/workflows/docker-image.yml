@@ -72,9 +72,23 @@ jobs:
           gcloud compute ssh curry --zone ${{ secrets.GCE_INSTANCE_ZONE}} \
           --command="curl -O https://gist.githubusercontent.com/kurokobo/25e41503eb060fee8d8bec1dd859eff3/raw/0d7cd29472f0eaa26ce424071456ad84b24fb318/installer.sh && \
                      bash ./installer.sh && \
+                     export MYSQL_URL='${MYSQL_URL}' && \
+                     export MYSQL_USERNAME='${MYSQL_USERNAME}' && \
+                     export MYSQL_PW='${MYSQL_PW}' && \
+                     export JWT_SECURITY_KEY='${JWT_SECURITY_KEY}' && \
+                     export REDIS_URL='${REDIS_URL}' && \
+                     export REDIS_PW='${REDIS_PW}' && \
+                     export FLASK_URL='${FLASK_URL}' && \
                      docker-compose version && \
                      docker-compose up -d && \
                      docker container prune -f && \
                      docker image prune -f"      
       env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+          MYSQL_URL: ${{ secrets.MYSQL_URL }}
+          MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
+          MYSQL_PW: ${{ secrets.MYSQL_PW }}
+          JWT_SECURITY_KEY: ${{ secrets.JWT_SECURITY_KEY }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          REDIS_PW: ${{ secrets.REDIS_PW }}
+          FLASK_URL: ${{ secrets.FLASK_URL }}
