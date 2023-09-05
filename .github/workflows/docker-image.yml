@@ -67,21 +67,24 @@ jobs:
       run: |-
           docker push "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:latest"
 
-    - name: SpringBoot Docker Image Pull
-      run: |-
-          docker pull "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:latest"
+    - name: SSH into Google Cloud VM
+      uses: w9jds/setup-gcloud@v1
+      with:
+        credentials: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        zone: us-central1-a
+        instance: curry
+        ssh_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Replace secrets in docker-compose.yml
-      working-directory: springboot/curry
-      run: |-
-        sed -i "s|${MYSQL_PW}|${MYSQL_PW}|g" docker-compose.yml
-        sed -i "s|${REDIS_PW}|${REDIS_PW}|g" docker-compose.yml
-        sed -i "s|${PROJECT_ID}|${PROJECT_ID}|g" docker-compose.yml
+    - name: Download and Run Installer Script
+      run: |
+        curl -O https://gist.githubusercontent.com/kurokobo/25e41503eb060fee8d8bec1dd859eff3/raw/0d7cd29472f0eaa26ce424071456ad84b24fb318/installer.sh
+        bash ./installer.sh
+        source ~/.bashrc
 
-    - name: Deploy to Google Compute Engine
-      working-directory: springboot/curry
+    - name: Run Docker Compose
       run: |-
-          docker-compose -f docker-compose.yml up -d
+          docker-compose -f /home/smcurry2023/docker-compose.yml up -d
 
     - name: Clean up Docker containers and images
       run: |
