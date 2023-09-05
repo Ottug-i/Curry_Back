@@ -78,7 +78,7 @@ jobs:
       with:
           host: ${{ secrets.GCE_INSTANCE }}
           username: smcurry2023
-          key: ${{ secrets.GCP_SSH_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/smcurry2023
             docker-compose up -d
