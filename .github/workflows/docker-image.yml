@@ -67,11 +67,19 @@ jobs:
       run: |-
           docker push "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:latest"
 
-    - name: Deploy to Google Compute Engine
+    - name: Replace secrets in docker-compse.yml
+      working-directory: springboot/curry
       run: |-
-          docker-compose -f /home/smcurry2023/docker-compose.yml up -d
-          
-    - name: Clean up Docker containers and images
-      run: |
+        sed -i "s|${MYSQL_PASSWORD}|${MYSQL_PW}|g" docker-compse.yml
+        sed -i "s|${REDIS_PASSWORD}|${REDIS_PW}|g" docker-compse.yml
+        sed -i "s|${$PROJECT_ID}|${PROJECT_ID}|g" docker-compse.yml
+
+    - name: Deploy to Google Compute Engine
+      working-directory: springboot/curry
+      run: |-
+          docker-compose -f docker-compose.yml up -d
+
+   - name: Clean up Docker containers and images
+     run: |
           docker container prune -f
           docker image prune -f
