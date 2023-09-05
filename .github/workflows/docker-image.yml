@@ -69,6 +69,9 @@ jobs:
 
     - name: Deploy to Google Compute Engine
       run: |-
-          gcloud compute instances update-container "$GCE_INSTANCE" \
-            --zone "$GCE_INSTANCE_ZONE" \
-            --container-image "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:latest"
+          docker-compose -f /home/smcurry2023/docker-compose.yml up -d
+          
+    - name: Clean up Docker containers and images
+      run: |
+          docker container prune -f
+          docker image prune -f
