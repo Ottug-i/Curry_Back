@@ -73,9 +73,17 @@ jobs:
         bash ./installer.sh
         source ~/.bashrc
 
-    - name: Run Docker Compose
+    - name: Replace secrets in docker-compose.yml
+      working-directory: springboot/curry
       run: |-
-          docker-compose -f /home/smcurry2023/docker-compose.yml up -d
+        sed -i "s|${MYSQL_PW}|${MYSQL_PW}|g" docker-compose.yml
+        sed -i "s|${REDIS_PW}|${REDIS_PW}|g" docker-compose.yml
+        sed -i "s|${PROJECT_ID}|${PROJECT_ID}|g" docker-compose.yml
+
+    - name: Deploy to Google Compute Engine
+      working-directory: springboot/curry
+      run: |-
+          docker-compose -f docker-compose.yml up -d
 
     - name: Clean up Docker containers and images
       run: |
