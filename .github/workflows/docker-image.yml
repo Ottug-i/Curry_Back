@@ -67,18 +67,13 @@ jobs:
       run: |-
           docker push "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:latest"
 
-    - name: Download and Run Installer Script
-      run: |
-        curl -O https://gist.githubusercontent.com/kurokobo/25e41503eb060fee8d8bec1dd859eff3/raw/0d7cd29472f0eaa26ce424071456ad84b24fb318/installer.sh
-        bash ./installer.sh
-        source ~/.bashrc
-        
     - name: SSH into GCP Instance and Run Docker Compose
       run: |
           gcloud compute ssh curry --zone ${{ secrets.GCE_INSTANCE_ZONE}} \
           --command="curl -O https://gist.githubusercontent.com/kurokobo/25e41503eb060fee8d8bec1dd859eff3/raw/0d7cd29472f0eaa26ce424071456ad84b24fb318/installer.sh && \
                  bash ./installer.sh && \
                  source ~/.bashrc && \
+                 cd /home/smcurry2023 && \
                  docker-compose version && \
                  docker-compose up -d && \
                  docker container prune -f && \
