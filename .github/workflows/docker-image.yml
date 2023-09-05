@@ -70,9 +70,9 @@ jobs:
     - name: Replace secrets in docker-compse.yml
       working-directory: springboot/curry
       run: |-
-        sed -i "s|${MYSQL_PW}|${MYSQL_PW}|g" docker-compse.yml
-        sed -i "s|${REDIS_PW}|${REDIS_PW}|g" docker-compse.yml
-        sed -i "s|${PROJECT_ID}|${PROJECT_ID}|g" docker-compse.yml
+        sed -i "s|${MYSQL_PW}|${MYSQL_PW}|g" docker-compose.yml
+        sed -i "s|${REDIS_PW}|${REDIS_PW}|g" docker-compose.yml
+        sed -i "s|${PROJECT_ID}|${PROJECT_ID}|g" docker-compose.yml
 
     - name: Deploy to Google Compute Engine
       working-directory: springboot/curry
