@@ -78,4 +78,4 @@ jobs:
           gcloud compute ssh curry \
             --command="cd /home/smcurry2023 && docker-compose up -d && docker container prune -f && docker image prune -f"
       env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY }}
