@@ -74,13 +74,8 @@ jobs:
         source ~/.bashrc
           
     - name: SSH into GCP Instance and Run Docker Compose
-      uses: appleboy/ssh-action@v0.1.6
-      with:
-          host: ${{ secrets.GCE_INSTANCE }}
-          username: smcurry2023
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /home/smcurry2023
-            docker-compose up -d
-            docker container prune -f
-            docker image prune -f
+      run: |
+          gcloud compute ssh curry \
+            --command="cd /home/smcurry2023 && docker-compose up -d && docker container prune -f && docker image prune -f"
+      env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
