@@ -9,6 +9,8 @@ services:
       - "3306:3306"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - curry
 
   redis:
     image: redis:latest
@@ -19,6 +21,8 @@ services:
       - "6379:6379"
     depends_on:
       - mysql
+    networks:
+      - curry
 
   flask:
     image: gcr.io/${PROJECT_ID}/flask:latest
@@ -27,6 +31,8 @@ services:
       - "5000:5000"
     depends_on:
       - redis
+    networks:
+      - curry
 
   springboot:
     image: gcr.io/${PROJECT_ID}/springboot:latest
@@ -35,3 +41,9 @@ services:
       - "8080:8080"
     depends_on:
       - flask
+    networks:
+      - curry
+
+networks:
+  curry:
+    external: true
