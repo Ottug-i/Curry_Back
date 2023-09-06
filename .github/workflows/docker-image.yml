@@ -69,6 +69,9 @@ jobs:
 
     - name: SSH into GCP Instance and Run Docker Compose
       uses: appleboy/ssh-action@master
+      env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          DOCKER_IMAGE_NAME: springboot
       with:
         host: ${{ secrets.GCE_INSTANCE }}
         username: ${{ secrets.SSH_USERNAME }}
