@@ -66,9 +66,6 @@ public class BookmarkServiceImpl implements BookmarkService {
         if (name == null) {
             name = "";
         }
-        if (time == null || time.isEmpty()) {
-            time = "2시간 이상";
-        }
 
         for (Bookmark bookmark : bookmarkList) {
             Recipe recipe = bookmark.getRecipeId();

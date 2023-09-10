@@ -54,9 +54,6 @@ public class RecipeServiceImpl implements RecipeService {
 
         else {
             for (Recipe recipe: recipeList) {
-                if (time == null || time.isEmpty()) {
-                    time = "2시간 이상";
-                }
                 if (commonService.isRecipeMatching(recipe, time, difficulty, composition)) {
                     recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, commonService.isBookmarked(user, recipe)));
                 }

@@ -81,7 +81,15 @@ public class CommonService {
     // 레시피 조건 일치
     @Transactional(readOnly = true)
     public Boolean isRecipeMatching(Recipe recipe, String time, String difficulty, String composition) {
-        return recipe.getTime().getTime() <= Time.ofTime(time).getTime() && recipe.getDifficulty().getDifficulty().contains(difficulty) && recipe.getComposition().getComposition().contains(composition);
+        if (time == null || time.isEmpty()) {
+            return recipe.getDifficulty().getDifficulty().contains(difficulty) && recipe.getComposition().getComposition().contains(composition);
+        }
+        else if (time.equals("2시간 이상")) {
+            return recipe.getTime().getTimeName().equals("2시간 이상") && recipe.getDifficulty().getDifficulty().contains(difficulty) && recipe.getComposition().getComposition().contains(composition);
+        }
+        else {
+            return recipe.getTime().getTime() <= Time.ofTime(time).getTime() && recipe.getDifficulty().getDifficulty().contains(difficulty) && recipe.getComposition().getComposition().contains(composition);
+        }
     }
 
     /** 북마크 관련 함수 */
