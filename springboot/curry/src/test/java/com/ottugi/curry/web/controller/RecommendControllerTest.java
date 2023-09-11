@@ -139,7 +139,7 @@ class RecommendControllerTest {
         when(recommendService.getIngredientsRecommendList(any(RecipeRequestDto.class))).thenReturn(pagedRecipeList);
 
         // when, then
-        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(user.getId(), ingredients, PAGE, SIZE);
+        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(user.getId(), ingredients, TIME.getTimeName(), DIFFICULTY.getDifficulty(), COMPOSITION.getComposition(), PAGE, SIZE);
         mockMvc.perform(post("/api/recommend/ingredients/list")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(recipeRequestDto)))

@@ -139,39 +139,17 @@ public class RecommendServiceImpl implements RecommendService {
         User user =  commonService.findByUserId(recipeRequestDto.getUserId());
 
         List<Recipe> recipeList = commonService.findByIngredientsContaining(recipeRequestDto.getIngredients().get(0));
-        List<Map<Recipe, Integer>> sortedRecipeList = new ArrayList<>();
+        List<Recipe> recipeSearchList = recipeList.stream().filter(recipe -> isRecipeMatching(recipe, recipeRequestDto)).collect(Collectors.toList());
 
-        for (Recipe recipe: recipeList) {
-            boolean isAllIncluded = true;
-            for (int i = 1; i < recipeRequestDto.getIngredients().size(); i++) {
-                if (!recipe.getIngredients().contains(recipeRequestDto.getIngredients().get(i))) {
-                    isAllIncluded = false;
-                    break;
-                }
-            }
-            if (isAllIncluded) {
-                Map<Recipe, Integer> recipeMap = new HashMap<>();
-                String favorite_genre = user.getFavoriteGenre();
-                if(favorite_genre == null)
-                    favorite_genre = "";
-                if (recipe.getGenre().contains(favorite_genre)) {
-                    recipeMap.put(recipe, 1);
-                }
-                else {
-                    recipeMap.put(recipe, 0);
-                }
-                sortedRecipeList.add(recipeMap);
-            }
-        }
-
-        sortedRecipeList.sort((recipeMap1, recipeMap2) -> recipeMap2.values().iterator().next().compareTo(recipeMap1.values().iterator().next()));
-
-        List<RecipeIngListResponseDto> pagedRecipeList = sortedRecipeList.stream()
-                .map(recipeMap -> new RecipeIngListResponseDto(recipeRequestDto.getIngredients(), recipeMap.keySet().iterator().next(), commonService.isBookmarked(user, recipeMap.keySet().iterator().next())))
+        List<RecipeIngListResponseDto> pagedRecipeList = sortedRecipeList(user, recipeRequestDto, recipeSearchList)
+                .stream()
+                .map(recipeMap -> new RecipeIngListResponseDto(recipeRequestDto.getIngredients(),
+                        recipeMap.keySet().iterator().next(), commonService.isBookmarked(user, recipeMap.keySet().iterator().next())))
                 .collect(Collectors.toList());
 
         return commonService.getPage(pagedRecipeList, recipeRequestDto.getPage(), recipeRequestDto.getSize());
     }
+
 
     // 북마크 추천 레시피 아이디 목록 조회
     @Override
@@ -240,5 +218,41 @@ public class RecommendServiceImpl implements RecommendService {
         }
 
         return sortedRecipeList.stream().map(recipe -> new RecipeListResponseDto(recipe, commonService.isBookmarked(user, recipe))).collect(Collectors.toList());
+    }
+
+    // 재료 추천 레시피 옵션 검색
+    @Transactional(readOnly = true)
+    private boolean isRecipeMatching(Recipe recipe, RecipeRequestDto recipeRequestDto) {
+        if (recipeRequestDto.getTime().isBlank() && recipeRequestDto.getDifficulty().isBlank() && recipeRequestDto.getComposition().isBlank()) {
+            return true;
+        }
+        return commonService.isRecipeMatching(recipe, recipeRequestDto.getTime(), recipeRequestDto.getDifficulty(), recipeRequestDto.getComposition());
+    }
+
+    // 재료 추천 레시피 장르에 따라 정렬
+    @Transactional(readOnly = true)
+    private List<Map<Recipe, Integer>> sortedRecipeList(User user, RecipeRequestDto recipeRequestDto, List<Recipe> recipeSearchList) {
+        return recipeSearchList.stream()
+                .filter(recipe -> isAllIngredientsIncluded(recipe, recipeRequestDto.getIngredients()))
+                .map(recipe -> {
+                    Map<Recipe, Integer> recipeMap = new HashMap<>();
+                    String favoriteGenre = user.getFavoriteGenre() != null ? user.getFavoriteGenre() : "";
+                    int genreMatch = recipe.getGenre().contains(favoriteGenre) ? 1 : 0;
+                    recipeMap.put(recipe, genreMatch);
+                    return recipeMap;
+                })
+                .sorted((recipeMap1, recipeMap2) -> recipeMap2.values().iterator().next().compareTo(recipeMap1.values().iterator().next()))
+                .collect(Collectors.toList());
+    }
+
+    // 재료 추천 레시피 목록 조회
+    @Transactional(readOnly = true)
+    private boolean isAllIngredientsIncluded(Recipe recipe, List<String> ingredients) {
+        for (int i = 1; i < ingredients.size(); i++) {
+            if (!recipe.getIngredients().contains(ingredients.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

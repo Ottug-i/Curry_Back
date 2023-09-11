@@ -165,11 +165,12 @@ class RecommendServiceTest {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
         when(commonService.findByIngredientsContaining(anyString())).thenReturn(recipeList);
+        when(commonService.isRecipeMatching(any(Recipe.class), anyString(), anyString(), anyString())).thenReturn(true);
         when(commonService.isBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
         doReturn(recipeIngListResponseDtoListPage).when(commonService).getPage(anyList(), anyInt(), anyInt());
 
         // when
-        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(user.getId(), ingredientList, PAGE, SIZE);
+        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(user.getId(), ingredientList, TIME.getTimeName(), DIFFICULTY.getDifficulty(), COMPOSITION.getComposition(), PAGE, SIZE);
         Page<RecipeIngListResponseDto> testRecipeIngListResponseDtoListPage = recommendService.getIngredientsRecommendList(recipeRequestDto);
 
         // then
