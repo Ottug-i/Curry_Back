@@ -1,11 +1,10 @@
-package com.ottugi.curry.web.dto.recommend;
+package com.ottugi.curry.web.dto.ratings;
 
+import com.ottugi.curry.domain.ratings.Ratings;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -21,9 +20,9 @@ public class RatingResponseDto {
     @ApiModelProperty(notes = "평점", example = "4.0")
     private double rating;
 
-    public RatingResponseDto(List<Double> ratingInfo) {
-        this.recipeId = ratingInfo.get(0).longValue();
-        this.userId = ratingInfo.get(1).longValue();
-        this.rating = ratingInfo.get(2);
+    public RatingResponseDto(Ratings ratings) {
+        this.recipeId = ratings.getRecipeId();
+        this.userId = ratings.getUserId();
+        this.rating = ratings.getRating();
     }
 }

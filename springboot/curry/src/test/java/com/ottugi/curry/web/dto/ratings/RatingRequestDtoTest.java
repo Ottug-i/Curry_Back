@@ -1,4 +1,4 @@
-package com.ottugi.curry.web.dto.recommend;
+package com.ottugi.curry.web.dto.ratings;
 
 import org.junit.jupiter.api.Test;
 

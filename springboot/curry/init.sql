@@ -159,3 +159,13 @@ create table lately (
         CONSTRAINT `fk_lately_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
         CONSTRAINT `fk_lately_recipe_id` FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+create table ratings (
+       rating_id bigint NOT NULL AUTO_INCREMENT,
+        created_date_time timestamp,
+        modified_date_time timestamp,
+        rating bigint,
+        recipe_id bigint,
+        user_id bigint,
+        primary key (rating_id)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
