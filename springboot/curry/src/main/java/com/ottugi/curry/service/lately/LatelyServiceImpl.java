@@ -46,6 +46,74 @@ public class LatelyServiceImpl implements LatelyService {
         return latelyList.stream().map(lately -> new LatelyListResponseDto(lately.getRecipeId())).collect(Collectors.toList());
     }
 
+    // 최근 본 레시피에 따른 3D 모델 캐릭터 조회
+    @Override
+    @Transactional(readOnly = true)
+    public String getLatelyCharacter(Long userId) {
+        User user = commonService.findByUserId(userId);
+        Lately lately = latelyRepository.findTop1ByUserIdOrderByIdDesc(user);
+        if (lately == null) {
+            return null;
+        }
+        else {
+            String[] parts = lately.getRecipeId().getGenre().split("\\|");
+            if (parts.length > 0) {
+                String mainGenre = parts[0];
+                String character = "";
+                System.out.println(mainGenre);
+                switch (mainGenre) {
+                    case "ing1":
+                    case "ing2":
+                    case "ing3":
+                    case "ing4":
+                        character = "meat";
+                        break;
+                    case "ing5":
+                    case "ing6":
+                    case "ing7":
+                    case "ing8":
+                        character = "fish";
+                        break;
+                    case "ing9":
+                        character = "kimchi";
+                        break;
+                    case "ing10":
+                        character = "tofu";
+                        break;
+                    case "ing11":
+                        character = "egg";
+                        break;
+                    case "ing12":
+                        character = "mushroom";
+                        break;
+                    case "ing13":
+                    case "ing14":
+                    case "ing15":
+                    case "ing16":
+                    case "ing17":
+                    case "ing18":
+                        character = "vegetable";
+                        break;
+                    case "ing19":
+                    case "ing20":
+                    case "ing21":
+                    case "ing22":
+                    case "ing23":
+                    case "ing24":
+                        character = "fruit";
+                        break;
+                    case "ing25":
+                        character = "milk";
+                        break;
+                }
+                return character;
+            }
+            else {
+                return null;
+            }
+        }
+    }
+
     // 최근 본 레시피 목록에서 중복 레시피 제거
     @Transactional
     private void removeDuplicatedLately(User user, Recipe recipe) {

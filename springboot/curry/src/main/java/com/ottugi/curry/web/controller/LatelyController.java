@@ -26,4 +26,11 @@ public class LatelyController {
     public ResponseEntity<List<LatelyListResponseDto>> getLatelyAll(@RequestParam Long userId) {
         return ResponseEntity.ok().body(latelyService.getLatelyAll(userId));
     }
+
+    @GetMapping("/character")
+    @ApiOperation(value = "최근 본 레시피에 따른 3D 모델 캐릭터 조회", notes = "최근 본 레시피의 메인 재료에 따른 3D 모델 캐릭터를 조회합니다.")
+    @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", readOnly = true)
+    public ResponseEntity<String> getLatelyCharacter(@RequestParam Long userId) {
+        return ResponseEntity.ok().body(latelyService.getLatelyCharacter(userId));
+    }
 }
