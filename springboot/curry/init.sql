@@ -164,7 +164,7 @@ create table ratings (
        rating_id bigint NOT NULL AUTO_INCREMENT,
         created_date_time timestamp,
         modified_date_time timestamp,
-        rating bigint,
+        rating double,
         recipe_id bigint,
         user_id bigint,
         primary key (rating_id)
