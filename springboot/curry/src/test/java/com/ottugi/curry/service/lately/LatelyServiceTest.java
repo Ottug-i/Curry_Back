@@ -96,4 +96,17 @@ class LatelyServiceTest {
         // then
         assertEquals(latelyList.size(), testLatelyListResponseDtoList.size());
     }
+
+    @Test
+    void 최근_본_레시피에_따른_3D_모델_캐릭터_조회() {
+        // given
+        when(commonService.findByUserId(anyLong())).thenReturn(user);
+        when(latelyRepository.findTop1ByUserIdOrderByIdDesc(any(User.class))).thenReturn(lately);
+
+        // when
+        String testCharacter = latelyService.getLatelyCharacter(user.getId());
+
+        // then
+        assertEquals("vegetable", testCharacter);
+    }
 }

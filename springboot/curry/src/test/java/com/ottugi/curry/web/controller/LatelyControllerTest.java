@@ -21,10 +21,9 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static com.ottugi.curry.TestConstants.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -64,5 +63,17 @@ class LatelyControllerTest {
                         .param("userId", String.valueOf(user.getId())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(latelyListResponseDtoList.size())));
+    }
+
+    @Test
+    void 최근_본_레시피에_따른_3D_모델_캐릭터_조회() throws Exception {
+        // given
+        when(latelyService.getLatelyCharacter(anyLong())).thenReturn("vegetable");
+
+        // when, then
+        mockMvc.perform(get("/api/lately/character")
+                    .param("userId", String.valueOf(user.getId())))
+            .andExpect(status().isOk())
+            .andExpect(content().string("vegetable"));
     }
 }
