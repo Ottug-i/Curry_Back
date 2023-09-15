@@ -79,6 +79,8 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
             gcloud auth configure-docker --quiet
+            docker container rm ${{ env.DOCKER_IMAGE_NAME }}
+            docker image gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.DOCKER_IMAGE_NAME }}:latest
             docker pull gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.DOCKER_IMAGE_NAME }}:latest
             cd /home/smcurry2023
             docker-compose up -d
