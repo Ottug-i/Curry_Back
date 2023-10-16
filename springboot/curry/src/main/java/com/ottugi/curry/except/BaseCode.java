@@ -28,6 +28,9 @@ public enum BaseCode {
 
     // BOOKMARK
     BOOKMARK_NOT_FOUND(NOT_FOUND, "해당 북마크 정보를 찾을 수 없습니다."),
+    
+    // RATING
+    RATING_NOT_FOUND(NOT_FOUND, "해당 평점 정보를 찾을 수 없습니다."),
 
     // RECOMMEND
     RECOMMEND_NOT_FOUND(NOT_FOUND, "해당 추천 레시피 정보를 찾을 수 없습니다."),

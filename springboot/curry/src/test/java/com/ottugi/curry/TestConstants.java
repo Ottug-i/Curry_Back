@@ -41,6 +41,11 @@ public class TestConstants {
     public static final String PHOTO = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg";
     public static final String GENRE = "ing13|ing21";
 
+    // Rating
+    public static final Long RATING_ID = 1L;
+    public static final Double RATING = 5.0;
+    public static final Double NEW_RATING = 4.0;
+
     // Rank
     public static final String KEYWORD = "망고";
     public static final int SCORE = 1;

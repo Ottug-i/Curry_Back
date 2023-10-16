@@ -39,6 +39,7 @@ class RecipeListResponseDtoTest {
         assertEquals(recipe.getDifficulty().getDifficulty(), recipeListResponseDto.getDifficulty());
         assertEquals(recipe.getComposition().getComposition(), recipeListResponseDto.getComposition());
         assertEquals(recipe.getIngredients(), recipeListResponseDto.getIngredients());
+        assertEquals("vegetable", recipeListResponseDto.getMainGenre());
         assertEquals(isBookmark, recipeListResponseDto.getIsBookmark());
     }
 }

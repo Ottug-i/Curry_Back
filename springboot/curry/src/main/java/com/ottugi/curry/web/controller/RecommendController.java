@@ -1,12 +1,13 @@
 package com.ottugi.curry.web.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ottugi.curry.service.ratings.RatingsService;
 import com.ottugi.curry.service.recommend.RecommendService;
 import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
-import com.ottugi.curry.web.dto.recommend.RatingRequestDto;
-import com.ottugi.curry.web.dto.recommend.RatingResponseDto;
+import com.ottugi.curry.web.dto.ratings.RatingRequestDto;
+import com.ottugi.curry.web.dto.ratings.RatingResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
 import io.swagger.annotations.Api;
@@ -27,12 +28,13 @@ import java.util.List;
 @RequestMapping("/api/recommend")
 public class RecommendController {
 
+    private final RatingsService ratingsService;
     private final RecommendService recommendService;
 
     @GetMapping("/initial")
     @ApiOperation(value = "초기 랜덤 레시피 평점", notes = "초기 레시피 선호도 조사를 위한 10개의 랜덤 레시피를 리턴합니다.")
     public ResponseEntity<List<RecommendListResponseDto>> getRandomRecipe() {
-        return ResponseEntity.ok().body(recommendService.getRandomRecipe());
+        return ResponseEntity.ok().body(ratingsService.getRandomRecipe());
     }
 
     @GetMapping("/rating")
@@ -42,13 +44,13 @@ public class RecommendController {
             @ApiImplicitParam(name = "recipeId", value = "레시피 아이디", example = "6846342", required = true)
     })
     public ResponseEntity<RatingResponseDto> getUserRatings(@RequestParam Long userId, Long recipeId) throws JsonProcessingException {
-        return ResponseEntity.ok().body(recommendService.getUserRating(userId, recipeId));
+        return ResponseEntity.ok().body(ratingsService.getUserRating(userId, recipeId));
     }
 
     @PostMapping("/rating")
     @ApiOperation(value = "레시피 평점 추가/수정", notes = "유저 아이디에 따른 레시피 평점 정보를 추가/수정합니다.")
     public ResponseEntity<Boolean> updateUserRatings(@RequestBody RatingRequestDto ratingRequestDto) {
-        return ResponseEntity.ok().body(recommendService.updateUserRating(ratingRequestDto));
+        return ResponseEntity.ok().body(ratingsService.updateUserRating(ratingRequestDto));
     }
 
     @DeleteMapping("/rating")
@@ -58,7 +60,7 @@ public class RecommendController {
             @ApiImplicitParam(name = "recipeId", value = "레시피 아이디", example = "6846342", required = true)
     })
     public ResponseEntity<Boolean> updateUserRatings(@RequestParam Long userId, Long recipeId) {
-        return ResponseEntity.ok().body(recommendService.deleteUserRating(userId, recipeId));
+        return ResponseEntity.ok().body(ratingsService.deleteUserRating(userId, recipeId));
     }
 
     @PostMapping("/ingredients/list")

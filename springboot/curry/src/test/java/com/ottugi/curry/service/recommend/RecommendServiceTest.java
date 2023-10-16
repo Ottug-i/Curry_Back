@@ -1,6 +1,5 @@
 package com.ottugi.curry.service.recommend;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ottugi.curry.config.GlobalConfig;
 import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.bookmark.BookmarkRepository;
@@ -21,7 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -48,8 +46,6 @@ class RecommendServiceTest {
     private Page<RecipeIngListResponseDto> recipeIngListResponseDtoListPage;
 
     private Long[] bookmarkIdList;
-
-    private Map<Long, Double> newUserRatingsDic = new HashMap<>();
 
     @Mock
     private UserRepository userRepository;
@@ -93,8 +89,6 @@ class RecommendServiceTest {
         recipeIngListResponseDtoListPage = new PageImpl<>(recipeIngListResponseDtoList, PageRequest.of(PAGE - 1, SIZE), recipeIngListResponseDtoList.size());
 
         bookmarkIdList = new Long[]{bookmark.getId()};
-
-        newUserRatingsDic.put(6847060L, 3.0);
     }
 
     @AfterEach
@@ -106,70 +100,16 @@ class RecommendServiceTest {
     }
 
     @Test
-    void 랜덤_레시피_목록_조회() {
-        // given
-        when(commonService.findByIdIn(anyList())).thenReturn(recipeList);
-
-        // when
-        List<RecommendListResponseDto> testRecommendListResponseDtoList = recommendService.getRandomRecipe();
-
-        // then
-        assertNotNull(testRecommendListResponseDtoList);
-        assertEquals(idList.size(), testRecommendListResponseDtoList.size());
-    }
-
-    @Test
-    void 레시피_평점_조회() {
-        // given
-        String httpResponse = "[" + Double.valueOf(RECIPE_ID) + ", " + Double.valueOf(USER_ID) + ", " +  3.5 + "]";
-        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(httpResponse);
-
-        // when
-        RatingResponseDto testRatingResponseDto = recommendService.getUserRating(user.getId(), recipe.getRecipeId());
-
-        // then
-        assertNotNull(testRatingResponseDto);
-        assertEquals(user.getId(), testRatingResponseDto.getUserId());
-        assertEquals(recipe.getRecipeId(), testRatingResponseDto.getRecipeId());
-    }
-
-    @Test
-    void 레시피_평점_업데이트() {
-        // given
-        ResponseEntity<String> updateHttpResponseEntity = ResponseEntity.ok("true");
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(updateHttpResponseEntity);
-
-        // when
-        RatingRequestDto ratingRequestDto = new RatingRequestDto(user.getId(), newUserRatingsDic);
-        Boolean testResponse = recommendService.updateUserRating(ratingRequestDto);
-
-        // then
-        assertTrue(testResponse);
-    }
-
-    @Test
-    void 레시피_평점_삭제() {
-        // given
-        ResponseEntity<Void> deleteHttpResponseEntity = ResponseEntity.noContent().build();
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.DELETE), any(), eq(Void.class))).thenReturn(deleteHttpResponseEntity);
-
-        // when
-        Boolean testResponse = recommendService.deleteUserRating(user.getId(), recipe.getRecipeId());
-
-        // then
-        assertTrue(testResponse);
-    }
-
-    @Test
     void 재료로_레시피_목록_조회() {
         // given
         when(commonService.findByUserId(anyLong())).thenReturn(user);
         when(commonService.findByIngredientsContaining(anyString())).thenReturn(recipeList);
+        when(commonService.isRecipeMatching(any(Recipe.class), anyString(), anyString(), anyString())).thenReturn(true);
         when(commonService.isBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
         doReturn(recipeIngListResponseDtoListPage).when(commonService).getPage(anyList(), anyInt(), anyInt());
 
         // when
-        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(user.getId(), ingredientList, PAGE, SIZE);
+        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(user.getId(), ingredientList, TIME.getTimeName(), DIFFICULTY.getDifficulty(), COMPOSITION.getComposition(), PAGE, SIZE);
         Page<RecipeIngListResponseDto> testRecipeIngListResponseDtoListPage = recommendService.getIngredientsRecommendList(recipeRequestDto);
 
         // then
@@ -178,7 +118,7 @@ class RecommendServiceTest {
     }
 
     @Test
-    void 북마크_추천_아이디_목록_조회() throws JsonProcessingException {
+    void 북마크_추천_아이디_목록_조회() {
         // given
         String httpResponse = "[1]";
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(httpResponse);
@@ -192,7 +132,7 @@ class RecommendServiceTest {
 
 
     @Test
-    void 평점_추천_아이디_목록_조회() throws JsonProcessingException {
+    void 평점_추천_아이디_목록_조회() {
         // given
         String httpResponse = "[\"ing15\", [1]]";
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(httpResponse);
