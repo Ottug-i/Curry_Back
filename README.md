@@ -10,10 +10,14 @@
 <br>
 
 ## ⚙ 스키마 설계
+- 기본적인 테이블의 경우 MySQL에 스키마를 작성
+- 캐시를 사용하기 위한 경우에는 Redis를 사용<br><br>
 ![스키마 설계](https://github.com/Ottug-i/Curry_Back/assets/87821678/b894bd62-c110-4b05-b9b4-8353d9e4d56e)
 <br><br>
 
 ## 📍 API 설계
+- REST API 설계
+- Swagger API 문서 제공<br><br>
 ![API 설계](https://github.com/Ottug-i/Curry_Back/assets/87821678/605bb587-b127-442b-b3ff-002b9ba08cac)
 <br><br>
 
