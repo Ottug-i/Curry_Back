@@ -8,30 +8,30 @@ import lombok.Getter;
 public class BookmarkListResponseDto {
 
     @ApiModelProperty(notes = "레시피 아이디", example = "6842324")
-    private Long recipeId;
+    private final Long recipeId;
 
     @ApiModelProperty(notes = "레시피 이름", example = "고구마맛탕")
-    private String name;
+    private final String name;
 
     @ApiModelProperty(notes = "레시피 썸네일", example = "https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/828bccf4fdd0a71b6477a8e96e84906b1.png")
-    private String thumbnail;
+    private final String thumbnail;
 
     @ApiModelProperty(notes = "레시피 시간", example = "60분 이내")
-    private String time;
+    private final String time;
 
     @ApiModelProperty(notes = "레시피 난이도", example = "초급")
-    private String difficulty;
+    private final String difficulty;
 
     @ApiModelProperty(notes = "레시피 구성", example = "가볍게")
-    private String composition;
+    private final String composition;
 
     @ApiModelProperty(notes = "레시피 재료", example = " `[재료] 고구마| 식용유| 황설탕| 올리고당| 견과류| 물")
-    private String ingredients;
+    private final String ingredients;
 
     @ApiModelProperty(notes = "북마크 유무", example = "true")
-    private Boolean isBookmark;
+    private final Boolean isBookmark;
 
-    public BookmarkListResponseDto(Recipe recipe, Boolean isBookmark) {
+    public BookmarkListResponseDto(Recipe recipe) {
         this.recipeId = recipe.getRecipeId();
         this.name = recipe.getName();
         this.thumbnail = recipe.getThumbnail();
@@ -39,6 +39,6 @@ public class BookmarkListResponseDto {
         this.difficulty = recipe.getDifficulty().getDifficulty();
         this.composition = recipe.getComposition().getComposition();
         this.ingredients = recipe.getIngredients();
-        this.isBookmark = isBookmark;
+        this.isBookmark = true;
     }
 }

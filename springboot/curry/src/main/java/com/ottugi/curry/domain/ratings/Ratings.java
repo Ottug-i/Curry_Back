@@ -1,17 +1,19 @@
 package com.ottugi.curry.domain.ratings;
 
 import com.ottugi.curry.domain.BaseTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor
 @Entity
 public class Ratings extends BaseTime {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Rating_Id")
@@ -31,8 +33,7 @@ public class Ratings extends BaseTime {
         this.rating = rating;
     }
 
-    public Ratings updateRatings(Double rating) {
+    public void updateRatings(Double rating) {
         this.rating = rating;
-        return this;
     }
 }

@@ -1,5 +1,35 @@
 package com.ottugi.curry.service.recommend;
 
+import static com.ottugi.curry.TestConstants.COMPOSITION;
+import static com.ottugi.curry.TestConstants.DIFFICULTY;
+import static com.ottugi.curry.TestConstants.EMAIL;
+import static com.ottugi.curry.TestConstants.FAVORITE_GENRE;
+import static com.ottugi.curry.TestConstants.GENRE;
+import static com.ottugi.curry.TestConstants.ID;
+import static com.ottugi.curry.TestConstants.INGREDIENTS;
+import static com.ottugi.curry.TestConstants.NAME;
+import static com.ottugi.curry.TestConstants.NICKNAME;
+import static com.ottugi.curry.TestConstants.ORDERS;
+import static com.ottugi.curry.TestConstants.PAGE;
+import static com.ottugi.curry.TestConstants.PHOTO;
+import static com.ottugi.curry.TestConstants.RECIPE_ID;
+import static com.ottugi.curry.TestConstants.ROLE;
+import static com.ottugi.curry.TestConstants.SERVINGS;
+import static com.ottugi.curry.TestConstants.SIZE;
+import static com.ottugi.curry.TestConstants.THUMBNAIL;
+import static com.ottugi.curry.TestConstants.TIME;
+import static com.ottugi.curry.TestConstants.USER_ID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.when;
+
 import com.ottugi.curry.config.GlobalConfig;
 import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.bookmark.BookmarkRepository;
@@ -7,10 +37,12 @@ import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
-import com.ottugi.curry.service.CommonService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
-import com.ottugi.curry.web.dto.recommend.*;
+import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
+import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,12 +54,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @SpringBootTest
 class RecommendServiceTest {
 
@@ -35,14 +61,14 @@ class RecommendServiceTest {
     private Recipe recipe;
     private Bookmark bookmark;
 
-    private Boolean isBookmark = true;
+    private final Boolean isBookmark = true;
 
-    private String ingredient = "고구마";
-    private List<String> ingredientList = new ArrayList<>();
-    private List<Long> idList = new ArrayList<>();
-    private List<Long> recipeIdList = new ArrayList<>();
-    private List<Recipe> recipeList = new ArrayList<>();
-    private List<RecipeIngListResponseDto> recipeIngListResponseDtoList = new ArrayList<>();
+    private final String ingredient = "고구마";
+    private final List<String> ingredientList = new ArrayList<>();
+    private final List<Long> idList = new ArrayList<>();
+    private final List<Long> recipeIdList = new ArrayList<>();
+    private final List<Recipe> recipeList = new ArrayList<>();
+    private final List<RecipeIngListResponseDto> recipeIngListResponseDtoList = new ArrayList<>();
     private Page<RecipeIngListResponseDto> recipeIngListResponseDtoListPage;
 
     private Long[] bookmarkIdList;
@@ -86,7 +112,8 @@ class RecommendServiceTest {
         recipeList.add(recipe);
         ingredientList.add(ingredient);
         recipeIngListResponseDtoList.add(new RecipeIngListResponseDto(ingredientList, recipe, isBookmark));
-        recipeIngListResponseDtoListPage = new PageImpl<>(recipeIngListResponseDtoList, PageRequest.of(PAGE - 1, SIZE), recipeIngListResponseDtoList.size());
+        recipeIngListResponseDtoListPage = new PageImpl<>(recipeIngListResponseDtoList, PageRequest.of(PAGE - 1, SIZE),
+                recipeIngListResponseDtoList.size());
 
         bookmarkIdList = new Long[]{bookmark.getId()};
     }
@@ -109,8 +136,9 @@ class RecommendServiceTest {
         doReturn(recipeIngListResponseDtoListPage).when(commonService).getPage(anyList(), anyInt(), anyInt());
 
         // when
-        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(user.getId(), ingredientList, TIME.getTimeName(), DIFFICULTY.getDifficulty(), COMPOSITION.getComposition(), PAGE, SIZE);
-        Page<RecipeIngListResponseDto> testRecipeIngListResponseDtoListPage = recommendService.getIngredientsRecommendList(recipeRequestDto);
+        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(user.getId(), ingredientList, TIME.getTimeName(), DIFFICULTY.getDifficulty(),
+                COMPOSITION.getComposition(), PAGE, SIZE);
+        Page<RecipeIngListResponseDto> testRecipeIngListResponseDtoListPage = recommendService.findRecipePageByIngredientsDetection(recipeRequestDto);
 
         // then
         assertNotNull(testRecipeIngListResponseDtoListPage);
@@ -123,7 +151,7 @@ class RecommendServiceTest {
         String httpResponse = "[1]";
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(httpResponse);
 
-        List<Long> testRecommendRecipeIdList = recommendService.getRecommendBookmarkId(recipe.getRecipeId(), PAGE);
+        List<Long> testRecommendRecipeIdList = recommendService.findRecipeIdListByBookmarkRecommend(recipe.getRecipeId(), PAGE);
 
         // then
         assertNotNull(testRecommendRecipeIdList);
@@ -139,7 +167,7 @@ class RecommendServiceTest {
         when(commonService.findByUserId(anyLong())).thenReturn(user);
 
         // when
-        List<Long> testRecommendRecipeIdList = recommendService.getRecommendRatingId(user.getId(), PAGE, bookmarkIdList);
+        List<Long> testRecommendRecipeIdList = recommendService.findRecipeIdListByRatingRecommend(user.getId(), PAGE, bookmarkIdList);
 
         // then
         assertNotNull(testRecommendRecipeIdList);
@@ -155,7 +183,7 @@ class RecommendServiceTest {
 
         // when
         RecommendRequestDto recommendRequestDto = new RecommendRequestDto(user.getId(), recipeIdList);
-        List<RecipeListResponseDto> testRecipeListResponseDtoList = recommendService.getBookmarkOrRatingRecommendList(recommendRequestDto);
+        List<RecipeListResponseDto> testRecipeListResponseDtoList = recommendService.findBookmarkOrRatingRecommendList(recommendRequestDto);
 
         // then
         assertNotNull(testRecipeListResponseDtoList);

@@ -1,19 +1,17 @@
 package com.ottugi.curry.domain.recipe;
 
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Arrays;
 
 @Getter
 @RequiredArgsConstructor
 public enum Difficulty {
-
-    anyone("아무나"),
-    beginner("초급"),
-    middle("중급"),
-    advanced("고급"),
-    master("마스터");
+    ANYONE("아무나"),
+    BEGINNER("초급"),
+    MIDDLE("중급"),
+    ADVANCED("고급"),
+    MASTER("마스터");
 
     private String difficulty;
 
@@ -26,5 +24,4 @@ public enum Difficulty {
                 .filter(d -> d.getDifficulty().equals(difficulty))
                 .findAny().orElse(null);
     }
-
 }

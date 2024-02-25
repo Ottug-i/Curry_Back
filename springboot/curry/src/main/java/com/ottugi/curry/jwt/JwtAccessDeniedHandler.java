@@ -1,29 +1,21 @@
 package com.ottugi.curry.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ottugi.curry.except.BaseCode;
 import com.ottugi.curry.except.ErrorResponse;
+import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
-
-    private ObjectMapper objectMapper = new ObjectMapper();
-
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("utf-8");
-
+        response.setContentType("application/json; charset=UTF-8");
         ErrorResponse errorResponse = new ErrorResponse(BaseCode.JWT_FORBIDDEN);
-        String result = objectMapper.writeValueAsString(errorResponse);
+        response.getWriter().write(errorResponse.convertToJson());
         response.setStatus(errorResponse.getStatus());
-        response.getWriter().write(result);
     }
 }

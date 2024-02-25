@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class BaseException extends RuntimeException {
+public class JwtAuthenticationException extends RuntimeException {
     private final BaseCode baseCode;
 }

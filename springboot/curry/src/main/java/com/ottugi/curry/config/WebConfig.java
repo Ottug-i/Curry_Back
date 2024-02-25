@@ -10,14 +10,13 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@RequiredArgsConstructor
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
-
     private String jwtHeader;
 
     public WebConfig(GlobalConfig config) {
-        this.jwtHeader = config.getHeader();
+        this.jwtHeader = config.getJwt_header();
     }
 
     @Bean

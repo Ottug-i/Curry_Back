@@ -1,8 +1,20 @@
 package com.ottugi.curry.service.user;
 
+import static com.ottugi.curry.TestConstants.EMAIL;
+import static com.ottugi.curry.TestConstants.FAVORITE_GENRE;
+import static com.ottugi.curry.TestConstants.NEW_NICKNAME;
+import static com.ottugi.curry.TestConstants.NICKNAME;
+import static com.ottugi.curry.TestConstants.ROLE;
+import static com.ottugi.curry.TestConstants.USER_ID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.when;
+
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
-import com.ottugi.curry.service.CommonService;
 import com.ottugi.curry.web.dto.user.UserResponseDto;
 import com.ottugi.curry.web.dto.user.UserUpdateRequestDto;
 import org.junit.jupiter.api.AfterEach;
@@ -11,11 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static com.ottugi.curry.TestConstants.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class UserServiceTest {
@@ -50,7 +57,7 @@ class UserServiceTest {
         when(commonService.findByUserId(anyLong())).thenReturn(user);
 
         // when
-        UserResponseDto testUserResponseDto = userService.getProfile(user.getId());
+        UserResponseDto testUserResponseDto = userService.findUserProfileByUserId(user.getId());
 
         // then
         assertNotNull(testUserResponseDto);
@@ -67,7 +74,7 @@ class UserServiceTest {
 
         // when
         UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(user.getId(), NEW_NICKNAME);
-        UserResponseDto testUserResponseDto = userService.updateProfile(userUpdateRequestDto);
+        UserResponseDto testUserResponseDto = userService.modifyUserProfile(userUpdateRequestDto);
 
         // then
         assertNotNull(testUserResponseDto);
@@ -83,7 +90,7 @@ class UserServiceTest {
         when(commonService.findByUserId(anyLong())).thenReturn(user);
 
         // when
-        Boolean testResponse = userService.setWithdraw(user.getId());
+        Boolean testResponse = userService.withdrawUserAccount(user.getId());
 
         // then
         assertTrue(testResponse);

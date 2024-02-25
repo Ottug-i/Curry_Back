@@ -10,15 +10,18 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Api(tags={"Recipe API (레시피 API)"})
+@Api(tags = {"Recipe API (레시피 API)"})
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/recipe")
 public class RecipeController {
-
     private final RecipeService recipeService;
 
     @GetMapping
@@ -27,8 +30,8 @@ public class RecipeController {
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
             @ApiImplicitParam(name = "recipeId", value = "레시피 아이디", example = "6909678", required = true)
     })
-    public ResponseEntity<RecipeResponseDto> getRecipeDetail(@RequestParam Long userId, Long recipeId) {
-        return ResponseEntity.ok().body(recipeService.getRecipeDetail(userId, recipeId));
+    public ResponseEntity<RecipeResponseDto> recipeDetails(@RequestParam Long userId, Long recipeId) {
+        return ResponseEntity.ok().body(recipeService.findRecipeByUserIdAndRecipeId(userId, recipeId));
     }
 
     @GetMapping("/search")
@@ -42,7 +45,8 @@ public class RecipeController {
             @ApiImplicitParam(name = "difficulty", value = "레시피 난이도", example = "아무나"),
             @ApiImplicitParam(name = "composition", value = "레시피 구성", example = "가볍게")
     })
-    public ResponseEntity<Page<RecipeListResponseDto>> searchByBox(@RequestParam Long userId, int page, int size, String name, String time, String difficulty, String composition) {
-        return ResponseEntity.ok().body(recipeService.searchByBox(userId, page, size, name, time, difficulty, composition));
+    public ResponseEntity<Page<RecipeListResponseDto>> recipeSearchOptionPage(@RequestParam Long userId, int page, int size, String name, String time,
+                                                                              String difficulty, String composition) {
+        return ResponseEntity.ok().body(recipeService.findRecipePageBySearchBox(userId, page, size, name, time, difficulty, composition));
     }
 }

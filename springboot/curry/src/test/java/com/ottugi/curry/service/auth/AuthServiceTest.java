@@ -1,27 +1,36 @@
 package com.ottugi.curry.service.auth;
 
+import static com.ottugi.curry.TestConstants.EMAIL;
+import static com.ottugi.curry.TestConstants.EXPIRED_TIME;
+import static com.ottugi.curry.TestConstants.FAVORITE_GENRE;
+import static com.ottugi.curry.TestConstants.IS_NEW;
+import static com.ottugi.curry.TestConstants.NICKNAME;
+import static com.ottugi.curry.TestConstants.ROLE;
+import static com.ottugi.curry.TestConstants.USER_ID;
+import static com.ottugi.curry.TestConstants.VALUE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.ottugi.curry.domain.token.Token;
 import com.ottugi.curry.domain.token.TokenRepository;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.jwt.TokenProvider;
-import com.ottugi.curry.service.CommonService;
 import com.ottugi.curry.web.dto.auth.TokenResponseDto;
 import com.ottugi.curry.web.dto.auth.UserSaveRequestDto;
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Optional;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class AuthServiceTest {
@@ -69,7 +78,7 @@ class AuthServiceTest {
 
         // when
         UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(user.getEmail(), user.getNickName());
-        TokenResponseDto testTokenResponseDto = authService.login(userSaveRequestDto, mock(HttpServletResponse.class));
+        TokenResponseDto testTokenResponseDto = authService.singUpOrLogin(userSaveRequestDto, mock(HttpServletResponse.class));
 
         // then
         assertNotNull(testTokenResponseDto);
@@ -79,7 +88,7 @@ class AuthServiceTest {
         assertNotNull(testTokenResponseDto.getToken());
         assertEquals(IS_NEW, testTokenResponseDto.getIsNew());
     }
-    
+
     @Test
     void 회원_로그인() {
         // given
@@ -92,7 +101,7 @@ class AuthServiceTest {
 
         // when
         UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(user.getEmail(), user.getNickName());
-        TokenResponseDto testTokenResponseDto = authService.login(userSaveRequestDto, mock(HttpServletResponse.class));
+        TokenResponseDto testTokenResponseDto = authService.singUpOrLogin(userSaveRequestDto, mock(HttpServletResponse.class));
 
         // then
         assertNotNull(testTokenResponseDto);
@@ -113,7 +122,8 @@ class AuthServiceTest {
         when(tokenProvider.createAccessToken(any(User.class))).thenReturn(token);
 
         // when
-        TokenResponseDto testTokenResponseDto = authService.reissueToken(user.getEmail(), mock(HttpServletRequest.class), mock(HttpServletResponse.class));
+        TokenResponseDto testTokenResponseDto = authService.reissueToken(user.getEmail(), mock(HttpServletRequest.class),
+                mock(HttpServletResponse.class));
 
         // then
         assertNotNull(testTokenResponseDto);

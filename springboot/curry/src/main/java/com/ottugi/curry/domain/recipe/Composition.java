@@ -1,17 +1,15 @@
 package com.ottugi.curry.domain.recipe;
 
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Arrays;
 
 @Getter
 @RequiredArgsConstructor
 public enum Composition {
-
-    lightly("가볍게"),
-    confidently("든든하게"),
-    generously("푸짐하게");
+    LIGHTLY("가볍게"),
+    CONFIDENTLY("든든하게"),
+    GENEROUSLY("푸짐하게");
 
     private String composition;
 

@@ -1,14 +1,12 @@
 package com.ottugi.curry.domain.user;
 
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Arrays;
 
 @Getter
 @RequiredArgsConstructor
 public enum Role {
-
     USER("일반 사용자"),
     MANAGER("관리자");
 

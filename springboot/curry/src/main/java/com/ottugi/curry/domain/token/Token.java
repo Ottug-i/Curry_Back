@@ -12,11 +12,10 @@ import org.springframework.data.redis.core.index.Indexed;
 @NoArgsConstructor
 @RedisHash("token")
 public class Token {
-
     @Id
     @Indexed
     private String key;
-    
+
     private String value;
 
     @TimeToLive

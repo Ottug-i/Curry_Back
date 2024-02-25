@@ -12,17 +12,14 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 @EnableRedisRepositories
 public class RedisConfig {
-
-    private String host;
-    private int port;
-    private String password;
-    private String jwtHeader;
+    private final String host;
+    private final int port;
+    private final String password;
 
     public RedisConfig(GlobalConfig config) {
         this.host = config.getRedis_host();
         this.port = config.getRedis_port();
         this.password = config.getRedis_password();
-        this.jwtHeader = config.getHeader();
     }
 
     @Bean

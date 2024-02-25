@@ -2,69 +2,98 @@ package com.ottugi.curry.service.recipe;
 
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeRepository;
+import com.ottugi.curry.domain.recipe.Time;
 import com.ottugi.curry.domain.user.User;
-import com.ottugi.curry.service.CommonService;
+import com.ottugi.curry.except.BaseCode;
+import com.ottugi.curry.except.NotFoundException;
+import com.ottugi.curry.service.PageUtil;
 import com.ottugi.curry.service.lately.LatelyService;
 import com.ottugi.curry.service.rank.RankService;
+import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
+    private final UserService userService;
     private final LatelyService latelyService;
     private final RankService rankService;
-    private final CommonService commonService;
 
-    // 레시피 상세 조회
     @Override
-    @Transactional
-    public RecipeResponseDto getRecipeDetail(Long userId, Long recipeId) {
-        User user = commonService.findByUserId(userId);
-        Recipe recipe = commonService.findByRecipeId(recipeId);
-        latelyService.addLately(userId, recipeId);
-        return new RecipeResponseDto(recipe, commonService.isBookmarked(user, recipe));
+    public RecipeResponseDto findRecipeByUserIdAndRecipeId(Long userId, Long recipeId) {
+        User user = userService.findUserByUserId(userId);
+        Recipe recipe = findRecipeByRecipeId(recipeId);
+        latelyService.addLately(user, recipe);
+        return new RecipeResponseDto(recipe, user);
     }
 
-    // 레시피 검색
     @Override
-    @Transactional(readOnly = true)
-    public Page<RecipeListResponseDto> searchByBox(Long userId, int page, int size, String name, String time, String difficulty, String composition) {
-        User user = commonService.findByUserId(userId);
-        List<Recipe> recipeList = findByName(name);
-        List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
+    public Page<RecipeListResponseDto> findRecipePageBySearchBox(Long userId, int page, int size,
+                                                                 String name, String time, String difficulty, String composition) {
+        User user = userService.findUserByUserId(userId);
+        List<Recipe> recipeList = recipeRepository.findByNameContaining(name);
+        List<RecipeListResponseDto> recipeListResponseDtoList = recipeList.stream()
+                .filter(filterPredicateForOptions(time, difficulty, composition))
+                .map(recipe -> new RecipeListResponseDto(recipe, user))
+                .collect(Collectors.toList());
+        if (!recipeListResponseDtoList.isEmpty()) {
+            rankService.updateOrAddRank(name);
+        }
+        return PageUtil.convertResponseDtoPages(recipeListResponseDtoList, page, size);
+    }
 
+    @Override
+    public Recipe findRecipeByRecipeId(Long recipeId) {
+        return recipeRepository.findByRecipeId(recipeId).orElseThrow(() -> new NotFoundException(BaseCode.RECIPE_NOT_FOUND));
+    }
+
+    @Override
+    public List<Recipe> findRecipeListByRecipeIdIn(List<Long> recipeIdList) {
+        return recipeRepository.findByRecipeIdIn(recipeIdList);
+    }
+
+    @Override
+    public List<Recipe> findByRecipeListByIngredientsContaining(String ingredients) {
+        return recipeRepository.findByIngredientsContaining(ingredients);
+    }
+
+    @Override
+    public Predicate<Recipe> filterPredicateForOptions(String time, String difficulty, String composition) {
         if (time.isBlank() && difficulty.isBlank() && composition.isBlank()) {
-            recipeListResponseDtoList = recipeList.stream().map(recipe -> new RecipeListResponseDto(recipe, commonService.isBookmarked(user, recipe))).collect(Collectors.toList());
-            if (!recipeListResponseDtoList.isEmpty()) {
-                rankService.updateOrAddRank(name);
-            }
+            return recipe -> true;
         }
-
-        else {
-            for (Recipe recipe: recipeList) {
-                if (commonService.isRecipeMatching(recipe, time, difficulty, composition)) {
-                    recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, commonService.isBookmarked(user, recipe)));
-                }
-            }
-        }
-        return commonService.getPage(recipeListResponseDtoList, page, size);
+        return recipe -> isRecipeMatching(recipe, time, difficulty, composition);
     }
 
-    // 레시피 이름으로 조회
-    @Transactional(readOnly = true)
-    private List<Recipe> findByName(String name) {
-        return recipeRepository.findByNameContaining(name);
+    @Override
+    public Boolean isRecipeMatching(Recipe recipe, String time, String difficulty, String composition) {
+        if (time == null || time.isEmpty()) {
+            return isDifficultyMatching(recipe, difficulty) && isCompositionMatching(recipe, composition);
+        }
+        return isTimeMatching(recipe, time) && isDifficultyMatching(recipe, difficulty) && isCompositionMatching(recipe, composition);
+    }
+
+    private Boolean isDifficultyMatching(Recipe recipe, String difficulty) {
+        return recipe.getDifficulty().getDifficulty().contains(difficulty);
+    }
+
+    private Boolean isCompositionMatching(Recipe recipe, String composition) {
+        return recipe.getComposition().getComposition().contains(composition);
+    }
+
+    private Boolean isTimeMatching(Recipe recipe, String time) {
+        if (time.equals(Time.TWO_HOURS.getTimeName())) {
+            return recipe.getTime().getTimeName().contains(Time.TWO_HOURS.getTimeName());
+        }
+        return recipe.getTime().getTime() <= Time.ofTime(time).getTime();
     }
 }

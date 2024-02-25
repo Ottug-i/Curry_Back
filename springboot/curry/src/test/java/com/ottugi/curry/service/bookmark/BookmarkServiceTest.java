@@ -1,13 +1,46 @@
 package com.ottugi.curry.service.bookmark;
 
+import static com.ottugi.curry.TestConstants.COMPOSITION;
+import static com.ottugi.curry.TestConstants.DIFFICULTY;
+import static com.ottugi.curry.TestConstants.EMAIL;
+import static com.ottugi.curry.TestConstants.FAVORITE_GENRE;
+import static com.ottugi.curry.TestConstants.GENRE;
+import static com.ottugi.curry.TestConstants.ID;
+import static com.ottugi.curry.TestConstants.INGREDIENTS;
+import static com.ottugi.curry.TestConstants.NAME;
+import static com.ottugi.curry.TestConstants.NICKNAME;
+import static com.ottugi.curry.TestConstants.ORDERS;
+import static com.ottugi.curry.TestConstants.PAGE;
+import static com.ottugi.curry.TestConstants.PHOTO;
+import static com.ottugi.curry.TestConstants.RECIPE_ID;
+import static com.ottugi.curry.TestConstants.ROLE;
+import static com.ottugi.curry.TestConstants.SERVINGS;
+import static com.ottugi.curry.TestConstants.SIZE;
+import static com.ottugi.curry.TestConstants.THUMBNAIL;
+import static com.ottugi.curry.TestConstants.TIME;
+import static com.ottugi.curry.TestConstants.USER_ID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.when;
+
 import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.bookmark.BookmarkRepository;
-import com.ottugi.curry.domain.recipe.*;
+import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
-import com.ottugi.curry.service.CommonService;
 import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,13 +51,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @SpringBootTest
 class BookmarkServiceTest {
 
@@ -32,8 +58,8 @@ class BookmarkServiceTest {
     private Recipe recipe;
     private Bookmark bookmark;
 
-    private List<Bookmark> bookmarkList = new ArrayList<>();
-    private List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
+    private final List<Bookmark> bookmarkList = new ArrayList<>();
+    private final List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
     private Page<BookmarkListResponseDto> bookmarkListResponseDtoListPage;
 
     @Mock
@@ -65,7 +91,8 @@ class BookmarkServiceTest {
 
         bookmarkList.add(bookmark);
         bookmarkListResponseDtoList.add(new BookmarkListResponseDto(recipe, true));
-        bookmarkListResponseDtoListPage = new PageImpl<>(bookmarkListResponseDtoList, PageRequest.of(PAGE - 1, SIZE), bookmarkListResponseDtoList.size());
+        bookmarkListResponseDtoListPage = new PageImpl<>(bookmarkListResponseDtoList, PageRequest.of(PAGE - 1, SIZE),
+                bookmarkListResponseDtoList.size());
     }
 
     @AfterEach
@@ -85,7 +112,7 @@ class BookmarkServiceTest {
         when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(bookmark);
 
         // when
-        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(user.getId(),recipe.getRecipeId());
+        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(user.getId(), recipe.getRecipeId());
         Boolean testResponse = bookmarkService.addOrRemoveBookmark(bookmarkRequestDto);
 
         // then
@@ -118,7 +145,7 @@ class BookmarkServiceTest {
         doReturn(bookmarkListResponseDtoListPage).when(commonService).getPage(anyList(), anyInt(), anyInt());
 
         // when
-        Page<BookmarkListResponseDto> testBookmarkListPageResponseDto = bookmarkService.getBookmarkAll(user.getId(), PAGE, SIZE);
+        Page<BookmarkListResponseDto> testBookmarkListPageResponseDto = bookmarkService.findBookmarkPageByUserId(user.getId(), PAGE, SIZE);
 
         // then
         assertEquals(bookmarkListResponseDtoListPage.getTotalElements(), testBookmarkListPageResponseDto.getTotalElements());
@@ -134,7 +161,8 @@ class BookmarkServiceTest {
         doReturn(bookmarkListResponseDtoListPage).when(commonService).getPage(anyList(), anyInt(), anyInt());
 
         // when
-        Page<BookmarkListResponseDto> testBookmarkListPageResponseDto = bookmarkService.searchBookmark(eq(user.getId()), PAGE, SIZE, recipe.getName(), recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficulty(), recipe.getComposition().getComposition());
+        Page<BookmarkListResponseDto> testBookmarkListPageResponseDto = bookmarkService.findBookmarkPageByOption(eq(user.getId()), PAGE, SIZE,
+                recipe.getName(), recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficulty(), recipe.getComposition().getComposition());
 
         // then
         assertEquals(bookmarkListResponseDtoListPage.getTotalElements(), testBookmarkListPageResponseDto.getTotalElements());

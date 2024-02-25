@@ -1,31 +1,45 @@
 package com.ottugi.curry.service.ratings;
 
+import static com.ottugi.curry.TestConstants.COMPOSITION;
+import static com.ottugi.curry.TestConstants.DIFFICULTY;
+import static com.ottugi.curry.TestConstants.GENRE;
+import static com.ottugi.curry.TestConstants.ID;
+import static com.ottugi.curry.TestConstants.INGREDIENTS;
+import static com.ottugi.curry.TestConstants.NAME;
+import static com.ottugi.curry.TestConstants.ORDERS;
+import static com.ottugi.curry.TestConstants.PHOTO;
+import static com.ottugi.curry.TestConstants.RATING;
+import static com.ottugi.curry.TestConstants.RATING_ID;
+import static com.ottugi.curry.TestConstants.RECIPE_ID;
+import static com.ottugi.curry.TestConstants.SERVINGS;
+import static com.ottugi.curry.TestConstants.THUMBNAIL;
+import static com.ottugi.curry.TestConstants.TIME;
+import static com.ottugi.curry.TestConstants.USER_ID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.when;
+
 import com.ottugi.curry.domain.ratings.Ratings;
 import com.ottugi.curry.domain.ratings.RatingsRepository;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeRepository;
-import com.ottugi.curry.service.CommonService;
 import com.ottugi.curry.web.dto.ratings.RatingRequestDto;
 import com.ottugi.curry.web.dto.ratings.RatingResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class RatingsServiceTest {
@@ -33,8 +47,8 @@ class RatingsServiceTest {
     private Ratings ratings;
     private Recipe recipe;
 
-    private List<Long> idList = new ArrayList<>();
-    private List<Recipe> recipeList = new ArrayList<>();
+    private final List<Long> idList = new ArrayList<>();
+    private final List<Recipe> recipeList = new ArrayList<>();
 
     @Mock
     private RatingsRepository ratingsRepository;
@@ -48,7 +62,7 @@ class RatingsServiceTest {
     @InjectMocks
     private RatingsServiceImpl ratingsService;
 
-    private Map<Long, Double> newUserRatingsDic = new HashMap<>();
+    private final Map<Long, Double> newUserRatingsDic = new HashMap<>();
 
     @BeforeEach
     public void setUp() {
@@ -66,7 +80,7 @@ class RatingsServiceTest {
     @AfterEach
     public void clean() {
         // clean
-        ratingsRepository.deleteAll();;
+        ratingsRepository.deleteAll();
     }
 
     @Test
@@ -75,7 +89,7 @@ class RatingsServiceTest {
         when(commonService.findByIdIn(anyList())).thenReturn(recipeList);
 
         // when
-        List<RecommendListResponseDto> testRecommendListResponseDtoList = ratingsService.getRandomRecipe();
+        List<RecommendListResponseDto> testRecommendListResponseDtoList = ratingsService.findRandomRecipeListForResearch();
 
         // then
         assertNotNull(testRecommendListResponseDtoList);
@@ -88,7 +102,7 @@ class RatingsServiceTest {
         when(ratingsRepository.findByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(ratings);
 
         // when
-        RatingResponseDto testRatingResponseDto = ratingsService.getUserRating(USER_ID, recipe.getRecipeId());
+        RatingResponseDto testRatingResponseDto = ratingsService.findUserRating(USER_ID, recipe.getRecipeId());
 
         // then
         assertNotNull(testRatingResponseDto);

@@ -1,25 +1,43 @@
 package com.ottugi.curry.service.lately;
 
+import static com.ottugi.curry.TestConstants.COMPOSITION;
+import static com.ottugi.curry.TestConstants.DIFFICULTY;
+import static com.ottugi.curry.TestConstants.EMAIL;
+import static com.ottugi.curry.TestConstants.FAVORITE_GENRE;
+import static com.ottugi.curry.TestConstants.GENRE;
+import static com.ottugi.curry.TestConstants.ID;
+import static com.ottugi.curry.TestConstants.INGREDIENTS;
+import static com.ottugi.curry.TestConstants.NAME;
+import static com.ottugi.curry.TestConstants.NICKNAME;
+import static com.ottugi.curry.TestConstants.ORDERS;
+import static com.ottugi.curry.TestConstants.PHOTO;
+import static com.ottugi.curry.TestConstants.RECIPE_ID;
+import static com.ottugi.curry.TestConstants.ROLE;
+import static com.ottugi.curry.TestConstants.SERVINGS;
+import static com.ottugi.curry.TestConstants.THUMBNAIL;
+import static com.ottugi.curry.TestConstants.TIME;
+import static com.ottugi.curry.TestConstants.USER_ID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.when;
+
 import com.ottugi.curry.domain.lately.Lately;
 import com.ottugi.curry.domain.lately.LatelyRepository;
-import com.ottugi.curry.domain.recipe.*;
+import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
-import com.ottugi.curry.service.CommonService;
 import com.ottugi.curry.web.dto.lately.LatelyListResponseDto;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class LatelyServiceTest {
@@ -28,7 +46,7 @@ class LatelyServiceTest {
     private Recipe recipe;
     private Lately lately;
 
-    private List<Lately> latelyList = new ArrayList<>();
+    private final List<Lately> latelyList = new ArrayList<>();
 
     @Mock
     private CommonService commonService;
@@ -91,7 +109,7 @@ class LatelyServiceTest {
         when(latelyRepository.findByUserIdOrderByIdDesc(any(User.class))).thenReturn(latelyList);
 
         // when
-        List<LatelyListResponseDto> testLatelyListResponseDtoList = latelyService.getLatelyAll(user.getId());
+        List<LatelyListResponseDto> testLatelyListResponseDtoList = latelyService.findLatelyListByUserId(user.getId());
 
         // then
         assertEquals(latelyList.size(), testLatelyListResponseDtoList.size());
@@ -104,7 +122,7 @@ class LatelyServiceTest {
         when(latelyRepository.findTop1ByUserIdOrderByIdDesc(any(User.class))).thenReturn(lately);
 
         // when
-        String testCharacter = latelyService.getLatelyCharacter(user.getId());
+        String testCharacter = latelyService.findLatelyGenreFor3DCharacter(user.getId());
 
         // then
         assertEquals("vegetable", testCharacter);

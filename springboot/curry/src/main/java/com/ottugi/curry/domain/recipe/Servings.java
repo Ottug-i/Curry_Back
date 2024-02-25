@@ -1,20 +1,18 @@
 package com.ottugi.curry.domain.recipe;
 
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Arrays;
 
 @Getter
 @RequiredArgsConstructor
 public enum Servings {
-
-    oneServing("1인분"),
-    twoServing("2인분"),
-    threeServing("3인분"),
-    fourServing("4인분"),
-    fiveServing("5인분"),
-    sixServing("6인분이상");
+    ONE("1인분"),
+    TWO("2인분"),
+    THREE("3인분"),
+    FOUR("4인분"),
+    FIVE("5인분"),
+    SIX("6인분이상");
 
     private String servings;
 

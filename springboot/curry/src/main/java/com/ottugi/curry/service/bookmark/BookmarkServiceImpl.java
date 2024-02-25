@@ -4,95 +4,74 @@ import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.bookmark.BookmarkRepository;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
-import com.ottugi.curry.service.CommonService;
+import com.ottugi.curry.service.PageUtil;
+import com.ottugi.curry.service.recipe.RecipeService;
+import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BookmarkServiceImpl implements BookmarkService {
-
     private final BookmarkRepository bookmarkRepository;
-    private final CommonService commonService;
+    private final UserService userService;
+    private final RecipeService recipeService;
 
-    // 북마크 추가 또는 제거
     @Override
-    @Transactional
-    public Boolean addOrRemoveBookmark(BookmarkRequestDto bookmarkRequestDto) {
-        User user = commonService.findByUserId(bookmarkRequestDto.getUserId());
-        Recipe recipe = commonService.findByRecipeId(bookmarkRequestDto.getRecipeId());
-
-        if(commonService.isBookmarked(user, recipe)) {
-            removeBookmark(user, recipe);
-            return false;
+    public Boolean addOrRemoveBookmark(BookmarkRequestDto requestDto) {
+        User user = userService.findUserByUserId(requestDto.getUserId());
+        Recipe recipe = recipeService.findRecipeByRecipeId(requestDto.getRecipeId());
+        if (isBookmarked(user, recipe)) {
+            return deleteBookmark(user, recipe);
         }
-        else {
-            addBookmark(user, recipe);
-            return true;
-        }
+        return createBookmark(user, recipe);
     }
 
-    // 모든 북마크 목록 조회
     @Override
-    @Transactional(readOnly = true)
-    public Page<BookmarkListResponseDto> getBookmarkAll(Long userId, int page, int size) {
-        User user = commonService.findByUserId(userId);
-        List<Bookmark> bookmarkList = commonService.findBookmarkByUser(user);
-
-        List<BookmarkListResponseDto> bookmarkListResponseDtoList = bookmarkList.stream()
-                .map(bookmark -> new BookmarkListResponseDto(bookmark.getRecipeId(), true))
+    public Page<BookmarkListResponseDto> findBookmarkPageByUserId(Long userId, int page, int size) {
+        User user = userService.findUserByUserId(userId);
+        List<BookmarkListResponseDto> bookmarkListResponseDtoList
+                = user.getBookmarkList()
+                .stream()
+                .map(bookmark -> new BookmarkListResponseDto(bookmark.getRecipeId()))
                 .collect(Collectors.toList());
-
-        return commonService.getPage(bookmarkListResponseDtoList, page, size);
+        return PageUtil.convertResponseDtoPages(bookmarkListResponseDtoList, page, size);
     }
 
-    // 북마크 검색
     @Override
-    @Transactional(readOnly = true)
-    public Page<BookmarkListResponseDto> searchBookmark(Long userId, int page, int size, String name, String time, String difficulty, String composition) {
-        User user = commonService.findByUserId(userId);
-        List<Bookmark> bookmarkList = commonService.findBookmarkByUser(user);
-
-        List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
-
-        if (name == null) {
-            name = "";
-        }
-
-        for (Bookmark bookmark : bookmarkList) {
-            Recipe recipe = bookmark.getRecipeId();
-            String recipeName = recipe.getName();
-
-            if (recipeName.contains(name) && commonService.isRecipeMatching(recipe, time, difficulty, composition)) {
-                bookmarkListResponseDtoList.add(new BookmarkListResponseDto(recipe, true));
-            }
-        }
-
-        return commonService.getPage(bookmarkListResponseDtoList, page, size);
+    public Page<BookmarkListResponseDto> findBookmarkPageByOption(Long userId, int page, int size,
+                                                                  String name, String time, String difficulty, String composition) {
+        User user = userService.findUserByUserId(userId);
+        List<BookmarkListResponseDto> bookmarkListResponseDtoList
+                = user.getBookmarkList()
+                .stream()
+                .filter(bookmark -> bookmark.getRecipeId().getName().contains(Optional.ofNullable(name).orElse("")))
+                .filter(bookmark -> recipeService.isRecipeMatching(bookmark.getRecipeId(), time, difficulty, composition))
+                .map(bookmark -> new BookmarkListResponseDto(bookmark.getRecipeId()))
+                .collect(Collectors.toList());
+        return PageUtil.convertResponseDtoPages(bookmarkListResponseDtoList, page, size);
     }
 
-    // 북마크 삭제
-    @Transactional
-    private void removeBookmark(User user, Recipe recipe) {
-        Bookmark bookmark = commonService.findBookmarkByUserAndRecipe(user, recipe);
-        bookmarkRepository.delete(bookmark);
+    private Boolean isBookmarked(User user, Recipe recipe) {
+        return bookmarkRepository.existsByUserIdAndRecipeId(user, recipe);
     }
 
-    // 북마크 추가
-    @Transactional
-    private void addBookmark(User user, Recipe recipe) {
-        Bookmark bookmark = new Bookmark();
+    private boolean createBookmark(User user, Recipe recipe) {
+        Bookmark bookmark = Bookmark.builder().build();
         bookmark.setUser(user);
         bookmark.setRecipe(recipe);
-        bookmarkRepository.save(bookmark);
-        user.addBookmarkList(bookmark);
+        user.addBookmarkList(bookmarkRepository.save(bookmark));
+        return true;
+    }
+
+    private boolean deleteBookmark(User user, Recipe recipe) {
+        bookmarkRepository.deleteByUserIdAndRecipeId(user, recipe);
+        return false;
     }
 }

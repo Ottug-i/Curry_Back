@@ -16,29 +16,27 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@RequiredArgsConstructor
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
-
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-
     private final TokenProvider tokenProvider;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) ->
                 web
-                .ignoring()
-                .antMatchers(
-                        "/h2-console/**",
-                        "/favicon.ico",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html/**",
-                        "/v2/api-docs",
-                        "/webjars/**",
-                        "/swagger-resources/**"
-                );
+                        .ignoring()
+                        .antMatchers(
+                                "/h2-console/**",
+                                "/favicon.ico",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html/**",
+                                "/v2/api-docs",
+                                "/webjars/**",
+                                "/swagger-resources/**"
+                        );
     }
 
     @Bean
@@ -53,7 +51,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/**").authenticated()
-                // .anyRequest().permitAll()
+                //.anyRequest().permitAll()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()

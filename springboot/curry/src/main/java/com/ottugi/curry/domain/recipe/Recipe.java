@@ -1,21 +1,25 @@
 package com.ottugi.curry.domain.recipe;
 
 import com.ottugi.curry.domain.BaseTime;
-import com.ottugi.curry.domain.bookmark.Bookmark;
-import com.ottugi.curry.domain.lately.Lately;
-import lombok.*;
-
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
 public class Recipe extends BaseTime implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,30 +45,26 @@ public class Recipe extends BaseTime implements Serializable {
     @Column(nullable = false)
     private Composition composition;
 
-    @Column(columnDefinition="TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String ingredients;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Servings servings;
 
-    @Column(columnDefinition="TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String orders;
 
-    @Column(columnDefinition="TEXT")
+    @Column(columnDefinition = "TEXT")
     private String photo;
 
-    @Column(columnDefinition="TEXT")
+    @Column(columnDefinition = "TEXT")
     private String genre;
 
-    @OneToMany(mappedBy = "recipeId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Bookmark> bookmarkList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "recipeId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Lately> latelyList = new ArrayList<>();
-
     @Builder
-    public Recipe(Long id, Long recipeId, String name, String thumbnail, Time time, Difficulty difficulty, Composition composition, String ingredients, Servings servings, String orders, String photo, String genre) {
+    public Recipe(Long id, Long recipeId, String name, String thumbnail,
+                  Time time, Difficulty difficulty, Composition composition,
+                  String ingredients, Servings servings, String orders, String photo, String genre) {
         this.id = id;
         this.recipeId = recipeId;
         this.name = name;
@@ -77,19 +77,5 @@ public class Recipe extends BaseTime implements Serializable {
         this.orders = orders;
         this.photo = photo;
         this.genre = genre;
-    }
-
-    public void addBookmarkList(Bookmark bookmark) {
-        this.bookmarkList.add(bookmark);
-        if(bookmark.getRecipeId() != this) {
-            bookmark.setRecipe(this);
-        }
-    }
-
-    public void addLatelyList(Lately lately){
-        this.latelyList.add(lately);
-        if(lately.getRecipeId() != this){
-            lately.setRecipe(this);
-        }
     }
 }

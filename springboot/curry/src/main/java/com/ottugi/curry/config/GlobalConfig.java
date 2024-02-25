@@ -1,30 +1,27 @@
 package com.ottugi.curry.config;
 
+import java.util.Properties;
+import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.apache.commons.lang3.ObjectUtils;
 
-import javax.annotation.PostConstruct;
-import java.util.Properties;
-
-@Getter
 @Slf4j
+@Getter
 public class GlobalConfig {
-
     @Autowired
     private ApplicationContext context;
-
     @Autowired
     private ResourceLoader resourceLoader;
 
-    private String key;
-    private String header;
-    private String prefix;
+    private String jwt_key;
+    private String jwt_header;
+    private String jwt_prefix;
 
     private String redis_host;
     private int redis_port;
@@ -32,6 +29,8 @@ public class GlobalConfig {
 
     private String flask_host;
     private int flask_port;
+
+    private String file_Path;
 
     private boolean local;
     private boolean dev;
@@ -49,9 +48,9 @@ public class GlobalConfig {
             Resource resource = resourceLoader.getResource(resourcePath);
             Properties properties = PropertiesLoaderUtils.loadProperties(resource);
 
-            key = properties.getProperty("jwt.security.key");
-            header = properties.getProperty("jwt.response.header");
-            prefix = properties.getProperty("jwt.token.prefix");
+            jwt_key = properties.getProperty("jwt.security.key");
+            jwt_header = properties.getProperty("jwt.response.header");
+            jwt_prefix = properties.getProperty("jwt.token.prefix");
 
             redis_host = properties.getProperty("spring.redis.host");
             redis_port = Integer.parseInt(properties.getProperty("spring.redis.port"));
@@ -60,6 +59,8 @@ public class GlobalConfig {
             flask_host = properties.getProperty("flask.host");
             flask_port = Integer.parseInt(properties.getProperty("flask.port"));
 
+            file_Path = properties.getProperty("file.path");
+            
             this.local = activeProfile.equals("local");
             this.dev = activeProfile.equals("dev");
             this.prod = activeProfile.equals("prod");
@@ -67,17 +68,5 @@ public class GlobalConfig {
         } catch (Exception e) {
             log.info(e.getMessage());
         }
-    }
-
-    public boolean isLocal() {
-        return local;
-    }
-
-    public boolean isDev() {
-        return dev;
-    }
-
-    public boolean isProd() {
-        return prod;
     }
 }
