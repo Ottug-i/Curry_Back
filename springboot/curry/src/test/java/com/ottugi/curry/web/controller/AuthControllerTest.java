@@ -55,7 +55,7 @@ class AuthControllerTest {
     void 회원_가입_및_로그인() throws Exception {
         // given
         TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE, IS_NEW);
-        when(authService.singUpOrLogin(any(UserSaveRequestDto.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
+        when(authService.signInOrSignUpAndIssueToken(any(UserSaveRequestDto.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
 
         // when, then
         UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(user.getEmail(), user.getNickName());

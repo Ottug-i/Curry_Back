@@ -42,8 +42,8 @@ import com.ottugi.curry.service.recommend.RecommendService;
 import com.ottugi.curry.web.dto.ratings.RatingRequestDto;
 import com.ottugi.curry.web.dto.ratings.RatingResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
-import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
+import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDto;
 import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
 import java.util.ArrayList;
@@ -154,7 +154,7 @@ class RecommendControllerTest {
     @Test
     void 레시피_평점_삭제() throws Exception {
         // given
-        when(ratingsService.deleteUserRating(anyLong(), anyLong())).thenReturn(true);
+        when(ratingsService.removeUserRating(anyLong(), anyLong())).thenReturn(true);
 
         // when, then
         mockMvc.perform(delete("/api/recommend/rating")
@@ -170,14 +170,15 @@ class RecommendControllerTest {
         List<RecipeIngListResponseDto> recipeListResponseDtoList = new ArrayList<>();
         recipeListResponseDtoList.add(new RecipeIngListResponseDto(ingredients, recipe, isBookmark));
         Page<RecipeIngListResponseDto> pagedRecipeList = new PageImpl<>(recipeListResponseDtoList);
-        when(recommendService.findRecipePageByIngredientsDetection(any(RecipeRequestDto.class))).thenReturn(pagedRecipeList);
+        when(recommendService.findRecipePageByIngredientsDetection(any(RecipeIngRequestDto.class))).thenReturn(pagedRecipeList);
 
         // when, then
-        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(user.getId(), ingredients, TIME.getTimeName(), DIFFICULTY.getDifficulty(),
+        RecipeIngRequestDto recipeIngRequestDto = new RecipeIngRequestDto(user.getId(), ingredients, TIME.getTimeName(),
+                DIFFICULTY.getDifficulty(),
                 COMPOSITION.getComposition(), PAGE, SIZE);
         mockMvc.perform(post("/api/recommend/ingredients/list")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(recipeRequestDto)))
+                        .content(new ObjectMapper().writeValueAsString(recipeIngRequestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(pagedRecipeList.getSize())));
     }

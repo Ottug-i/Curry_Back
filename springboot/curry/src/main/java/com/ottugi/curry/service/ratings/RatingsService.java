@@ -14,7 +14,7 @@ public interface RatingsService {
     @Transactional(readOnly = true)
     RatingResponseDto findUserRating(Long userId, Long recipeId);
 
-    Boolean addOrUpdateUserRating(RatingRequestDto ratingRequestDto);
+    Boolean addOrUpdateUserRating(RatingRequestDto requestDto);
 
-    Boolean deleteUserRating(Long userId, Long recipeId);
+    Boolean removeUserRating(Long userId, Long recipeId);
 }

@@ -22,4 +22,8 @@ public enum Composition {
                 .filter(c -> c.getComposition().equals(composition))
                 .findAny().orElse(null);
     }
+
+    public static Boolean isCompositionMatching(Recipe recipe, String composition) {
+        return recipe.getComposition().getComposition().contains(composition);
+    }
 }

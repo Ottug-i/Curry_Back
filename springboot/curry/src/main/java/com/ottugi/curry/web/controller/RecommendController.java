@@ -6,8 +6,8 @@ import com.ottugi.curry.service.recommend.RecommendService;
 import com.ottugi.curry.web.dto.ratings.RatingRequestDto;
 import com.ottugi.curry.web.dto.ratings.RatingResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
-import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
+import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDto;
 import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
 import io.swagger.annotations.Api;
@@ -65,13 +65,14 @@ public class RecommendController {
             @ApiImplicitParam(name = "recipeId", value = "레시피 아이디", example = "6846342", required = true)
     })
     public ResponseEntity<Boolean> userRatingRemove(@RequestParam Long userId, Long recipeId) {
-        return ResponseEntity.ok().body(ratingsService.deleteUserRating(userId, recipeId));
+        return ResponseEntity.ok().body(ratingsService.removeUserRating(userId, recipeId));
     }
 
     @PostMapping("/ingredients/list")
     @ApiOperation(value = "재료 인식에 따른 추천 레시피 조회", notes = "재료 인식에 따른 레시피를 조회하여 레시피 북마크 유무와 함께 리턴합니다.")
-    public ResponseEntity<Page<RecipeIngListResponseDto>> recipePageByIngredientsDetection(@RequestBody RecipeRequestDto recipeRequestDto) {
-        return ResponseEntity.ok().body(recommendService.findRecipePageByIngredientsDetection(recipeRequestDto));
+    public ResponseEntity<Page<RecipeIngListResponseDto>> recipePageByIngredientsDetection(
+            @RequestBody RecipeIngRequestDto recipeIngRequestDto) {
+        return ResponseEntity.ok().body(recommendService.findRecipePageByIngredientsDetection(recipeIngRequestDto));
     }
 
     @GetMapping("/bookmark/list")

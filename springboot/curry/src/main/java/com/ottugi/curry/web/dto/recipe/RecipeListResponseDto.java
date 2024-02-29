@@ -2,7 +2,6 @@ package com.ottugi.curry.web.dto.recipe;
 
 import com.ottugi.curry.domain.recipe.Genre;
 import com.ottugi.curry.domain.recipe.Recipe;
-import com.ottugi.curry.domain.user.User;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
@@ -36,7 +35,7 @@ public class RecipeListResponseDto {
     @ApiModelProperty(notes = "재료 메인 장르", example = "vegetable")
     private final String mainGenre;
 
-    public RecipeListResponseDto(Recipe recipe, User user) {
+    public RecipeListResponseDto(Recipe recipe, Boolean isBookmark) {
         this.recipeId = recipe.getRecipeId();
         this.name = recipe.getName();
         this.thumbnail = recipe.getThumbnail();
@@ -44,7 +43,7 @@ public class RecipeListResponseDto {
         this.difficulty = recipe.getDifficulty().getDifficulty();
         this.composition = recipe.getComposition().getComposition();
         this.ingredients = recipe.getIngredients();
-        this.isBookmark = user.getBookmarkList().stream().anyMatch(bookmark -> bookmark.getRecipeId().equals(recipe));
+        this.isBookmark = isBookmark;
         this.mainGenre = Genre.findMainGenre(recipe);
     }
 }

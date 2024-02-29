@@ -129,7 +129,7 @@ class RatingsServiceTest {
         when(ratingsRepository.findByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(ratings);
 
         // when
-        Boolean testResponse = ratingsService.deleteUserRating(USER_ID, recipe.getRecipeId());
+        Boolean testResponse = ratingsService.removeUserRating(USER_ID, recipe.getRecipeId());
 
         // then
         assertTrue(testResponse);

@@ -25,6 +25,9 @@ public enum BaseCode {
     // RECIPE ERROR
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 레시피 정보를 찾을 수 없습니다."),
 
+    // GENRE ERROR
+    GENRE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 레시피 장르 정보를 찾을 수 없습니다."),
+
     // BOOKMARK ERROR
     BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 북마크 정보를 찾을 수 없습니다."),
 

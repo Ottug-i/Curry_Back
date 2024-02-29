@@ -1,5 +1,6 @@
 package com.ottugi.curry.domain.recipe;
 
+import com.ottugi.curry.domain.user.User;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
@@ -28,12 +29,29 @@ public enum Genre {
     }
 
     public static String findMainGenre(Recipe recipe) {
-        final String SPLIT_VALUE = "\\|";
-        String[] parts = recipe.getGenre().split(SPLIT_VALUE);
-        if (parts.length > 0) {
-            String mainGenre = parts[0];
+        String[] genres = convertToGenreArray(recipe);
+        if (genres.length > 0) {
+            String mainGenre = genres[0];
             return ofGenre(mainGenre).getGenre();
         }
         return null;
+    }
+
+    public static Boolean containFavoriteGenre(Recipe recipe, User user) {
+        String favoriteGenre = user.getFavoriteGenre();
+        String[] genres = convertToGenreArray(recipe);
+        if (favoriteGenre != null) {
+            for (String genre : genres) {
+                if (favoriteGenre.equals(genre)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static String[] convertToGenreArray(Recipe recipe) {
+        final String SPLIT_VALUE = "\\|";
+        return recipe.getGenre().split(SPLIT_VALUE);
     }
 }

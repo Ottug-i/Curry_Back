@@ -78,7 +78,7 @@ class AuthServiceTest {
 
         // when
         UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(user.getEmail(), user.getNickName());
-        TokenResponseDto testTokenResponseDto = authService.singUpOrLogin(userSaveRequestDto, mock(HttpServletResponse.class));
+        TokenResponseDto testTokenResponseDto = authService.signInOrSignUpAndIssueToken(userSaveRequestDto, mock(HttpServletResponse.class));
 
         // then
         assertNotNull(testTokenResponseDto);
@@ -101,7 +101,7 @@ class AuthServiceTest {
 
         // when
         UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(user.getEmail(), user.getNickName());
-        TokenResponseDto testTokenResponseDto = authService.singUpOrLogin(userSaveRequestDto, mock(HttpServletResponse.class));
+        TokenResponseDto testTokenResponseDto = authService.signInOrSignUpAndIssueToken(userSaveRequestDto, mock(HttpServletResponse.class));
 
         // then
         assertNotNull(testTokenResponseDto);

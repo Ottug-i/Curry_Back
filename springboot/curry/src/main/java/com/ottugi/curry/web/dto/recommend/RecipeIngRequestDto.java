@@ -1,16 +1,14 @@
-package com.ottugi.curry.web.dto.recipe;
+package com.ottugi.curry.web.dto.recommend;
 
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @NoArgsConstructor
-public class RecipeRequestDto {
+public class RecipeIngRequestDto {
 
     @ApiModelProperty(notes = "회원 기본키", example = "1", required = true)
     private Long userId;
@@ -34,7 +32,8 @@ public class RecipeRequestDto {
     private int size;
 
     @Builder
-    public RecipeRequestDto(Long userId, List<String> ingredients, String time, String difficulty, String composition, int page, int size) {
+    public RecipeIngRequestDto(Long userId, List<String> ingredients, String time, String difficulty, String composition, int page,
+                               int size) {
         this.userId = userId;
         this.ingredients = ingredients;
         this.time = time;

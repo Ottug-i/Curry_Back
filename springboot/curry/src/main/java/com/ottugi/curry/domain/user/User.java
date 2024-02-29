@@ -40,6 +40,8 @@ public class User extends BaseTime {
     @Column(nullable = false)
     private Role role;
 
+    private Boolean isNew;
+
     private Boolean withdraw;
 
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -54,6 +56,7 @@ public class User extends BaseTime {
         this.email = email;
         this.nickName = nickName;
         this.favoriteGenre = favoriteGenre;
+        this.isNew = true;
         this.role = role;
     }
 
@@ -67,6 +70,10 @@ public class User extends BaseTime {
 
     public void updateRole(Role role) {
         this.role = role;
+    }
+
+    public void markAsExistingUser() {
+        this.isNew = false;
     }
 
     public void withdrawUser() {

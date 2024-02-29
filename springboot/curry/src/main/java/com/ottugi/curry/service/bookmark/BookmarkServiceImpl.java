@@ -10,7 +10,6 @@ import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,26 +35,24 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Override
     public Page<BookmarkListResponseDto> findBookmarkPageByUserId(Long userId, int page, int size) {
         User user = userService.findUserByUserId(userId);
-        List<BookmarkListResponseDto> bookmarkListResponseDtoList
-                = user.getBookmarkList()
+        List<BookmarkListResponseDto> bookmarkListResponseDtoList = user.getBookmarkList()
                 .stream()
-                .map(bookmark -> new BookmarkListResponseDto(bookmark.getRecipeId()))
+                .map(BookmarkListResponseDto::new)
                 .collect(Collectors.toList());
-        return PageUtil.convertResponseDtoPages(bookmarkListResponseDtoList, page, size);
+        return PageUtil.convertToPage(bookmarkListResponseDtoList, page, size);
     }
 
     @Override
     public Page<BookmarkListResponseDto> findBookmarkPageByOption(Long userId, int page, int size,
                                                                   String name, String time, String difficulty, String composition) {
         User user = userService.findUserByUserId(userId);
-        List<BookmarkListResponseDto> bookmarkListResponseDtoList
-                = user.getBookmarkList()
+        List<BookmarkListResponseDto> bookmarkListResponseDtoList = user.getBookmarkList()
                 .stream()
-                .filter(bookmark -> bookmark.getRecipeId().getName().contains(Optional.ofNullable(name).orElse("")))
-                .filter(bookmark -> recipeService.isRecipeMatching(bookmark.getRecipeId(), time, difficulty, composition))
-                .map(bookmark -> new BookmarkListResponseDto(bookmark.getRecipeId()))
+                .filter(bookmark -> name == null || bookmark.getRecipeId().getName().contains(name))
+                .filter(bookmark -> recipeService.isRecipeMatchingCriteria(bookmark.getRecipeId(), time, difficulty, composition))
+                .map(BookmarkListResponseDto::new)
                 .collect(Collectors.toList());
-        return PageUtil.convertResponseDtoPages(bookmarkListResponseDtoList, page, size);
+        return PageUtil.convertToPage(bookmarkListResponseDtoList, page, size);
     }
 
     private Boolean isBookmarked(User user, Recipe recipe) {

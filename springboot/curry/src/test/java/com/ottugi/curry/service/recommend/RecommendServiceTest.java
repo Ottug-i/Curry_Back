@@ -30,6 +30,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ottugi.curry.config.GlobalConfig;
 import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.bookmark.BookmarkRepository;
@@ -38,8 +39,8 @@ import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
-import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
+import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDto;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,9 +137,11 @@ class RecommendServiceTest {
         doReturn(recipeIngListResponseDtoListPage).when(commonService).getPage(anyList(), anyInt(), anyInt());
 
         // when
-        RecipeRequestDto recipeRequestDto = new RecipeRequestDto(user.getId(), ingredientList, TIME.getTimeName(), DIFFICULTY.getDifficulty(),
+        RecipeIngRequestDto recipeIngRequestDto = new RecipeIngRequestDto(user.getId(), ingredientList, TIME.getTimeName(),
+                DIFFICULTY.getDifficulty(),
                 COMPOSITION.getComposition(), PAGE, SIZE);
-        Page<RecipeIngListResponseDto> testRecipeIngListResponseDtoListPage = recommendService.findRecipePageByIngredientsDetection(recipeRequestDto);
+        Page<RecipeIngListResponseDto> testRecipeIngListResponseDtoListPage = recommendService.findRecipePageByIngredientsDetection(
+                recipeIngRequestDto);
 
         // then
         assertNotNull(testRecipeIngListResponseDtoListPage);
@@ -146,7 +149,7 @@ class RecommendServiceTest {
     }
 
     @Test
-    void 북마크_추천_아이디_목록_조회() {
+    void 북마크_추천_아이디_목록_조회() throws JsonProcessingException {
         // given
         String httpResponse = "[1]";
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(httpResponse);
@@ -160,7 +163,7 @@ class RecommendServiceTest {
 
 
     @Test
-    void 평점_추천_아이디_목록_조회() {
+    void 평점_추천_아이디_목록_조회() throws JsonProcessingException {
         // given
         String httpResponse = "[\"ing15\", [1]]";
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(httpResponse);

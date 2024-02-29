@@ -36,4 +36,11 @@ public enum Time {
                 .filter(t -> t.getTimeName().equals(timeName))
                 .findAny().orElse(null);
     }
+
+    public static Boolean isTimeMatching(Recipe recipe, String timeName) {
+        if (timeName.equals(TWO_HOURS.getTimeName())) {
+            return recipe.getTime().getTimeName().contains(TWO_HOURS.getTimeName());
+        }
+        return recipe.getTime().getTime() <= ofTime(timeName).getTime();
+    }
 }

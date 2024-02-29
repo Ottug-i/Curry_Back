@@ -16,7 +16,7 @@ public interface UserService {
     @Transactional(readOnly = true)
     UserResponseDto findUserProfileByUserId(Long userId);
 
-    UserResponseDto modifyUserProfile(UserUpdateRequestDto userUpdateRequestDto);
+    UserResponseDto modifyUserProfile(UserUpdateRequestDto updateRequestDto);
 
     Boolean withdrawUserAccount(Long userId);
 }

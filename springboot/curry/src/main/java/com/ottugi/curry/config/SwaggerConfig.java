@@ -1,6 +1,5 @@
 package com.ottugi.curry.config;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
@@ -54,7 +53,7 @@ public class SwaggerConfig {
                 .securityReferences(defaultAuth()).forPaths(PathSelectors.any()).build();
     }
 
-    List<SecurityReference> defaultAuth() {
+    private List<SecurityReference> defaultAuth() {
         AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;

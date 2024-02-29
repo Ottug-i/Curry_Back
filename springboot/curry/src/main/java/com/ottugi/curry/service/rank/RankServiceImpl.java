@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class RankServiceImpl implements RankService {
-    private final Integer RANK_SIZE = 10;
+    private static final int RANK_SIZE = 10;
 
     private final RankRepository rankRepository;
 
@@ -23,9 +23,9 @@ public class RankServiceImpl implements RankService {
         }
         Rank rank = rankRepository.findByName(name);
         if (rank == null) {
-            addRank(name);
+            createRank(name);
         } else {
-            updateRank(rank);
+            incrementRankScore(rank);
         }
     }
 
@@ -47,13 +47,13 @@ public class RankServiceImpl implements RankService {
         return name == null || name.isEmpty();
     }
 
-    private void addRank(String name) {
+    private void createRank(String name) {
         Rank newRank = Rank.builder().name(name).build();
         rankRepository.save(newRank);
     }
 
-    private void updateRank(Rank exisitingRank) {
-        exisitingRank.incrementScore(1);
+    private void incrementRankScore(Rank exisitingRank) {
+        exisitingRank.incrementScore();
         rankRepository.save(exisitingRank);
     }
 }

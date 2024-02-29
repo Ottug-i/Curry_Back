@@ -7,8 +7,8 @@ import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.domain.recipe.Servings;
 import com.ottugi.curry.domain.recipe.Time;
 import com.ottugi.curry.web.dto.recipe.RecipeSaveRequestDto;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.context.annotation.Configuration;
@@ -16,27 +16,43 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 public class RecipeCsvWriter implements ItemWriter<RecipeSaveRequestDto> {
+    private static final int BATCH_SIZE = 1000;
+
     private final RecipeRepository recipeRepository;
 
     @Override
-    public void write(List<? extends RecipeSaveRequestDto> list) {
-        List<Recipe> recipeList = new ArrayList<>();
-        list.forEach(csvInfo -> {
-            Recipe recipe = Recipe.builder()
-                    .recipeId(csvInfo.getRecipeId())
-                    .name(csvInfo.getName())
-                    .composition(Composition.ofComposition(csvInfo.getComposition()))
-                    .ingredients(csvInfo.getIngredients())
-                    .servings(Servings.ofServings(csvInfo.getServings()))
-                    .difficulty(Difficulty.ofDifficulty(csvInfo.getDifficulty()))
-                    .thumbnail(csvInfo.getThumbnail())
-                    .time(Time.ofTime(csvInfo.getTime()))
-                    .orders(csvInfo.getOrders())
-                    .photo(csvInfo.getPhoto())
-                    .genre(csvInfo.getGenre())
-                    .build();
-            recipeList.add(recipe);
-        });
-        recipeRepository.saveAll(recipeList);
+    public void write(List<? extends RecipeSaveRequestDto> dtoList) {
+        List<Recipe> recipeList = dtoListToRecipeList(dtoList);
+        saveRecipeListInBatch(recipeList);
+    }
+
+    private List<Recipe> dtoListToRecipeList(List<? extends RecipeSaveRequestDto> dtoList) {
+        return dtoList.stream()
+                .map(this::createRecipe)
+                .collect(Collectors.toList());
+    }
+
+    private Recipe createRecipe(RecipeSaveRequestDto requestDto) {
+        return Recipe.builder()
+                .recipeId(requestDto.getRecipeId())
+                .name(requestDto.getName())
+                .composition(Composition.ofComposition(requestDto.getComposition()))
+                .ingredients(requestDto.getIngredients())
+                .servings(Servings.ofServings(requestDto.getServings()))
+                .difficulty(Difficulty.ofDifficulty(requestDto.getDifficulty()))
+                .thumbnail(requestDto.getThumbnail())
+                .time(Time.ofTime(requestDto.getTime()))
+                .orders(requestDto.getOrders())
+                .photo(requestDto.getPhoto())
+                .genre(requestDto.getGenre())
+                .build();
+    }
+
+    private void saveRecipeListInBatch(List<Recipe> recipeList) {
+        for (int i = 0; i < recipeList.size(); i += BATCH_SIZE) {
+            int endIndex = Math.min(i + BATCH_SIZE, recipeList.size());
+            List<Recipe> batch = recipeList.subList(i, endIndex);
+            recipeRepository.saveAll(batch);
+        }
     }
 }

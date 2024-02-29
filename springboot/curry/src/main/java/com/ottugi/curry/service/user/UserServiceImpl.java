@@ -16,12 +16,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByUserId(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(BaseCode.USER_NOT_FOUND));
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(BaseCode.USER_NOT_FOUND));
     }
 
     @Override
     public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(BaseCode.USER_NOT_FOUND));
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(BaseCode.USER_NOT_FOUND));
     }
 
     @Override
@@ -31,9 +33,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto modifyUserProfile(UserUpdateRequestDto userUpdateRequestDto) {
-        User user = findUserByUserId(userUpdateRequestDto.getId());
-        user.updateProfile(userUpdateRequestDto.getNickName());
+    public UserResponseDto modifyUserProfile(UserUpdateRequestDto updateRequestDto) {
+        User user = findUserByUserId(updateRequestDto.getId());
+        user.updateProfile(updateRequestDto.getNickName());
         return new UserResponseDto(user);
     }
 

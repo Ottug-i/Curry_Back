@@ -23,7 +23,7 @@ public class Rank {
         this.score = 1;
     }
 
-    public void incrementScore(int score) {
-        this.score += score;
+    public void incrementScore() {
+        this.score += 1;
     }
 }

@@ -13,10 +13,14 @@ import org.springframework.core.io.ClassPathResource;
 
 @Configuration
 public class RecipeCsvReader {
+    private final String delimiter;
+    private final String[] fieldNames;
     private final String filePath;
 
     public RecipeCsvReader(GlobalConfig config) {
         this.filePath = config.getFile_Path();
+        this.delimiter = config.getFile_delimiter();
+        this.fieldNames = config.getField_Names();
     }
 
     @Bean
@@ -27,21 +31,33 @@ public class RecipeCsvReader {
         flatFileItemReader.setLinesToSkip(1);
         flatFileItemReader.setEncoding("UTF-8");
 
-        DefaultLineMapper<RecipeSaveRequestDto> defaultLineMapper = new DefaultLineMapper<>();
-        DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer("@");
-        delimitedLineTokenizer.setNames(
-                "recipeId", "name", "composition", "ingredients", "servings",
-                "difficulty", "thumbnail", "time", "orders", "photo", "genre");
-        delimitedLineTokenizer.setStrict(false);
-        defaultLineMapper.setLineTokenizer(delimitedLineTokenizer);
-
-        BeanWrapperFieldSetMapper<RecipeSaveRequestDto> beanWrapperFieldSetMapper = new BeanWrapperFieldSetMapper<>();
-        beanWrapperFieldSetMapper.setTargetType(RecipeSaveRequestDto.class);
-
-        defaultLineMapper.setFieldSetMapper(beanWrapperFieldSetMapper);
-
+        DefaultLineMapper<RecipeSaveRequestDto> defaultLineMapper = createLineMapper();
         flatFileItemReader.setLineMapper(defaultLineMapper);
 
         return flatFileItemReader;
+    }
+
+    private DefaultLineMapper<RecipeSaveRequestDto> createLineMapper() {
+        DelimitedLineTokenizer tokenizer = createTokenizer();
+        BeanWrapperFieldSetMapper<RecipeSaveRequestDto> fieldSetMapper = createFieldSetMapper();
+
+        DefaultLineMapper<RecipeSaveRequestDto> lineMapper = new DefaultLineMapper<>();
+        lineMapper.setLineTokenizer(tokenizer);
+        lineMapper.setFieldSetMapper(fieldSetMapper);
+
+        return lineMapper;
+    }
+
+    private DelimitedLineTokenizer createTokenizer() {
+        DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer(delimiter);
+        tokenizer.setNames(fieldNames);
+        tokenizer.setStrict(false);
+        return tokenizer;
+    }
+
+    private BeanWrapperFieldSetMapper<RecipeSaveRequestDto> createFieldSetMapper() {
+        BeanWrapperFieldSetMapper<RecipeSaveRequestDto> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
+        fieldSetMapper.setTargetType(RecipeSaveRequestDto.class);
+        return fieldSetMapper;
     }
 }

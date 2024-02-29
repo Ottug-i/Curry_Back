@@ -1,13 +1,11 @@
 package com.ottugi.curry.web.dto.recipe;
 
 import com.ottugi.curry.domain.recipe.Recipe;
-import com.ottugi.curry.domain.user.User;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
 @Getter
 public class RecipeResponseDto {
-
     @ApiModelProperty(notes = "레시피 아이디", example = "6842324")
     private final Long recipeId;
 
@@ -41,7 +39,7 @@ public class RecipeResponseDto {
     @ApiModelProperty(notes = "북마크 유무", example = "true")
     private final Boolean isBookmark;
 
-    public RecipeResponseDto(Recipe recipe, User user) {
+    public RecipeResponseDto(Recipe recipe, Boolean isBookmark) {
         this.recipeId = recipe.getRecipeId();
         this.name = recipe.getName();
         this.thumbnail = recipe.getThumbnail();
@@ -52,6 +50,6 @@ public class RecipeResponseDto {
         this.servings = recipe.getServings().getServings();
         this.orders = recipe.getOrders();
         this.photo = recipe.getPhoto();
-        this.isBookmark = user.getBookmarkList().stream().anyMatch(bookmark -> bookmark.getRecipeId().equals(recipe));
+        this.isBookmark = isBookmark;
     }
 }

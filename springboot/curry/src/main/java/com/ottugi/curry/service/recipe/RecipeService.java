@@ -1,6 +1,7 @@
 package com.ottugi.curry.service.recipe;
 
 import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
 import java.util.List;
@@ -24,5 +25,7 @@ public interface RecipeService {
 
     Predicate<Recipe> filterPredicateForOptions(String time, String difficulty, String composition);
 
-    Boolean isRecipeMatching(Recipe recipe, String time, String difficulty, String composition);
+    Boolean isRecipeMatchingCriteria(Recipe recipe, String time, String difficulty, String composition);
+
+    Boolean isRecipeBookmarked(User user, Recipe recipe);
 }

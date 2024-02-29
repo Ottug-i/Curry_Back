@@ -14,12 +14,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 public class FileItemReaderJobConfig {
+    private static final int CHUNK_SIZE = 1000;
+    
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final RecipeCsvReader recipeCsvReader;
     private final RecipeCsvWriter recipeCsvWriter;
-
-    private static final int CHUNK_SIZE = 1000;
 
     @Bean
     public Job csvFileItemReaderJob() throws Exception {

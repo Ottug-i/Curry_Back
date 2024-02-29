@@ -24,4 +24,8 @@ public enum Difficulty {
                 .filter(d -> d.getDifficulty().equals(difficulty))
                 .findAny().orElse(null);
     }
+
+    public static Boolean isDifficultyMatching(Recipe recipe, String difficulty) {
+        return recipe.getDifficulty().getDifficulty().contains(difficulty);
+    }
 }

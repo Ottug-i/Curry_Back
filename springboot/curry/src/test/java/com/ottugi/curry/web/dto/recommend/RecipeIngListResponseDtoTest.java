@@ -1,19 +1,28 @@
 package com.ottugi.curry.web.dto.recommend;
 
+import static com.ottugi.curry.TestConstants.COMPOSITION;
+import static com.ottugi.curry.TestConstants.DIFFICULTY;
+import static com.ottugi.curry.TestConstants.GENRE;
+import static com.ottugi.curry.TestConstants.ID;
+import static com.ottugi.curry.TestConstants.INGREDIENTS;
+import static com.ottugi.curry.TestConstants.NAME;
+import static com.ottugi.curry.TestConstants.ORDERS;
+import static com.ottugi.curry.TestConstants.PHOTO;
+import static com.ottugi.curry.TestConstants.RECIPE_ID;
+import static com.ottugi.curry.TestConstants.SERVINGS;
+import static com.ottugi.curry.TestConstants.THUMBNAIL;
+import static com.ottugi.curry.TestConstants.TIME;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.ottugi.curry.domain.recipe.Recipe;
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
 import java.util.List;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class RecipeIngListResponseDtoTest {
 
     private Recipe recipe;
-    private Boolean isBookmark = true;
-    private List<String> ingredients = Arrays.asList("고구마");
+    private final Boolean isBookmark = true;
+    private final List<String> ingredients = List.of("고구마");
 
     @Test
     void 재료로_레시피_목록_응답_Dto_롬복() {

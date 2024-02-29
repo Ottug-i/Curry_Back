@@ -1,5 +1,6 @@
 package com.ottugi.curry.web.dto.bookmark;
 
+import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.recipe.Recipe;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -31,7 +32,8 @@ public class BookmarkListResponseDto {
     @ApiModelProperty(notes = "북마크 유무", example = "true")
     private final Boolean isBookmark;
 
-    public BookmarkListResponseDto(Recipe recipe) {
+    public BookmarkListResponseDto(Bookmark bookmark) {
+        Recipe recipe = bookmark.getRecipeId();
         this.recipeId = recipe.getRecipeId();
         this.name = recipe.getName();
         this.thumbnail = recipe.getThumbnail();

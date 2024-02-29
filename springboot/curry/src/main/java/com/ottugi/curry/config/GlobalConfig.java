@@ -31,6 +31,8 @@ public class GlobalConfig {
     private int flask_port;
 
     private String file_Path;
+    private String file_delimiter;
+    private String[] field_Names;
 
     private boolean local;
     private boolean dev;
@@ -60,7 +62,10 @@ public class GlobalConfig {
             flask_port = Integer.parseInt(properties.getProperty("flask.port"));
 
             file_Path = properties.getProperty("file.path");
-            
+            file_delimiter = properties.getProperty("file.delimiter");
+            String fieldNamesString = properties.getProperty("file.field.names");
+            field_Names = fieldNamesString.split(",");
+
             this.local = activeProfile.equals("local");
             this.dev = activeProfile.equals("dev");
             this.prod = activeProfile.equals("prod");

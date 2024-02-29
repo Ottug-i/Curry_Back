@@ -37,7 +37,7 @@ public class TokenProvider {
         this.jwtTokenPrefix = config.getJwt_prefix();
     }
 
-    private final long accessTokenValidTime = Duration.ofMinutes(1).toMillis();
+    private final long accessTokenValidTime = Duration.ofMinutes(30).toMillis();
     private final long refreshTokenValidTime = Duration.ofDays(14).toMillis();
 
     @PostConstruct

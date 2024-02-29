@@ -11,25 +11,23 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RatingsServiceImpl implements RatingsService {
-    private final Long RANDOM_MIN = 1L;
-    private final Long RANDOM_MAX = 3616L;
-    private final Integer BATCH_SIZE = 10;
+    private static final int RANDOM_SIZE = 10;
 
     private final RatingsRepository ratingsRepository;
     private final RecipeRepository recipeRepository;
 
     @Override
     public List<RecommendListResponseDto> findRandomRecipeListForResearch() {
-        List<Long> selectedIdList = selectRandomNumbers();
-        List<Recipe> recipeList = recipeRepository.findByIdIn(selectedIdList);
-        return recipeList.stream().map(RecommendListResponseDto::new).collect(Collectors.toList());
+        List<Recipe> recipeList = selectRandomRecipes();
+        return recipeList
+                .stream()
+                .map(RecommendListResponseDto::new)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -43,29 +41,31 @@ public class RatingsServiceImpl implements RatingsService {
 
     @Override
     public Boolean addOrUpdateUserRating(RatingRequestDto requestDto) {
-        for (Long recipeId : requestDto.getNewUserRatingsDic().keySet()) {
+        requestDto.getNewUserRatingsDic().forEach((recipeId, rating) -> {
             if (existsByUserIdAndRecipeId(requestDto.getUserId(), recipeId)) {
-                updateUserRating(requestDto.getUserId(), recipeId, requestDto.getNewUserRatingsDic().get(recipeId));
+                updateUserRating(requestDto.getUserId(), recipeId, rating);
             } else {
-                createUserRating(requestDto.getUserId(), recipeId, requestDto.getNewUserRatingsDic().get(recipeId));
+                createUserRating(requestDto.getUserId(), recipeId, rating);
             }
-        }
+        });
         return true;
     }
 
     @Override
-    public Boolean deleteUserRating(Long userId, Long recipeId) {
+    public Boolean removeUserRating(Long userId, Long recipeId) {
         ratingsRepository.deleteByUserIdAndRecipeId(userId, recipeId);
         return true;
     }
 
-    private List<Long> selectRandomNumbers() {
-        return ThreadLocalRandom.current()
-                .longs(RANDOM_MIN, RANDOM_MAX + 1)
+    private List<Recipe> selectRandomRecipes() {
+        long recipeCount = recipeRepository.count();
+        List<Long> selectedIdList = ThreadLocalRandom.current()
+                .longs(1, recipeCount + 1)
                 .distinct()
-                .limit(BATCH_SIZE)
+                .limit(RANDOM_SIZE)
                 .boxed()
                 .collect(Collectors.toList());
+        return recipeRepository.findByIdIn(selectedIdList);
     }
 
     private Boolean existsByUserIdAndRecipeId(Long userId, Long recipeId) {

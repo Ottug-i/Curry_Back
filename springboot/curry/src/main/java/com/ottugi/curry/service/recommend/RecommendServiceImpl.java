@@ -3,28 +3,25 @@ package com.ottugi.curry.service.recommend;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ottugi.curry.config.GlobalConfig;
+import com.ottugi.curry.domain.recipe.Genre;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
-import com.ottugi.curry.except.BaseCode;
-import com.ottugi.curry.except.NotFoundException;
 import com.ottugi.curry.service.PageUtil;
 import com.ottugi.curry.service.recipe.RecipeService;
 import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
-import com.ottugi.curry.web.dto.recipe.RecipeRequestDto;
 import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
+import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDto;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -36,85 +33,62 @@ public class RecommendServiceImpl implements RecommendService {
     private final RecipeService recipeService;
     private final GlobalConfig globalConfig;
 
-    private String FLASK_API_URL;
+    private String flaskApiUrl;
 
     @PostConstruct
     private void setFlaskApiUrl() {
-        String flask_host = globalConfig.getFlask_host();
-        int flask_port = globalConfig.getFlask_port();
-        this.FLASK_API_URL = "http://" + flask_host + ":" + flask_port;
+        this.flaskApiUrl = String.format("http://%s:%d", globalConfig.getFlask_host(), globalConfig.getFlask_port());
     }
 
     @Override
-    public Page<RecipeIngListResponseDto> findRecipePageByIngredientsDetection(RecipeRequestDto requestDto) {
+    public Page<RecipeIngListResponseDto> findRecipePageByIngredientsDetection(RecipeIngRequestDto requestDto) {
         User user = userService.findUserByUserId(requestDto.getUserId());
-        List<Recipe> recipeList = recipeService.findByRecipeListByIngredientsContaining(requestDto.getIngredients().get(0));
-        List<Recipe> recipeDetectionList = recipeList.stream()
+        List<Recipe> detectedRecipeList = findRecipeListContainingIngredients(requestDto);
+        List<RecipeIngListResponseDto> sortedRecipeList = sortRecipeListByPreference(user, requestDto, detectedRecipeList);
+        return PageUtil.convertToPage(sortedRecipeList, requestDto.getPage(), requestDto.getSize());
+    }
+
+    @Override
+    public List<Long> findRecipeIdListByBookmarkRecommend(Long recipeId, int page) throws JsonProcessingException {
+        String apiUrl = String.format("%s/bookmark/recommend?recipe_id=%d&page=%d", flaskApiUrl, recipeId, page);
+        String response = restTemplate.getForObject(apiUrl, String.class);
+        if (response == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(objectMapper.readValue(response, Long[].class)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Long> findRecipeIdListByRatingRecommend(Long userId, int page, Long[] bookmarkList) throws JsonProcessingException {
+        String apiUrl = String.format("%s/rating/recommend?user_id=%d&page=%d%s", flaskApiUrl, userId, page, addBookmarkParams(bookmarkList));
+        String response = restTemplate.getForObject(apiUrl, String.class);
+        Object[] resultList = objectMapper.readValue(response, Object[].class);
+        updateUserFavoriteGenre((String) resultList[0], userId);
+        return Arrays.stream(objectMapper.convertValue(resultList[1], Long[].class)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RecipeListResponseDto> findBookmarkOrRatingRecommendList(RecommendRequestDto requestDto) {
+        User user = userService.findUserByUserId(requestDto.getUserId());
+        return recipeService.findRecipeListByRecipeIdIn(requestDto.getRecipeId())
+                .stream()
+                .map(recipe -> new RecipeListResponseDto(recipe, recipeService.isRecipeBookmarked(user, recipe)))
+                .collect(Collectors.toList());
+    }
+
+    private List<Recipe> findRecipeListContainingIngredients(RecipeIngRequestDto requestDto) {
+        return recipeService.findByRecipeListByIngredientsContaining(requestDto.getIngredients().get(0))
+                .stream()
                 .filter(recipeService.filterPredicateForOptions(requestDto.getTime(), requestDto.getDifficulty(), requestDto.getComposition()))
                 .collect(Collectors.toList());
-        List<RecipeIngListResponseDto> pagedRecipeList = sortedRecipeList(user, requestDto, recipeDetectionList).stream()
-                .map(recipeMap -> new RecipeIngListResponseDto(requestDto.getIngredients(), recipeMap.keySet().iterator().next(), user))
-                .collect(Collectors.toList());
-        return PageUtil.convertResponseDtoPages(pagedRecipeList, requestDto.getPage(), requestDto.getSize());
     }
 
-    @Override
-    public List<Long> findRecipeIdListByBookmarkRecommend(Long recipeId, int page) {
-        try {
-            String apiUrl = String.format("%s/bookmark/recommend?recipe_id=%d&page=%d", FLASK_API_URL, recipeId, page);
-            String response = restTemplate.getForObject(apiUrl, String.class);
-            if (response == null) {
-                return Collections.emptyList();
-            }
-            return Arrays.stream(objectMapper.readValue(response, Long[].class)).collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new NotFoundException(BaseCode.RECOMMEND_NOT_FOUND);
-        }
-    }
-
-    @Override
-    public List<Long> findRecipeIdListByRatingRecommend(Long userId, int page, Long[] bookmarkList) {
-        try {
-            String apiUrl = String.format("%s/rating/recommend?user_id=%d&page=%d", FLASK_API_URL, userId, page);
-            if (bookmarkList != null) {
-                apiUrl += addBookmarkParams(bookmarkList);
-            }
-            String response = restTemplate.getForObject(apiUrl, String.class);
-            Object[] resultList = objectMapper.readValue(response, Object[].class);
-            updateUserFavoriteGenre(resultList[0], userId);
-            return Arrays.stream(objectMapper.convertValue(resultList[1], Long[].class)).collect(Collectors.toList());
-        } catch (RestClientException | JsonProcessingException e) {
-            throw new NotFoundException(BaseCode.RECOMMEND_NOT_FOUND);
-        }
-    }
-
-    @Override
-    public List<RecipeListResponseDto> findBookmarkOrRatingRecommendList(RecommendRequestDto recommendRequestDto) {
-        User user = userService.findUserByUserId(recommendRequestDto.getUserId());
-        List<Recipe> recommendRecipeList = recipeService.findRecipeListByRecipeIdIn(recommendRequestDto.getRecipeId());
-        return recommendRecipeList.stream()
-                .map(recipe -> new RecipeListResponseDto(recipe, user))
-                .collect(Collectors.toList());
-    }
-
-    private String addBookmarkParams(Long[] bookmarkList) {
-        StringBuilder bookmarkParams = new StringBuilder();
-        for (Long bookmarkId : bookmarkList) {
-            bookmarkParams.append("&bookmark_list=").append(bookmarkId);
-        }
-        return bookmarkParams.toString();
-    }
-
-    private void updateUserFavoriteGenre(Object genre, Long userId) {
-        User user = userService.findUserByUserId(userId);
-        user.updateGenre((String) genre);
-    }
-
-    private List<Map<Recipe, Integer>> sortedRecipeList(User user, RecipeRequestDto recipeRequestDto, List<Recipe> recipeSearchList) {
-        return recipeSearchList.stream()
-                .filter(recipe -> isAllIngredientsIncluded(recipe, recipeRequestDto.getIngredients()))
-                .map(recipe -> containFavoriteGenre(recipe, user))
-                .sorted((recipe1, recipe2) -> recipe2.values().iterator().next().compareTo(recipe1.values().iterator().next()))
+    private List<RecipeIngListResponseDto> sortRecipeListByPreference(User user, RecipeIngRequestDto requestDto, List<Recipe> recipeDetectionList) {
+        return recipeDetectionList.stream()
+                .filter(recipe -> isAllIngredientsIncluded(recipe, requestDto.getIngredients()))
+                .map(recipe -> new RecipeIngListResponseDto(requestDto.getIngredients(), recipe,
+                        Genre.containFavoriteGenre(recipe, user), recipeService.isRecipeBookmarked(user, recipe)))
+                .sorted(Comparator.comparing(RecipeIngListResponseDto::getIsFavoriteGenre, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
     }
 
@@ -122,11 +96,15 @@ public class RecommendServiceImpl implements RecommendService {
         return ingredients.stream().skip(1).allMatch(recipe.getIngredients()::contains);
     }
 
-    private Map<Recipe, Integer> containFavoriteGenre(Recipe recipe, User user) {
-        Map<Recipe, Integer> recipeMap = new HashMap<>();
-        String favoriteGenre = user.getFavoriteGenre() != null ? user.getFavoriteGenre() : "";
-        int genreMatch = recipe.getGenre().contains(favoriteGenre) ? 1 : 0;
-        recipeMap.put(recipe, genreMatch);
-        return recipeMap;
+    private String addBookmarkParams(Long[] bookmarkList) {
+        if (bookmarkList == null || bookmarkList.length == 0) {
+            return "";
+        }
+        return "&bookmark_list=" + Arrays.stream(bookmarkList).map(String::valueOf).collect(Collectors.joining("&bookmark_list="));
+    }
+
+    private void updateUserFavoriteGenre(String genre, Long userId) {
+        User user = userService.findUserByUserId(userId);
+        user.updateGenre(genre);
     }
 }
