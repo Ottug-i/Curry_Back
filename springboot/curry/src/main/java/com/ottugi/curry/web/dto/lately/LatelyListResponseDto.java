@@ -7,7 +7,6 @@ import lombok.Getter;
 
 @Getter
 public class LatelyListResponseDto {
-
     @ApiModelProperty(notes = "레시피 아이디", example = "6842324")
     private final Long recipeId;
 

@@ -1,18 +1,13 @@
 package com.ottugi.curry.web.dto.recommend;
 
 import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.util.IngredientPrioritySorter;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Getter
 public class RecipeIngListResponseDto {
-
     @ApiModelProperty(notes = "레시피 아이디", example = "6842324")
     private final Long recipeId;
 
@@ -47,74 +42,8 @@ public class RecipeIngListResponseDto {
         this.time = recipe.getTime().getTimeName();
         this.difficulty = recipe.getDifficulty().getDifficulty();
         this.composition = recipe.getComposition().getComposition();
-        this.ingredients = ingredientFilter(recipe.getIngredients(), ingredients);
+        this.ingredients = IngredientPrioritySorter.prioritizeIngredients(recipe.getIngredients(), ingredients);
         this.isFavoriteGenre = isFavoriteGenre;
         this.isBookmark = isBookmark;
-    }
-
-    // [] 섹션마다 재료 순서 필터링 후 합치기
-    private String ingredientFilter(String ingredients, List<String> filterIngredients) {
-        List<String> sections = extractSections(ingredients);
-        StringBuilder resultBuilder = new StringBuilder();
-        for (String section : sections) {
-            resultBuilder.append(changeIngredientOrder(section, filterIngredients)).append(" ");
-        }
-        return resultBuilder.toString().trim();
-    }
-
-    // [필수 재료] 재료1, 재료2, 재료3 [양념 재료] 재료1, 재료2, 지료3 에서 [ 기준으로 나누기
-    private List<String> extractSections(String ingredients) {
-        List<String> section = new ArrayList<>();
-        String[] parts = ingredients.split("\\[");
-        for (String part : parts) {
-            if (!part.trim().isEmpty()) {
-                section.add("[" + part.trim());
-            }
-        }
-        return section;
-    }
-
-    // 재료 순서 바꾸기
-    private String changeIngredientOrder(String ingredientSection, List<String> filterIngredients) {
-        String[] ingredientSectionList = splitIngredients(ingredientSection);
-        String[] parts = ingredientSectionList[1].split("\\|");
-        List<String> allIngredients = new ArrayList<>(Arrays.asList(parts));
-        List<String> modifiedIngredients = new ArrayList<>();
-
-        for (String ingredient : filterIngredients) {
-            Iterator<String> iterator = allIngredients.iterator();
-            while (iterator.hasNext()) {
-                String part = iterator.next();
-                if (part.contains(ingredient)) {
-                    modifiedIngredients.add(part);
-                    iterator.remove();
-                }
-            }
-        }
-
-        modifiedIngredients.addAll(allIngredients);
-        modifiedIngredients = removeSpacesFromIngredients(modifiedIngredients);
-        return ingredientSectionList[0] + " " + String.join("| ", modifiedIngredients);
-    }
-
-    // [필수 재료]와 재료 나누기
-    private String[] splitIngredients(String ingredientSection) {
-        int bracketIndex = ingredientSection.indexOf("]");
-        if (bracketIndex != -1) {
-            String bracket = ingredientSection.substring(0, bracketIndex + 1).trim();
-            String ingredients = ingredientSection.substring(bracketIndex + 1).trim();
-            return new String[]{bracket, ingredients};
-        } else {
-            return new String[]{ingredientSection, ""};
-        }
-    }
-
-    // 재료 리스트에서 공백 제거
-    private List<String> removeSpacesFromIngredients(List<String> modifiedIngredients) {
-        List<String> result = new ArrayList<>();
-        for (String ingredient : modifiedIngredients) {
-            result.add(ingredient.trim());
-        }
-        return result;
     }
 }

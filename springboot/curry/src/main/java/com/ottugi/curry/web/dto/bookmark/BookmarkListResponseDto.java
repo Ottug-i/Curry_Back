@@ -7,7 +7,6 @@ import lombok.Getter;
 
 @Getter
 public class BookmarkListResponseDto {
-
     @ApiModelProperty(notes = "레시피 아이디", example = "6842324")
     private final Long recipeId;
 
@@ -30,7 +29,7 @@ public class BookmarkListResponseDto {
     private final String ingredients;
 
     @ApiModelProperty(notes = "북마크 유무", example = "true")
-    private final Boolean isBookmark;
+    private final Boolean isBookmark = true;
 
     public BookmarkListResponseDto(Bookmark bookmark) {
         Recipe recipe = bookmark.getRecipeId();
@@ -41,6 +40,5 @@ public class BookmarkListResponseDto {
         this.difficulty = recipe.getDifficulty().getDifficulty();
         this.composition = recipe.getComposition().getComposition();
         this.ingredients = recipe.getIngredients();
-        this.isBookmark = true;
     }
 }

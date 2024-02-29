@@ -6,9 +6,9 @@ import com.ottugi.curry.config.GlobalConfig;
 import com.ottugi.curry.domain.recipe.Genre;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
-import com.ottugi.curry.service.PageUtil;
 import com.ottugi.curry.service.recipe.RecipeService;
 import com.ottugi.curry.service.user.UserService;
+import com.ottugi.curry.util.PageConverter;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDto;
@@ -45,7 +45,7 @@ public class RecommendServiceImpl implements RecommendService {
         User user = userService.findUserByUserId(requestDto.getUserId());
         List<Recipe> detectedRecipeList = findRecipeListContainingIngredients(requestDto);
         List<RecipeIngListResponseDto> sortedRecipeList = sortRecipeListByPreference(user, requestDto, detectedRecipeList);
-        return PageUtil.convertToPage(sortedRecipeList, requestDto.getPage(), requestDto.getSize());
+        return PageConverter.convertToPage(sortedRecipeList, requestDto.getPage(), requestDto.getSize());
     }
 
     @Override

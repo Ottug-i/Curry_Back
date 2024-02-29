@@ -1,5 +1,10 @@
 package com.ottugi.curry.web.dto.recipe;
 
+import com.ottugi.curry.domain.recipe.Composition;
+import com.ottugi.curry.domain.recipe.Difficulty;
+import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.Servings;
+import com.ottugi.curry.domain.recipe.Time;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +15,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class RecipeSaveRequestDto {
-
     @ApiModelProperty(notes = "레시피 아이디", example = "6842324")
     private Long recipeId;
 
@@ -45,7 +49,8 @@ public class RecipeSaveRequestDto {
     private String genre;
 
     @Builder
-    public RecipeSaveRequestDto(Long recipeId, String name, String composition, String ingredients, String servings, String difficulty, String thumbnail, String time, String orders, String photo, String genre) {
+    public RecipeSaveRequestDto(Long recipeId, String name, String composition, String ingredients, String servings, String difficulty,
+                                String thumbnail, String time, String orders, String photo, String genre) {
         this.recipeId = recipeId;
         this.name = name;
         this.composition = composition;
@@ -57,5 +62,21 @@ public class RecipeSaveRequestDto {
         this.orders = orders;
         this.photo = photo;
         this.genre = genre;
+    }
+
+    public Recipe toEntity() {
+        return Recipe.builder()
+                .recipeId(recipeId)
+                .name(name)
+                .composition(Composition.ofComposition(composition))
+                .ingredients(ingredients)
+                .servings(Servings.ofServings(servings))
+                .difficulty(Difficulty.ofDifficulty(difficulty))
+                .thumbnail(thumbnail)
+                .time(Time.ofTime(time))
+                .orders(orders)
+                .photo(photo)
+                .genre(genre)
+                .build();
     }
 }

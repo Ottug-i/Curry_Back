@@ -1,11 +1,11 @@
-package com.ottugi.curry.service;
+package com.ottugi.curry.util;
 
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-public class PageUtil {
+public class PageConverter {
     public static <T> Page<T> convertToPage(List<T> dtoList, int page, int size) {
         int totalItems = dtoList.size();
         int fromIndex = Math.max(0, page - 1) * size;

@@ -8,10 +8,10 @@ import com.ottugi.curry.domain.recipe.Time;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.except.BaseCode;
 import com.ottugi.curry.except.NotFoundException;
-import com.ottugi.curry.service.PageUtil;
 import com.ottugi.curry.service.lately.LatelyService;
 import com.ottugi.curry.service.rank.RankService;
 import com.ottugi.curry.service.user.UserService;
+import com.ottugi.curry.util.PageConverter;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
 import java.util.List;
@@ -44,7 +44,7 @@ public class RecipeServiceImpl implements RecipeService {
         User user = userService.findUserByUserId(userId);
         List<RecipeListResponseDto> recipeListResponseDtoList = findRecipesBySearchBox(user, name, time, difficulty, composition);
         updateOrAddRank(recipeListResponseDtoList, name);
-        return PageUtil.convertToPage(recipeListResponseDtoList, page, size);
+        return PageConverter.convertToPage(recipeListResponseDtoList, page, size);
     }
 
     @Override

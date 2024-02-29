@@ -4,9 +4,9 @@ import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.bookmark.BookmarkRepository;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
-import com.ottugi.curry.service.PageUtil;
 import com.ottugi.curry.service.recipe.RecipeService;
 import com.ottugi.curry.service.user.UserService;
+import com.ottugi.curry.util.PageConverter;
 import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
 import java.util.List;
@@ -39,7 +39,7 @@ public class BookmarkServiceImpl implements BookmarkService {
                 .stream()
                 .map(BookmarkListResponseDto::new)
                 .collect(Collectors.toList());
-        return PageUtil.convertToPage(bookmarkListResponseDtoList, page, size);
+        return PageConverter.convertToPage(bookmarkListResponseDtoList, page, size);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class BookmarkServiceImpl implements BookmarkService {
                 .filter(bookmark -> recipeService.isRecipeMatchingCriteria(bookmark.getRecipeId(), time, difficulty, composition))
                 .map(BookmarkListResponseDto::new)
                 .collect(Collectors.toList());
-        return PageUtil.convertToPage(bookmarkListResponseDtoList, page, size);
+        return PageConverter.convertToPage(bookmarkListResponseDtoList, page, size);
     }
 
     private Boolean isBookmarked(User user, Recipe recipe) {
