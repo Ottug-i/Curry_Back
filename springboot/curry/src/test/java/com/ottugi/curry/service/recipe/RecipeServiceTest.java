@@ -1,69 +1,47 @@
 package com.ottugi.curry.service.recipe;
 
-import static com.ottugi.curry.TestConstants.COMPOSITION;
-import static com.ottugi.curry.TestConstants.DIFFICULTY;
-import static com.ottugi.curry.TestConstants.EMAIL;
-import static com.ottugi.curry.TestConstants.FAVORITE_GENRE;
-import static com.ottugi.curry.TestConstants.GENRE;
-import static com.ottugi.curry.TestConstants.ID;
-import static com.ottugi.curry.TestConstants.INGREDIENTS;
-import static com.ottugi.curry.TestConstants.NAME;
-import static com.ottugi.curry.TestConstants.NICKNAME;
-import static com.ottugi.curry.TestConstants.ORDERS;
+import static com.ottugi.curry.TestConstants.INGREDIENT;
 import static com.ottugi.curry.TestConstants.PAGE;
-import static com.ottugi.curry.TestConstants.PHOTO;
-import static com.ottugi.curry.TestConstants.RECIPE_ID;
-import static com.ottugi.curry.TestConstants.ROLE;
-import static com.ottugi.curry.TestConstants.SERVINGS;
 import static com.ottugi.curry.TestConstants.SIZE;
-import static com.ottugi.curry.TestConstants.THUMBNAIL;
-import static com.ottugi.curry.TestConstants.TIME;
-import static com.ottugi.curry.TestConstants.USER_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ottugi.curry.TestObjectFactory;
+import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.domain.user.User;
-import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.service.lately.LatelyService;
 import com.ottugi.curry.service.rank.RankService;
+import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
+import java.util.Optional;
+import java.util.function.Predicate;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class RecipeServiceTest {
-
     private User user;
     private Recipe recipe;
-
-    private final Boolean isBookmark = true;
-
-    private final List<Recipe> recipeList = new ArrayList<>();
-    private final List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
-    private Page<RecipeListResponseDto> recipeListResponseDtoListPage;
-
-    @Mock
-    private CommonService commonService;
 
     @Mock
     private LatelyService latelyService;
@@ -72,77 +50,145 @@ class RecipeServiceTest {
     private RankService rankService;
 
     @Mock
-    private RecipeRepository recipeRepository;
+    private UserService userService;
 
     @Mock
-    private UserRepository userRepository;
+    private RecipeRepository recipeRepository;
 
     @InjectMocks
-    private RecipeServiceImpl recipeService;
+    private RecipeService recipeService;
 
     @BeforeEach
     public void setUp() {
-        // given
-        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        user = TestObjectFactory.initUser();
+        recipe = TestObjectFactory.initRecipe();
 
-        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-
-        recipeList.add(recipe);
-        recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, isBookmark));
-        recipeListResponseDtoListPage = new PageImpl<>(recipeListResponseDtoList, PageRequest.of(PAGE - 1, SIZE), recipeListResponseDtoList.size());
-    }
-
-    @AfterEach
-    public void clean() {
-        // clean
-        recipeRepository.deleteAll();
-        userRepository.deleteAll();
+        Bookmark bookmark = TestObjectFactory.initBookmark();
+        bookmark.setUser(user);
+        bookmark.setRecipe(recipe);
+        user.addBookmarkList(bookmark);
     }
 
     @Test
-    void 레시피_조회() {
-        // given
-        when(commonService.findByUserId(anyLong())).thenReturn(user);
-        when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe);
-        when(commonService.findByRecipeId(anyLong())).thenReturn(recipe);
-        when(latelyService.addLately(anyLong(), anyLong())).thenReturn(true);
-        when(commonService.isBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
+    @DisplayName("회원 아이디와 레시피 아이디로 레시피 조회 테스트")
+    void testFindRecipeByUserIdAndRecipeId() {
+        when(userService.findUserByUserId(anyLong())).thenReturn(user);
+        when(recipeRepository.findByRecipeId(anyLong())).thenReturn(Optional.ofNullable(recipe));
+        when(latelyService.addLately(any(User.class), any(Recipe.class))).thenReturn(true);
 
-        // when
-        RecipeResponseDto testRecipeResponseDto = recipeService.findRecipeByUserIdAndRecipeId(user.getId(), recipe.getRecipeId());
+        RecipeResponseDto result = recipeService.findRecipeByUserIdAndRecipeId(user.getId(), recipe.getRecipeId());
 
-        // then
-        assertNotNull(testRecipeResponseDto);
-        assertEquals(recipe.getRecipeId(), testRecipeResponseDto.getRecipeId());
-        assertEquals(recipe.getName(), testRecipeResponseDto.getName());
-        assertEquals(recipe.getThumbnail(), testRecipeResponseDto.getThumbnail());
-        assertEquals(recipe.getTime().getTimeName(), testRecipeResponseDto.getTime());
-        assertEquals(recipe.getDifficulty().getDifficulty(), testRecipeResponseDto.getDifficulty());
-        assertEquals(recipe.getComposition().getComposition(), testRecipeResponseDto.getComposition());
-        assertEquals(recipe.getIngredients(), testRecipeResponseDto.getIngredients());
-        assertEquals(recipe.getServings().getServings(), testRecipeResponseDto.getServings());
-        assertEquals(recipe.getOrders(), testRecipeResponseDto.getOrders());
-        assertEquals(recipe.getPhoto(), testRecipeResponseDto.getPhoto());
-        assertEquals(isBookmark, testRecipeResponseDto.getIsBookmark());
+        assertNotNull(result);
+        assertEquals(recipe.getRecipeId(), result.getRecipeId());
+        assertEquals(recipe.getName(), result.getName());
+        assertEquals(recipe.getThumbnail(), result.getThumbnail());
+        assertEquals(recipe.getTime().getTimeName(), result.getTime());
+        assertEquals(recipe.getDifficulty().getDifficulty(), result.getDifficulty());
+        assertEquals(recipe.getComposition().getComposition(), result.getComposition());
+        assertEquals(recipe.getIngredients(), result.getIngredients());
+        assertEquals(recipe.getServings().getServings(), result.getServings());
+        assertEquals(recipe.getOrders(), result.getOrders());
+        assertEquals(recipe.getPhoto(), result.getPhoto());
+        assertEquals(true, result.getIsBookmark());
+
+        verify(userService, times(1)).findUserByUserId(anyLong());
+        verify(recipeRepository, times(1)).findByRecipeId(anyLong());
+        verify(latelyService, times(1)).addLately(any(User.class), any(Recipe.class));
     }
 
     @Test
-    void 레시피_검색() {
-        // given
-        when(commonService.findByUserId(anyLong())).thenReturn(user);
-        when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe);
-        when(recipeRepository.findByNameContaining(anyString())).thenReturn(recipeList);
-        when(commonService.isBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
+    @DisplayName("검색창으로 레시피 조회 테스트")
+    void testFindRecipePageBySearchBox() {
+        when(userService.findUserByUserId(anyLong())).thenReturn(user);
+        when(recipeRepository.findByNameContaining(anyString())).thenReturn(Collections.singletonList(recipe));
         doNothing().when(rankService).updateOrAddRank(anyString());
-        doReturn(recipeListResponseDtoListPage).when(commonService).getPage(anyList(), anyInt(), anyInt());
 
-        // when
-        Page<RecipeListResponseDto> testRecipeListPageResponseDto = recipeService.findRecipePageBySearchBox(user.getId(), PAGE, SIZE, NAME,
-                TIME.getTimeName(),
-                DIFFICULTY.getDifficulty(), COMPOSITION.getComposition());
+        Page<RecipeListResponseDto> result = recipeService.findRecipePageBySearchBox(user.getId(), PAGE, SIZE,
+                recipe.getName(), recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficulty(), recipe.getComposition().getComposition());
 
-        // then
-        assertEquals(recipeListResponseDtoListPage.getTotalElements(), testRecipeListPageResponseDto.getTotalElements());
+        assertEquals(1, result.getTotalElements());
+
+        verify(userService, times(1)).findUserByUserId(anyLong());
+        verify(recipeRepository, times(1)).findByNameContaining(anyString());
+        verify(rankService, times(1)).updateOrAddRank(anyString());
+    }
+
+    @Test
+    @DisplayName("레시피 아이디로 레시피 조회 테스트")
+    void testFindRecipeByRecipeId() {
+        when(recipeRepository.findByRecipeId(anyLong())).thenReturn(Optional.ofNullable(recipe));
+
+        Recipe result = recipeService.findRecipeByRecipeId(recipe.getRecipeId());
+
+        assertNotNull(result);
+        assertEquals(recipe.getRecipeId(), result.getRecipeId());
+        assertEquals(recipe.getName(), result.getName());
+        assertEquals(recipe.getThumbnail(), result.getThumbnail());
+        assertEquals(recipe.getTime(), result.getTime());
+        assertEquals(recipe.getDifficulty(), result.getDifficulty());
+        assertEquals(recipe.getComposition(), result.getComposition());
+        assertEquals(recipe.getIngredients(), result.getIngredients());
+        assertEquals(recipe.getServings(), result.getServings());
+        assertEquals(recipe.getOrders(), result.getOrders());
+        assertEquals(recipe.getPhoto(), result.getPhoto());
+
+        verify(recipeRepository, times(1)).findByRecipeId(anyLong());
+    }
+
+    @Test
+    @DisplayName("레시피 아이디 리스트로 레시피 목록 조회 테스트")
+    void testFindRecipeListByRecipeIdIn() {
+        when(recipeRepository.findByRecipeIdIn(anyList())).thenReturn(Collections.singletonList(recipe));
+
+        List<Recipe> result = recipeService.findRecipeListByRecipeIdIn(Collections.singletonList(recipe.getRecipeId()));
+
+        assertEquals(1, result.size());
+
+        verify(recipeRepository, times(1)).findByIdIn(anyList());
+    }
+
+    @Test
+    @DisplayName("레시피 재료로 레시피 목록 조회 테스트")
+    void testFindByRecipeListByIngredientsContaining() {
+        when(recipeRepository.findByIngredientsContaining(anyString())).thenReturn(Collections.singletonList(recipe));
+
+        List<Recipe> result = recipeService.findByRecipeListByIngredientsContaining(INGREDIENT);
+
+        assertEquals(1, result.size());
+        assertTrue(result.get(0).getIngredients().contains(INGREDIENT));
+
+        verify(recipeRepository, times(1)).findByIngredientsContaining(anyString());
+    }
+
+    @Test
+    @DisplayName("레시피 옵션에 따른 레시피 필터 설정 테스트")
+    void testFilterPredicateForOptions() {
+        Predicate<Recipe> result = recipeService.filterPredicateForOptions(
+                recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficulty(), recipe.getComposition().getComposition());
+
+        assertTrue(result.test(recipe));
+
+        verify(recipeService, times(1)).filterPredicateForOptions(anyString(), anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("레시피 옵션에 따른 레시피 매칭 설정 테스트")
+    void testIsRecipeMatchingCriteria() {
+        Boolean result = recipeService.isRecipeMatchingCriteria(recipe,
+                recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficulty(), recipe.getComposition().getComposition());
+
+        assertTrue(result);
+
+        verify(recipeService, times(1)).isRecipeMatchingCriteria(any(Recipe.class), anyString(), anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("회원과 레시피에 따른 레시피 북마크 여부 조회 테스트")
+    void testIsRecipeBookmarked() {
+        Boolean result = recipeService.isRecipeBookmarked(user, recipe);
+
+        assertTrue(result);
+
+        verify(recipeService, times(1)).isRecipeBookmarked(any(User.class), any(Recipe.class));
     }
 }

@@ -1,28 +1,17 @@
 package com.ottugi.curry.service.ratings;
 
-import static com.ottugi.curry.TestConstants.COMPOSITION;
-import static com.ottugi.curry.TestConstants.DIFFICULTY;
-import static com.ottugi.curry.TestConstants.GENRE;
-import static com.ottugi.curry.TestConstants.ID;
-import static com.ottugi.curry.TestConstants.INGREDIENTS;
-import static com.ottugi.curry.TestConstants.NAME;
-import static com.ottugi.curry.TestConstants.ORDERS;
-import static com.ottugi.curry.TestConstants.PHOTO;
-import static com.ottugi.curry.TestConstants.RATING;
-import static com.ottugi.curry.TestConstants.RATING_ID;
-import static com.ottugi.curry.TestConstants.RECIPE_ID;
-import static com.ottugi.curry.TestConstants.SERVINGS;
-import static com.ottugi.curry.TestConstants.THUMBNAIL;
-import static com.ottugi.curry.TestConstants.TIME;
-import static com.ottugi.curry.TestConstants.USER_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.ratings.Ratings;
 import com.ottugi.curry.domain.ratings.RatingsRepository;
 import com.ottugi.curry.domain.recipe.Recipe;
@@ -30,25 +19,21 @@ import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.web.dto.ratings.RatingRequestDto;
 import com.ottugi.curry.web.dto.ratings.RatingResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class RatingsServiceTest {
-
     private Ratings ratings;
+    private RatingRequestDto ratingRequestDto;
     private Recipe recipe;
-
-    private final List<Long> idList = new ArrayList<>();
-    private final List<Recipe> recipeList = new ArrayList<>();
 
     @Mock
     private RatingsRepository ratingsRepository;
@@ -56,83 +41,84 @@ class RatingsServiceTest {
     @Mock
     private RecipeRepository recipeRepository;
 
-    @Mock
-    private CommonService commonService;
-
     @InjectMocks
-    private RatingsServiceImpl ratingsService;
-
-    private final Map<Long, Double> newUserRatingsDic = new HashMap<>();
+    private RatingsService ratingsService;
 
     @BeforeEach
     public void setUp() {
-        // given
-        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        ratings = new Ratings(RATING_ID, USER_ID, RECIPE_ID, RATING);
+        ratings = TestObjectFactory.initRatings();
+        ratingRequestDto = TestObjectFactory.initRatingRequestDto(ratings);
+        recipe = TestObjectFactory.initRecipe();
+    }
 
-        // when
-        when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe);
+    @Test
+    @DisplayName("초기 평점 수집을 위한 랜덤 레시피 목록 조회 테스트")
+    void testFindRandomRecipeListForResearch() {
+        when(recipeRepository.count()).thenReturn(1L);
+        when(recipeRepository.findByIdIn(anyList())).thenReturn(Collections.singletonList(recipe));
+
+        List<RecommendListResponseDto> result = ratingsService.findRandomRecipeListForResearch();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+
+        verify(recipeRepository, times(1)).count();
+        verify(recipeRepository, times(1)).findByIdIn(anyList());
+    }
+
+    @Test
+    @DisplayName("회원에 따른 레시피 평점 조회 테스트")
+    void testFindUserRating() {
+        when(ratingsRepository.existsByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(true);
+        when(ratingsRepository.findByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(ratings);
+
+        RatingResponseDto result = ratingsService.findUserRating(ratings.getUserId(), ratings.getRecipeId());
+
+        assertNotNull(result);
+        assertEquals(ratings.getUserId(), result.getUserId());
+        assertEquals(ratings.getRecipeId(), result.getRecipeId());
+
+        verify(ratingsRepository, times(1)).existsByUserIdAndRecipeId(anyLong(), anyLong());
+        verify(ratingsRepository, times(1)).findByUserIdAndRecipeId(anyLong(), anyLong());
+    }
+
+    @Test
+    @DisplayName("회원에 따른 레시피 평점 추가 테스트")
+    void testAddUserRating() {
+        when(ratingsRepository.existsByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(false);
         when(ratingsRepository.save(any(Ratings.class))).thenReturn(ratings);
 
-        newUserRatingsDic.put(6847060L, 3.0);
-    }
+        Boolean result = ratingsService.addOrUpdateUserRating(ratingRequestDto);
 
-    @AfterEach
-    public void clean() {
-        // clean
-        ratingsRepository.deleteAll();
-    }
+        assertTrue(result);
 
-    @Test
-    void 초기_평점을_위한_랜덤_레시피_목록_조회() {
-        // given
-        when(commonService.findByIdIn(anyList())).thenReturn(recipeList);
-
-        // when
-        List<RecommendListResponseDto> testRecommendListResponseDtoList = ratingsService.findRandomRecipeListForResearch();
-
-        // then
-        assertNotNull(testRecommendListResponseDtoList);
-        assertEquals(idList.size(), testRecommendListResponseDtoList.size());
+        verify(ratingsRepository, times(1)).existsByUserIdAndRecipeId(anyLong(), anyLong());
+        verify(ratingsRepository, times(1)).save(any(Ratings.class));
     }
 
     @Test
-    void 레시피_평점_조회() {
-        // given
+    @DisplayName("회원에 따른 레시피 평점 수정 테스트")
+    void testUpdateUserRating() {
+        when(ratingsRepository.existsByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(true);
         when(ratingsRepository.findByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(ratings);
 
-        // when
-        RatingResponseDto testRatingResponseDto = ratingsService.findUserRating(USER_ID, recipe.getRecipeId());
+        Boolean result = ratingsService.addOrUpdateUserRating(ratingRequestDto);
 
-        // then
-        assertNotNull(testRatingResponseDto);
-        assertEquals(USER_ID, testRatingResponseDto.getUserId());
-        assertEquals(recipe.getRecipeId(), testRatingResponseDto.getRecipeId());
+        assertTrue(result);
+
+        verify(ratingsRepository, times(1)).existsByUserIdAndRecipeId(anyLong(), anyLong());
+        verify(ratingsRepository, times(1)).findByUserIdAndRecipeId(anyLong(), anyLong());
     }
 
     @Test
-    void 레시피_평점_업데이트() {
-        // given
-        when(ratingsRepository.findByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(ratings);
+    @DisplayName("회원에 따른 레시피 평점 삭제 테스트")
+    void testRemoveUserRating() {
+        doNothing().when(ratingsRepository).deleteByUserIdAndRecipeId(anyLong(), anyLong());
 
-        // when
-        RatingRequestDto ratingRequestDto = new RatingRequestDto(USER_ID, newUserRatingsDic);
-        Boolean testResponse = ratingsService.updateUserRating(ratingRequestDto);
+        Boolean result = ratingsService.removeUserRating(ratings.getUserId(), recipe.getRecipeId());
 
-        // then
-        assertTrue(testResponse);
+        assertTrue(result);
+
+        verify(ratingsRepository, times(1)).deleteByUserIdAndRecipeId(anyLong(), anyLong());
     }
-
-    @Test
-    void 레시피_평점_삭제() {
-        // given
-        when(ratingsRepository.findByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(ratings);
-
-        // when
-        Boolean testResponse = ratingsService.removeUserRating(USER_ID, recipe.getRecipeId());
-
-        // then
-        assertTrue(testResponse);
-    }
-
 }

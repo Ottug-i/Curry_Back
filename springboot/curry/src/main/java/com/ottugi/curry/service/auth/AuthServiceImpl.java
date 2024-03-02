@@ -24,7 +24,7 @@ public class AuthServiceImpl implements AuthService {
     private final TokenProvider tokenProvider;
 
     @Override
-    public TokenResponseDto signInOrSignUpAndIssueToken(UserSaveRequestDto requestDto, HttpServletResponse response) {
+    public TokenResponseDto signUpOrSignInAndIssueToken(UserSaveRequestDto requestDto, HttpServletResponse response) {
         User user = findOrAddUser(requestDto);
         return issueToken(user, response);
     }

@@ -1,33 +1,33 @@
 package com.ottugi.curry.service.rank;
 
-import static com.ottugi.curry.TestConstants.KEYWORD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.rank.Rank;
 import com.ottugi.curry.domain.rank.RankRepository;
 import com.ottugi.curry.web.dto.rank.RankResponseDto;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.scheduling.TaskScheduler;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class RankServiceTest {
-
     private Rank rank;
-
-    private final List<Rank> rankList = new ArrayList<>();
 
     @Mock
     private RankRepository rankRepository;
@@ -36,74 +36,58 @@ class RankServiceTest {
     private TaskScheduler taskScheduler;
 
     @InjectMocks
-    private RankServiceImpl rankService;
+    private RankService rankService;
 
     @BeforeEach
     public void setUp() {
-        // given
-        rank = new Rank(KEYWORD);
-
-        rankList.add(rank);
-    }
-
-    @AfterEach
-    public void clean() {
-        // clean
-        rankRepository.deleteAll();
+        rank = TestObjectFactory.initRank();
     }
 
     @Test
-    void 랭킹초기화() {
-        // given
-        when(rankRepository.save(any(Rank.class))).thenReturn(rank);
-        doNothing().when(rankRepository).deleteAll();
-
-        // when
-        rankService.clearRanking();
-    }
-
-    @Test
-    void 검색어_추가() {
-        // given
+    @DisplayName("검색어 순위 추가 테스트")
+    void testAddRank() {
         when(rankRepository.findByName(anyString())).thenReturn(null);
         when(rankRepository.save(any(Rank.class))).thenReturn(rank);
 
-        // when
         rankService.updateOrAddRank(rank.getName());
+
+        verify(rankRepository, times(1)).findByName(anyString());
+        verify(rankRepository, times(1)).save(any(Rank.class));
     }
 
     @Test
-    void 검색어_횟수_증가() {
-        // given
+    @DisplayName("검색어 순위 횟수 추가 테스트")
+    void testUpdateRank() {
+        when(rankRepository.findByName(anyString())).thenReturn(rank);
         when(rankRepository.save(any(Rank.class))).thenReturn(rank);
-        when(rankRepository.findByName(rank.getName())).thenReturn(rank);
 
-        // when
         rankService.updateOrAddRank(rank.getName());
+
+        verify(rankRepository, times(1)).findByName(anyString());
+        verify(rankRepository, times(1)).save(any(Rank.class));
     }
 
     @Test
-    void 검색어_순위_10개_목록_조회() {
-        // given
-        when(rankRepository.save(any(Rank.class))).thenReturn(rank);
-        when(rankRepository.findAllByOrderByScoreDesc()).thenReturn(rankList);
+    @DisplayName("검색어 최고 순위 10개 목록 조회")
+    void testFindTopRankList() {
+        when(rankRepository.findAllByOrderByScoreDesc()).thenReturn(Collections.singletonList(rank));
 
-        // when
-        List<RankResponseDto> testRankResponseDtoList = rankService.getRankList();
+        List<RankResponseDto> result = rankService.findTopRankList();
 
-        // then
-        assertNotNull(testRankResponseDtoList);
-        assertEquals(rankList.size(), testRankResponseDtoList.size());
+        assertNotNull(result);
+        assertEquals(1, result.size());
+
+        verify(rankRepository, times(1)).findAllByOrderByScoreDesc();
     }
 
     @Test
-    void 일주일마다_검색어_순위_초기화() {
-        // given
-        when(rankRepository.save(any(Rank.class))).thenReturn(rank);
+    @DisplayName("일주일마다 검색어 순위 초기화 테스트")
+    void testResetWeeklyRanking() {
         doNothing().when(rankRepository).deleteAll();
         when(taskScheduler.schedule(any(Runnable.class), any(Date.class))).thenReturn(null);
 
-        // when
         rankService.resetWeeklyRanking();
+
+        verify(rankRepository, times(1)).deleteAll();
     }
 }

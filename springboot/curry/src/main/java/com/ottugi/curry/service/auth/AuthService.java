@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public interface AuthService {
-    TokenResponseDto signInOrSignUpAndIssueToken(UserSaveRequestDto requestDto, HttpServletResponse response);
+    TokenResponseDto signUpOrSignInAndIssueToken(UserSaveRequestDto requestDto, HttpServletResponse response);
 
     TokenResponseDto reissueToken(String email, HttpServletRequest request, HttpServletResponse response);
 }

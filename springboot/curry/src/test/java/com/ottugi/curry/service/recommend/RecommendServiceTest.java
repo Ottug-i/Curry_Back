@@ -1,90 +1,57 @@
 package com.ottugi.curry.service.recommend;
 
-import static com.ottugi.curry.TestConstants.COMPOSITION;
-import static com.ottugi.curry.TestConstants.DIFFICULTY;
-import static com.ottugi.curry.TestConstants.EMAIL;
-import static com.ottugi.curry.TestConstants.FAVORITE_GENRE;
-import static com.ottugi.curry.TestConstants.GENRE;
-import static com.ottugi.curry.TestConstants.ID;
-import static com.ottugi.curry.TestConstants.INGREDIENTS;
-import static com.ottugi.curry.TestConstants.NAME;
-import static com.ottugi.curry.TestConstants.NICKNAME;
-import static com.ottugi.curry.TestConstants.ORDERS;
 import static com.ottugi.curry.TestConstants.PAGE;
-import static com.ottugi.curry.TestConstants.PHOTO;
-import static com.ottugi.curry.TestConstants.RECIPE_ID;
-import static com.ottugi.curry.TestConstants.ROLE;
-import static com.ottugi.curry.TestConstants.SERVINGS;
-import static com.ottugi.curry.TestConstants.SIZE;
-import static com.ottugi.curry.TestConstants.THUMBNAIL;
-import static com.ottugi.curry.TestConstants.TIME;
-import static com.ottugi.curry.TestConstants.USER_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.config.GlobalConfig;
 import com.ottugi.curry.domain.bookmark.Bookmark;
-import com.ottugi.curry.domain.bookmark.BookmarkRepository;
 import com.ottugi.curry.domain.recipe.Recipe;
-import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.domain.user.User;
-import com.ottugi.curry.domain.user.UserRepository;
+import com.ottugi.curry.service.recipe.RecipeService;
+import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDto;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
+import java.util.function.Predicate;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.client.RestTemplate;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class RecommendServiceTest {
+    private final Predicate<Recipe> mockPredicate = recipe -> true;
 
     private User user;
     private Recipe recipe;
     private Bookmark bookmark;
-
-    private final Boolean isBookmark = true;
-
-    private final String ingredient = "고구마";
-    private final List<String> ingredientList = new ArrayList<>();
-    private final List<Long> idList = new ArrayList<>();
-    private final List<Long> recipeIdList = new ArrayList<>();
-    private final List<Recipe> recipeList = new ArrayList<>();
-    private final List<RecipeIngListResponseDto> recipeIngListResponseDtoList = new ArrayList<>();
-    private Page<RecipeIngListResponseDto> recipeIngListResponseDtoListPage;
-
-    private Long[] bookmarkIdList;
+    private RecipeIngRequestDto recipeIngRequestDto;
+    private RecommendRequestDto recommendRequestDto;
 
     @Mock
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Mock
-    private RecipeRepository recipeRepository;
-
-    @Mock
-    private BookmarkRepository bookmarkRepository;
-
-    @Mock
-    private CommonService commonService;
+    private RecipeService recipeService;
 
     @Mock
     private GlobalConfig config;
@@ -93,103 +60,81 @@ class RecommendServiceTest {
     private RestTemplate restTemplate;
 
     @InjectMocks
-    private RecommendServiceImpl recommendService;
+    private RecommendService recommendService;
 
     @BeforeEach
     public void setUp() {
-        // given
-        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        bookmark = new Bookmark();
+        user = TestObjectFactory.initUser();
+        recipe = TestObjectFactory.initRecipe();
+        bookmark = TestObjectFactory.initBookmark();
         bookmark.setUser(user);
         bookmark.setRecipe(recipe);
 
-        when(userRepository.save(any(User.class))).thenReturn(user);
-        when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe);
-        when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(bookmark);
-
-        idList.add(recipe.getId());
-        recipeIdList.add(recipe.getRecipeId());
-        recipeList.add(recipe);
-        ingredientList.add(ingredient);
-        recipeIngListResponseDtoList.add(new RecipeIngListResponseDto(ingredientList, recipe, isBookmark));
-        recipeIngListResponseDtoListPage = new PageImpl<>(recipeIngListResponseDtoList, PageRequest.of(PAGE - 1, SIZE),
-                recipeIngListResponseDtoList.size());
-
-        bookmarkIdList = new Long[]{bookmark.getId()};
-    }
-
-    @AfterEach
-    public void clean() {
-        // clean
-        bookmarkRepository.deleteAll();
-        recipeRepository.deleteAll();
-        userRepository.deleteAll();
+        recipeIngRequestDto = TestObjectFactory.initRecipeIngRequestDto(user, recipe);
+        recommendRequestDto = TestObjectFactory.initRecommendRequestDto(user, recipe);
     }
 
     @Test
-    void 재료로_레시피_목록_조회() {
-        // given
-        when(commonService.findByUserId(anyLong())).thenReturn(user);
-        when(commonService.findByIngredientsContaining(anyString())).thenReturn(recipeList);
-        when(commonService.isRecipeMatching(any(Recipe.class), anyString(), anyString(), anyString())).thenReturn(true);
-        when(commonService.isBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
-        doReturn(recipeIngListResponseDtoListPage).when(commonService).getPage(anyList(), anyInt(), anyInt());
+    @DisplayName("객체 인식으로 검출된 재료를 포함하는 레시피 목록 조회 테스트")
+    void testFindRecipePageByIngredientsDetection() {
+        when(userService.findUserByUserId(anyLong())).thenReturn(user);
+        when(recipeService.findByRecipeListByIngredientsContaining(anyString())).thenReturn(Collections.singletonList(recipe));
+        when(recipeService.filterPredicateForOptions(anyString(), anyString(), anyString())).thenReturn(mockPredicate);
+        when(recipeService.isRecipeBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
 
-        // when
-        RecipeIngRequestDto recipeIngRequestDto = new RecipeIngRequestDto(user.getId(), ingredientList, TIME.getTimeName(),
-                DIFFICULTY.getDifficulty(),
-                COMPOSITION.getComposition(), PAGE, SIZE);
-        Page<RecipeIngListResponseDto> testRecipeIngListResponseDtoListPage = recommendService.findRecipePageByIngredientsDetection(
-                recipeIngRequestDto);
+        Page<RecipeIngListResponseDto> result = recommendService.findRecipePageByIngredientsDetection(recipeIngRequestDto);
 
-        // then
-        assertNotNull(testRecipeIngListResponseDtoListPage);
-        assertEquals(recipeIngListResponseDtoListPage.getTotalElements(), testRecipeIngListResponseDtoListPage.getTotalElements());
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+
+        verify(userService, times(1)).findUserByUserId(anyLong());
+        verify(recipeService, times(1)).findByRecipeListByIngredientsContaining(anyString());
+        verify(recipeService, times(1)).filterPredicateForOptions(anyString(), anyString(), anyString());
+        verify(recipeService, times(1)).isRecipeBookmarked(any(User.class), any(Recipe.class));
     }
 
     @Test
-    void 북마크_추천_아이디_목록_조회() throws JsonProcessingException {
-        // given
-        String httpResponse = "[1]";
-        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(httpResponse);
+    @DisplayName("북마크 추천 레시피 아이디 목록 조회 테스트")
+    void testFindRecipeIdListByBookmarkRecommend() throws JsonProcessingException {
+        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("[1]");
 
-        List<Long> testRecommendRecipeIdList = recommendService.findRecipeIdListByBookmarkRecommend(recipe.getRecipeId(), PAGE);
+        List<Long> result = recommendService.findRecipeIdListByBookmarkRecommend(recipe.getRecipeId(), PAGE);
 
-        // then
-        assertNotNull(testRecommendRecipeIdList);
-        assertEquals(1, testRecommendRecipeIdList.size());
-    }
+        assertNotNull(result);
+        assertEquals(1, result.size());
 
-
-    @Test
-    void 평점_추천_아이디_목록_조회() throws JsonProcessingException {
-        // given
-        String httpResponse = "[\"ing15\", [1]]";
-        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(httpResponse);
-        when(commonService.findByUserId(anyLong())).thenReturn(user);
-
-        // when
-        List<Long> testRecommendRecipeIdList = recommendService.findRecipeIdListByRatingRecommend(user.getId(), PAGE, bookmarkIdList);
-
-        // then
-        assertNotNull(testRecommendRecipeIdList);
-        assertEquals(1, testRecommendRecipeIdList.size());
+        verify(restTemplate, times(1)).getForObject(anyString(), eq(String.class));
     }
 
     @Test
-    void 북마크_및_평점_추천_레시피_목록_조회() {
-        // given
-        when(commonService.findByUserId(anyLong())).thenReturn(user);
-        when(commonService.findByRecipeIdIn(anyList())).thenReturn(recipeList);
-        when(commonService.isBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
+    @DisplayName("평점 추천 레시피 아이디 목록 조회 테스트")
+    void testFindRecipeIdListByRatingRecommend() throws JsonProcessingException {
+        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("[\"ing15\", [1]]");
+        when(userService.findUserByUserId(anyLong())).thenReturn(user);
 
-        // when
-        RecommendRequestDto recommendRequestDto = new RecommendRequestDto(user.getId(), recipeIdList);
-        List<RecipeListResponseDto> testRecipeListResponseDtoList = recommendService.findBookmarkOrRatingRecommendList(recommendRequestDto);
+        List<Long> result = recommendService.findRecipeIdListByRatingRecommend(user.getId(), PAGE, new Long[]{bookmark.getId()});
 
-        // then
-        assertNotNull(testRecipeListResponseDtoList);
-        assertEquals(recipeList.size(), testRecipeListResponseDtoList.size());
+        assertNotNull(result);
+        assertEquals(1, result.size());
+
+        verify(restTemplate, times(1)).getForObject(anyString(), eq(String.class));
+        verify(userService, times(1)).findUserByUserId(anyLong());
+    }
+
+    @Test
+    @DisplayName("북마크 또는 평점 추천 레시피 목록 조회 테스트")
+    void testFindBookmarkOrRatingRecommendList() {
+        when(userService.findUserByUserId(anyLong())).thenReturn(user);
+        when(recipeService.findRecipeListByRecipeIdIn(anyList())).thenReturn(Collections.singletonList(recipe));
+        when(recipeService.isRecipeBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
+
+        List<RecipeListResponseDto> result = recommendService.findBookmarkOrRatingRecommendList(recommendRequestDto);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+
+        verify(userService, times(1)).findUserByUserId(anyLong());
+        verify(recipeService, times(1)).findRecipeListByRecipeIdIn(anyList());
+        verify(recipeService, times(1)).isRecipeBookmarked(any(User.class), any(Recipe.class));
     }
 }

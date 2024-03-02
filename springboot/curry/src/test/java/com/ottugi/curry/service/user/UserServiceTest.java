@@ -1,98 +1,119 @@
 package com.ottugi.curry.service.user;
 
-import static com.ottugi.curry.TestConstants.EMAIL;
-import static com.ottugi.curry.TestConstants.FAVORITE_GENRE;
 import static com.ottugi.curry.TestConstants.NEW_NICKNAME;
-import static com.ottugi.curry.TestConstants.NICKNAME;
-import static com.ottugi.curry.TestConstants.ROLE;
-import static com.ottugi.curry.TestConstants.USER_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.web.dto.user.UserResponseDto;
 import com.ottugi.curry.web.dto.user.UserUpdateRequestDto;
-import org.junit.jupiter.api.AfterEach;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
-
     private User user;
-
-    @Mock
-    private CommonService commonService;
+    private UserUpdateRequestDto userUpdateRequestDto;
 
     @Mock
     private UserRepository userRepository;
 
     @InjectMocks
-    private UserServiceImpl userService;
+    private UserService userService;
 
     @BeforeEach
     public void setUp() {
-        // given
-        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        when(userRepository.save(any(User.class))).thenReturn(user);
-    }
-
-    @AfterEach
-    public void clean() {
-        // clean
-        userRepository.deleteAll();
+        user = TestObjectFactory.initUser();
+        userUpdateRequestDto = TestObjectFactory.initUserUpdateRequestDto(user);
     }
 
     @Test
-    void 회원_조회() {
-        // given
-        when(commonService.findByUserId(anyLong())).thenReturn(user);
+    @DisplayName("회원 아이디로 회원 조회 테스트")
+    void testFindUserByUserId() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
 
-        // when
-        UserResponseDto testUserResponseDto = userService.findUserProfileByUserId(user.getId());
+        User result = userService.findUserByUserId(user.getId());
 
-        // then
-        assertNotNull(testUserResponseDto);
-        assertEquals(user.getId(), testUserResponseDto.getId());
-        assertEquals(user.getEmail(), testUserResponseDto.getEmail());
-        assertEquals(user.getNickName(), testUserResponseDto.getNickName());
-        assertEquals(user.getRole().getRole(), testUserResponseDto.getRole());
+        assertNotNull(result);
+        assertEquals(user.getId(), result.getId());
+        assertEquals(user.getEmail(), result.getEmail());
+        assertEquals(user.getNickName(), result.getNickName());
+        assertEquals(user.getRole(), result.getRole());
+
+        verify(userRepository, times(1)).findById(anyLong());
     }
 
     @Test
-    void 회원_수정() {
-        // given
-        when(commonService.findByUserId(anyLong())).thenReturn(user);
+    @DisplayName("회원 이메일로 회원 조회 테스트")
+    void testFindUserByEmail() {
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.ofNullable(user));
 
-        // when
-        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(user.getId(), NEW_NICKNAME);
-        UserResponseDto testUserResponseDto = userService.modifyUserProfile(userUpdateRequestDto);
+        User result = userService.findUserByEmail(user.getEmail());
 
-        // then
-        assertNotNull(testUserResponseDto);
-        assertEquals(user.getId(), testUserResponseDto.getId());
-        assertEquals(user.getEmail(), testUserResponseDto.getEmail());
+        assertNotNull(result);
+        assertEquals(user.getId(), result.getId());
+        assertEquals(user.getEmail(), result.getEmail());
+        assertEquals(user.getNickName(), result.getNickName());
+        assertEquals(user.getRole(), result.getRole());
+
+        verify(userRepository, times(1)).findByEmail(anyString());
+    }
+
+    @Test
+    @DisplayName("회원 아이디로 회원 프로필 조회 테스트")
+    void testFindUserProfileByUserId() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+
+        UserResponseDto result = userService.findUserProfileByUserId(user.getId());
+
+        assertNotNull(result);
+        assertEquals(user.getId(), result.getId());
+        assertEquals(user.getEmail(), result.getEmail());
+        assertEquals(user.getNickName(), result.getNickName());
+        assertEquals(user.getRole().getRole(), result.getRole());
+
+        verify(userRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    @DisplayName("회원 프로필 수정 테스트")
+    void testModifyUserProfile() {
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.ofNullable(user));
+
+        UserResponseDto result = userService.modifyUserProfile(userUpdateRequestDto);
+
+        assertNotNull(result);
+        assertEquals(user.getId(), result.getId());
+        assertEquals(user.getEmail(), result.getEmail());
         assertEquals(user.getNickName(), NEW_NICKNAME);
-        assertEquals(user.getRole().getRole(), testUserResponseDto.getRole());
+        assertEquals(user.getRole().getRole(), result.getRole());
+
+        verify(userRepository, times(1)).findByEmail(anyString());
     }
 
     @Test
-    void 회원_탈퇴() {
-        // given
-        when(commonService.findByUserId(anyLong())).thenReturn(user);
+    @DisplayName("회원 아이디로 회원 탈퇴 테스트")
+    void testWithdrawUserAccount() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
 
-        // when
-        Boolean testResponse = userService.withdrawUserAccount(user.getId());
+        Boolean result = userService.withdrawUserAccount(user.getId());
 
-        // then
-        assertTrue(testResponse);
+        assertTrue(result);
+
+        verify(userRepository, times(1)).findById(anyLong());
     }
 }
