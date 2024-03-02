@@ -1,27 +1,30 @@
 package com.ottugi.curry.domain.token;
 
+import static com.ottugi.curry.TestConstants.EMAIL;
+import static com.ottugi.curry.TestConstants.EXPIRED_TIME;
+import static com.ottugi.curry.TestConstants.VALUE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.ottugi.curry.TestObjectFactory;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest
 public class TokenTest {
-
     private Token token;
 
     @BeforeEach
     public void setUp() {
-        // given
-        token = new Token(EMAIL, VALUE, EXPIRED_TIME);
+        token = TestObjectFactory.initToken();
     }
 
     @Test
-    void 토큰_추가() {
-        // when, then
+    @DisplayName("토큰 추가 테스트")
+    void testToken() {
+        assertNotNull(token);
         assertEquals(EMAIL, token.getKey());
         assertEquals(VALUE, token.getValue());
+        assertEquals(EXPIRED_TIME, token.getExpiredTime());
     }
 }

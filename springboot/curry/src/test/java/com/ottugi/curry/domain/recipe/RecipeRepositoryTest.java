@@ -1,98 +1,86 @@
 package com.ottugi.curry.domain.recipe;
 
+import static com.ottugi.curry.TestConstants.INGREDIENT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.ottugi.curry.TestObjectFactory;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest
+@DataJpaTest
 class RecipeRepositoryTest {
-
     private Recipe recipe;
 
-    private String ingredient = "고구마";
-    private List<Long> idList = new ArrayList<>();
-    private List<Long> recipeIdList = new ArrayList<>();
-    private List<Recipe> recipeList;
-
-    private RecipeRepository recipeRepository;
-
-    private Recipe testRecipe;
-
     @Autowired
-    RecipeRepositoryTest(RecipeRepository recipeRepository) {
-        this.recipeRepository = recipeRepository;
-    }
+    private RecipeRepository recipeRepository;
 
     @BeforeEach
     public void setUp() {
-        // given
-        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        recipe = TestObjectFactory.initRecipe();
         recipe = recipeRepository.save(recipe);
-
-        idList.add(recipe.getId());
-        recipeIdList.add(recipe.getRecipeId());
     }
 
     @AfterEach
     public void clean() {
-        // clean
         recipeRepository.deleteAll();
     }
 
     @Test
-    void 재료로_레시피_목록_조회() {
-        // when
-        recipeList = recipeRepository.findByIngredientsContaining(ingredient);
+    @DisplayName("레시피 재료로 레시피 목록 조회 테스트")
+    void testFindByIngredientsContaining() {
+        List<Recipe> foundRecipeList = recipeRepository.findByIngredientsContaining(INGREDIENT);
 
-        // then
-        testRecipe = recipeList.get(0);
-        assertTrue(testRecipe.getIngredients().contains(ingredient));
+        assertNotNull(foundRecipeList);
+        assertEquals(1, foundRecipeList.size());
+        assertTrue(foundRecipeList.get(0).getIngredients().contains(INGREDIENT));
     }
 
     @Test
-    void 이름으로_레시피_목록_조회() {
-        // when
-        recipeList = recipeRepository.findByNameContaining(ingredient);
+    @DisplayName("레시피 이름으로 레시피 목록 조회 테스트")
+    void testFindByNameContaining() {
+        List<Recipe> foundRecipeList = recipeRepository.findByNameContaining(INGREDIENT);
 
-        // then
-        testRecipe = recipeList.get(0);
-        assertTrue(testRecipe.getName().contains(ingredient));
+        assertNotNull(foundRecipeList);
+        assertEquals(1, foundRecipeList.size());
+        assertTrue(foundRecipeList.get(0).getName().contains(INGREDIENT));
     }
 
     @Test
-    void 레시피_아이디로_레시피_목록_조회() {
-        // when
-        recipeList = recipeRepository.findByRecipeIdIn(recipeIdList);
+    @DisplayName("레시피 아이디로 레시피 목록 조회 테스트")
+    void testFindByRecipeIdIn() {
+        List<Long> recipeIdList = List.of(recipe.getRecipeId());
+        List<Recipe> foundRecipeList = recipeRepository.findByRecipeIdIn(recipeIdList);
 
-        // then
-        testRecipe = recipeList.get(0);
-        assertEquals(recipeIdList.get(0), testRecipe.getRecipeId());
+        assertNotNull(foundRecipeList);
+        assertEquals(1, foundRecipeList.size());
+        assertEquals(recipeIdList.get(0), foundRecipeList.get(0).getRecipeId());
     }
 
     @Test
-    void 레시피_기본키로_레시피_목록_조회() {
-        // when
-        recipeList = recipeRepository.findByIdIn(idList);
+    @DisplayName("레시피 기본 키로 레시피 목록 조회 테스트")
+    void testFindByIdIn() {
+        List<Long> idList = List.of(recipe.getId());
+        List<Recipe> foundRecipeList = recipeRepository.findByIdIn(idList);
 
-        // then
-        testRecipe = recipeList.get(0);
-        assertEquals(idList.get(0), testRecipe.getId());
+        assertNotNull(foundRecipeList);
+        assertEquals(1, foundRecipeList.size());
+        assertEquals(idList.get(0), foundRecipeList.get(0).getId());
     }
 
     @Test
-    void 레시피_아이디로_레시피_조회() {
-        // when
-        testRecipe = recipeRepository.findByRecipeId(recipe.getRecipeId()).get();
+    @DisplayName("레시피 아이디로 레시피 조회 테스트")
+    void testFindByRecipeId() {
+        Optional<Recipe> foundRecipe = recipeRepository.findByRecipeId(recipe.getRecipeId());
 
-        // then
-        assertEquals(recipe.getRecipeId(), testRecipe.getRecipeId());
+        assertNotNull(foundRecipe);
+        assertEquals(recipe.getRecipeId(), foundRecipe.get().getRecipeId());
     }
 }

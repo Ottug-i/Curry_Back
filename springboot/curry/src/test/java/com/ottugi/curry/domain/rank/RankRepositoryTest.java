@@ -1,58 +1,45 @@
 package com.ottugi.curry.domain.rank;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.ottugi.curry.TestObjectFactory;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.List;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest
+@DataJpaTest
 class RankRepositoryTest {
-
     private Rank rank;
 
-    private RankRepository rankRepository;
-
-    private Rank testRank;
-
     @Autowired
-    RankRepositoryTest(RankRepository rankRepository) {
-        this.rankRepository = rankRepository;
-    }
+    private RankRepository rankRepository;
 
     @BeforeEach
     public void setUp() {
-        // given
-        rank = new Rank(KEYWORD);
+        rank = TestObjectFactory.initRank();
         rank = rankRepository.save(rank);
     }
 
     @AfterEach
     public void clean() {
-        // clean
         rankRepository.deleteAll();
     }
 
     @Test
     void 이름으로_검색어_조회() {
-        // when
-        testRank = rankRepository.findByName(rank.getName());
+        Rank foundRank = rankRepository.findByName(rank.getName());
 
-        // then
-        assertEquals(rank.getName(), testRank.getName());
+        assertEquals(rank.getName(), foundRank.getName());
     }
 
     @Test
     void 검색어_순위_내림차순_조회() {
-        // when
-        List<Rank> rankList = rankRepository.findAllByOrderByScoreDesc();
+        List<Rank> foundRankList = rankRepository.findAllByOrderByScoreDesc();
 
-        // then
-        assertNotNull(rankList);
+        assertNotNull(foundRankList);
     }
 }

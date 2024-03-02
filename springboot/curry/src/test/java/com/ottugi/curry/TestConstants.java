@@ -5,13 +5,11 @@ import com.ottugi.curry.domain.recipe.Difficulty;
 import com.ottugi.curry.domain.recipe.Servings;
 import com.ottugi.curry.domain.recipe.Time;
 import com.ottugi.curry.domain.user.Role;
-import org.springframework.boot.test.context.TestConfiguration;
-
 import java.time.Duration;
+import org.springframework.boot.test.context.TestConfiguration;
 
 @TestConfiguration
 public class TestConstants {
-
     // User
     public static final Long USER_ID = 2L;
     public static final String EMAIL = "wn8925@gmail.com";
@@ -25,7 +23,7 @@ public class TestConstants {
 
     // Token
     public static final String VALUE = "token";
-    public static final Long EXPIRED_TIME = Duration.ofDays(14).toMillis();;
+    public static final Long EXPIRED_TIME = Duration.ofDays(14).toMillis();
 
     // Recipe
     public static final Long ID = 12345L;
@@ -35,11 +33,18 @@ public class TestConstants {
     public static final Time TIME = Time.ofTime("60분 이내");
     public static final Difficulty DIFFICULTY = Difficulty.ofDifficulty("초급");
     public static final Composition COMPOSITION = Composition.ofComposition("가볍게");
+    public static final String INGREDIENT = "고구마";
     public static final String INGREDIENTS = "[재료] 고구마| 식용유| 황설탕| 올리고당| 견과류| 물";
     public static final Servings SERVINGS = Servings.ofServings("2인분");
     public static final String ORDERS = "|1. 바삭하게 튀기는 꿀팁|2. 달콤한 소스 꿀팁|3. 더 건강하게 먹는 꿀팁";
     public static final String PHOTO = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg";
     public static final String GENRE = "ing13|ing21";
+
+    // Bookmark
+    public static final Long BOOKMARK_ID = 1L;
+
+    // Lately
+    public static final Long LATELY_ID = 1L;
 
     // Rating
     public static final Long RATING_ID = 1L;

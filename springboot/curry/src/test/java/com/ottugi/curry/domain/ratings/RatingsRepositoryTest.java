@@ -1,42 +1,55 @@
 package com.ottugi.curry.domain.ratings;
 
+import static com.ottugi.curry.TestConstants.RECIPE_ID;
+import static com.ottugi.curry.TestConstants.USER_ID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import com.ottugi.curry.TestObjectFactory;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest
+@DataJpaTest
 class RatingsRepositoryTest {
-
     private Ratings ratings;
 
-    private RatingsRepository ratingsRepository;
-
-    private Ratings testRatings;
-
     @Autowired
-    RatingsRepositoryTest(RatingsRepository ratingsRepository) {
-        this.ratingsRepository = ratingsRepository;
-    }
+    private RatingsRepository ratingsRepository;
 
     @BeforeEach
     public void setUp() {
-        // given
-        ratings = new Ratings(RATING_ID, USER_ID, RATING_ID, RATING);
+        ratings = TestObjectFactory.initRatings();
         ratings = ratingsRepository.save(ratings);
     }
 
     @Test
-    void 유저아이디와_레시피아이디로_평점_조회() {
-        // when
-        testRatings = ratingsRepository.findByUserIdAndRecipeId(USER_ID, RECIPE_ID);
+    @DisplayName("회원 아이디와 레시피 아이디로 평점 조회 테스트")
+    void testFindByUserIdAndRecipeId() {
+        Ratings foundRatings = ratingsRepository.findByUserIdAndRecipeId(USER_ID, RECIPE_ID);
 
-        // then
-        assertEquals(ratings.getUserId(), testRatings.getUserId());
-        assertEquals(ratings.getRecipeId(), testRatings.getRecipeId());
-        assertEquals(ratings.getRating(), testRatings.getRating());
+        assertEquals(ratings.getUserId(), foundRatings.getUserId());
+        assertEquals(ratings.getRecipeId(), foundRatings.getRecipeId());
+        assertEquals(ratings.getRating(), foundRatings.getRating());
+    }
+
+    @Test
+    @DisplayName("회원 아이디와 레시피 아이디로 평점 조회 테스트")
+    void testExistsByUserIdAndRecipeId() {
+        Ratings foundRatings = ratingsRepository.findByUserIdAndRecipeId(USER_ID, RECIPE_ID);
+
+        assertEquals(USER_ID, foundRatings.getUserId());
+        assertEquals(RECIPE_ID, foundRatings.getRecipeId());
+    }
+
+    @Test
+    @DisplayName("회원 아이디와 레시피 아이디로 평점 삭제 테스트")
+    void testDeleteByUserIdAndRecipeId() {
+        ratingsRepository.deleteByUserIdAndRecipeId(USER_ID, RECIPE_ID);
+        boolean existBookmark = ratingsRepository.existsByUserIdAndRecipeId(USER_ID, RECIPE_ID);
+
+        assertFalse(existBookmark);
     }
 }

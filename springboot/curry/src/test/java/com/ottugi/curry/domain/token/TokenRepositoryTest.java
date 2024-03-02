@@ -1,48 +1,41 @@
 package com.ottugi.curry.domain.token;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import static com.ottugi.curry.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
-public class TokenRepositoryTest {
+import com.ottugi.curry.TestObjectFactory;
+import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+@DataJpaTest
+public class TokenRepositoryTest {
     private Token token;
 
-    private TokenRepository tokenRepository;
-
-    private Token testToken;
-
     @Autowired
-    public TokenRepositoryTest(TokenRepository tokenRepository) {
-        this.tokenRepository = tokenRepository;
-    }
+    private TokenRepository tokenRepository;
 
     @BeforeEach
     public void setUp() {
-        // given
-        token = new Token(EMAIL, VALUE, EXPIRED_TIME);
+        token = TestObjectFactory.initToken();
         token = tokenRepository.save(token);
     }
 
     @AfterEach
     public void clean() {
-        // clean
         tokenRepository.deleteAll();
     }
 
     @Test
-    void 키로_토큰_조회() {
-        // when
-        testToken = tokenRepository.findByKey(token.getKey()).get();
+    @DisplayName("키인 이메일로 토큰 조회 테스트")
+    void testFindByKey() {
+        Optional<Token> foundToken = tokenRepository.findByKey(token.getKey());
 
-        // then
-        assertEquals(token.getKey(), testToken.getKey());
-        assertEquals(token.getValue(), testToken.getValue());
+        assertEquals(token.getKey(), foundToken.get().getKey());
+        assertEquals(token.getValue(), foundToken.get().getValue());
+        assertEquals(token.getExpiredTime(), foundToken.get().getExpiredTime());
     }
 }

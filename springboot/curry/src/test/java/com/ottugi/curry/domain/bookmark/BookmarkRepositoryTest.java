@@ -1,80 +1,88 @@
 package com.ottugi.curry.domain.bookmark;
 
-import com.ottugi.curry.domain.recipe.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.ottugi.curry.TestObjectFactory;
+import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.List;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest
+@DataJpaTest
 class BookmarkRepositoryTest {
-
     private User user;
     private Recipe recipe;
-    private Bookmark bookmark;
-
-    private BookmarkRepository bookmarkRepository;
-    private UserRepository userRepository;
-    private RecipeRepository recipeRepository;
-
-    private Bookmark testBookmark;
 
     @Autowired
-    BookmarkRepositoryTest(BookmarkRepository bookmarkRepository, UserRepository userRepository, RecipeRepository recipeRepository) {
-        this.bookmarkRepository = bookmarkRepository;
-        this.userRepository = userRepository;
-        this.recipeRepository = recipeRepository;
-    }
+    private BookmarkRepository bookmarkRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RecipeRepository recipeRepository;
 
     @BeforeEach
     public void setUp() {
-        // given
-        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
+        user = TestObjectFactory.initUser();
         user = userRepository.save(user);
 
-        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
+        recipe = TestObjectFactory.initRecipe();
         recipe = recipeRepository.save(recipe);
 
-        bookmark = new Bookmark();
+        Bookmark bookmark = TestObjectFactory.initBookmark();
         bookmark.setUser(user);
         bookmark.setRecipe(recipe);
-        bookmark = bookmarkRepository.save(bookmark);
+        bookmarkRepository.save(bookmark);
     }
 
     @AfterEach
     public void clean() {
-        // clean
         bookmarkRepository.deleteAll();
         recipeRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @Test
-    void 유저와_레시피로_북마크_조회() {
-        // when
-        testBookmark = bookmarkRepository.findByUserIdAndRecipeId(user, recipe);
+    @DisplayName("회원 아이디와 레시피 아이디로 북마크 존재 확인 테스트")
+    void testExistsByUserIdAndRecipeId() {
+        boolean existBookmark = bookmarkRepository.existsByUserIdAndRecipeId(user, recipe);
 
-        // then
-        assertEquals(user.getId(), testBookmark.getUserId().getId());
-        assertEquals(recipe.getId(), testBookmark.getRecipeId().getId());
+        assertTrue(existBookmark);
     }
 
     @Test
-    void 유저로_북마크_목록_조회() {
-        // when
-        List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(user);
+    @DisplayName("회원 아이디와 레시피 아이디로 북마크 조회 테스트")
+    void testFindByUserIdAndRecipeId() {
+        Bookmark foundBookmark = bookmarkRepository.findByUserIdAndRecipeId(user, recipe);
 
-        // then
-        testBookmark = bookmarkList.get(0);
-        assertEquals(user.getId(), testBookmark.getUserId().getId());
-        assertEquals(recipe.getId(), testBookmark.getRecipeId().getId());
+        assertEquals(user.getId(), foundBookmark.getUserId().getId());
+        assertEquals(recipe.getId(), foundBookmark.getRecipeId().getId());
+    }
+
+    @Test
+    @DisplayName("회원 아이디로 북마크 목록 조회 테스트")
+    void testFindByUserId() {
+        List<Bookmark> foundBookmarkList = bookmarkRepository.findByUserId(user);
+
+        assertNotNull(foundBookmarkList);
+        assertEquals(1, foundBookmarkList.size());
+    }
+
+    @Test
+    @DisplayName("회원 아이디와 레시피 아이디로 북마크 삭제 테스트")
+    void testDeleteByUserIdAndRecipeId() {
+        bookmarkRepository.deleteByUserIdAndRecipeId(user, recipe);
+        boolean existBookmark = bookmarkRepository.existsByUserIdAndRecipeId(user, recipe);
+
+        assertFalse(existBookmark);
     }
 }

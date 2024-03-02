@@ -1,37 +1,39 @@
 package com.ottugi.curry.domain.ratings;
 
+import static com.ottugi.curry.TestConstants.NEW_RATING;
+import static com.ottugi.curry.TestConstants.RATING;
+import static com.ottugi.curry.TestConstants.RECIPE_ID;
+import static com.ottugi.curry.TestConstants.USER_ID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.ottugi.curry.TestObjectFactory;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest
 class RatingsTest {
-
     private Ratings ratings;
 
     @BeforeEach
     public void setUp() {
-        // given
-        ratings = new Ratings(RATING_ID, USER_ID, RECIPE_ID, RATING);
+        ratings = TestObjectFactory.initRatings();
     }
 
     @Test
-    void 평점_추가() {
-        // when, then
+    @DisplayName("평점 추가 테스트")
+    void testRatings() {
+        assertNotNull(ratings);
         assertEquals(USER_ID, ratings.getUserId());
         assertEquals(RECIPE_ID, ratings.getRecipeId());
         assertEquals(RATING, ratings.getRating());
     }
 
     @Test
-    void 평점_수정() {
-        // when
+    @DisplayName("평점 수정 테스트")
+    void testUpdateRatings() {
         ratings.updateRatings(NEW_RATING);
 
-        // then
         assertEquals(NEW_RATING, ratings.getRating());
     }
 }
