@@ -31,9 +31,9 @@ public class AuthController {
 
     @PostMapping("/login")
     @ApiOperation(value = "소셜 회원가입과 로그인", notes = "소셜 회원가입 또는 로그인을 한 후, 토큰과 사용자 정보를 리턴합니다.")
-    public ResponseEntity<TokenResponseDto> singUpOrLogin(@RequestBody @Valid UserSaveRequestDto requestDto,
-                                                          HttpServletResponse response) {
-        return ResponseEntity.ok().body(authService.signInOrSignUpAndIssueToken(requestDto, response));
+    public ResponseEntity<TokenResponseDto> signUpOrSignIn(@RequestBody @Valid UserSaveRequestDto requestDto,
+                                                           HttpServletResponse response) {
+        return ResponseEntity.ok().body(authService.signUpOrSignInAndIssueToken(requestDto, response));
     }
 
     @PostMapping("/reissue")

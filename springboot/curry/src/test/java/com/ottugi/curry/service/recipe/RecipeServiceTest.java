@@ -1,6 +1,6 @@
 package com.ottugi.curry.service.recipe;
 
-import static com.ottugi.curry.TestConstants.INGREDIENT;
+import static com.ottugi.curry.TestConstants.INGREDIENT1;
 import static com.ottugi.curry.TestConstants.PAGE;
 import static com.ottugi.curry.TestConstants.SIZE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -152,10 +152,10 @@ class RecipeServiceTest {
     void testFindByRecipeListByIngredientsContaining() {
         when(recipeRepository.findByIngredientsContaining(anyString())).thenReturn(Collections.singletonList(recipe));
 
-        List<Recipe> result = recipeService.findByRecipeListByIngredientsContaining(INGREDIENT);
+        List<Recipe> result = recipeService.findByRecipeListByIngredientsContaining(INGREDIENT1);
 
         assertEquals(1, result.size());
-        assertTrue(result.get(0).getIngredients().contains(INGREDIENT));
+        assertTrue(result.get(0).getIngredients().contains(INGREDIENT1));
 
         verify(recipeRepository, times(1)).findByIngredientsContaining(anyString());
     }

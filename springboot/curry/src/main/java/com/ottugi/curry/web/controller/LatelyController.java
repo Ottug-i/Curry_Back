@@ -28,7 +28,7 @@ public class LatelyController {
     @GetMapping("/list")
     @ApiOperation(value = "최근 본 레시피 조회", notes = "최근 본 레시피를 조회하여 리턴합니다.")
     @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true)
-    public ResponseEntity<List<LatelyListResponseDto>> latelyDetails(@RequestParam @NotNull Long userId) {
+    public ResponseEntity<List<LatelyListResponseDto>> latelyList(@RequestParam @NotNull Long userId) {
         return ResponseEntity.ok().body(latelyService.findLatelyListByUserId(userId));
     }
 

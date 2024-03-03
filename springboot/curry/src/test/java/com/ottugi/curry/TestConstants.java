@@ -33,7 +33,8 @@ public class TestConstants {
     public static final Time TIME = Time.ofTime("60분 이내");
     public static final Difficulty DIFFICULTY = Difficulty.ofDifficulty("초급");
     public static final Composition COMPOSITION = Composition.ofComposition("가볍게");
-    public static final String INGREDIENT = "고구마";
+    public static final String INGREDIENT1 = "고구마";
+    public static final String INGREDIENT2 = "올리고당";
     public static final String INGREDIENTS = "[재료] 고구마| 식용유| 황설탕| 올리고당| 견과류| 물";
     public static final Servings SERVINGS = Servings.ofServings("2인분");
     public static final String ORDERS = "|1. 바삭하게 튀기는 꿀팁|2. 달콤한 소스 꿀팁|3. 더 건강하게 먹는 꿀팁";

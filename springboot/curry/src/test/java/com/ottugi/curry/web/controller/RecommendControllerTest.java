@@ -1,31 +1,11 @@
 package com.ottugi.curry.web.controller;
 
-import static com.ottugi.curry.TestConstants.COMPOSITION;
-import static com.ottugi.curry.TestConstants.DIFFICULTY;
-import static com.ottugi.curry.TestConstants.EMAIL;
-import static com.ottugi.curry.TestConstants.FAVORITE_GENRE;
-import static com.ottugi.curry.TestConstants.GENRE;
-import static com.ottugi.curry.TestConstants.ID;
-import static com.ottugi.curry.TestConstants.INGREDIENTS;
-import static com.ottugi.curry.TestConstants.NAME;
-import static com.ottugi.curry.TestConstants.NICKNAME;
-import static com.ottugi.curry.TestConstants.ORDERS;
 import static com.ottugi.curry.TestConstants.PAGE;
-import static com.ottugi.curry.TestConstants.PHOTO;
-import static com.ottugi.curry.TestConstants.RATING;
-import static com.ottugi.curry.TestConstants.RATING_ID;
-import static com.ottugi.curry.TestConstants.RECIPE_ID;
-import static com.ottugi.curry.TestConstants.ROLE;
-import static com.ottugi.curry.TestConstants.SERVINGS;
-import static com.ottugi.curry.TestConstants.SIZE;
-import static com.ottugi.curry.TestConstants.THUMBNAIL;
-import static com.ottugi.curry.TestConstants.TIME;
-import static com.ottugi.curry.TestConstants.USER_ID;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,10 +13,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ottugi.curry.TestObjectFactory;
+import com.ottugi.curry.config.SecurityConfig;
 import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.ratings.Ratings;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.jwt.JwtAuthenticationFilter;
 import com.ottugi.curry.service.ratings.RatingsService;
 import com.ottugi.curry.service.recommend.RecommendService;
 import com.ottugi.curry.web.dto.ratings.RatingRequestDto;
@@ -46,173 +29,152 @@ import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDto;
 import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(controllers = RecommendController.class, excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class),
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
+@WithMockUser
 class RecommendControllerTest {
-
     private User user;
     private Recipe recipe;
-    private Bookmark bookmark;
-    private Ratings ratings;
-
-    private final Boolean isBookmark = true;
-    private final String ingredient1 = "고구마";
-    private final String ingredient2 = "올리고당";
-    private final List<String> ingredients = new ArrayList<>();
-    private final List<Long> recipeIdList = new ArrayList<>();
+    private RatingRequestDto ratingRequestDto;
+    private RatingResponseDto ratingResponseDto;
+    private RecipeIngRequestDto recipeIngRequestDto;
+    private List<RecipeListResponseDto> recipeListResponseDtoList;
+    private Page<RecipeIngListResponseDto> recipeIngListResponseDtoPage;
+    private List<RecommendListResponseDto> recommendListResponseDtoList;
     private Long[] bookmarkList;
-    private final Map<Long, Double> newUserRatingsDic = new HashMap<>();
 
+    @Autowired
     private MockMvc mockMvc;
 
-    @Mock
+    @MockBean
     private RecommendService recommendService;
 
-    @Mock
+    @MockBean
     private RatingsService ratingsService;
-
-    @InjectMocks
-    private RecommendController recommendController;
 
     @BeforeEach
     public void setUp() {
-        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        bookmark = new Bookmark();
+        user = TestObjectFactory.initUser();
+        recipe = TestObjectFactory.initRecipe();
+        Bookmark bookmark = TestObjectFactory.initBookmark();
         bookmark.setUser(user);
         bookmark.setRecipe(recipe);
-        ratings = new Ratings(RATING_ID, USER_ID, RATING_ID, RATING);
+        Ratings ratings = TestObjectFactory.initRatings();
 
-        ingredients.add(ingredient1);
-        ingredients.add(ingredient2);
-        recipeIdList.add(recipe.getRecipeId());
+        ratingRequestDto = TestObjectFactory.initRatingRequestDto(ratings);
+        ratingResponseDto = TestObjectFactory.initRatingResponseDto(ratings);
+        recipeIngRequestDto = TestObjectFactory.initRecipeIngRequestDto(user, recipe);
+        recipeListResponseDtoList = TestObjectFactory.initRecipeListResponseDtoList(recipe);
+        recipeIngListResponseDtoPage = TestObjectFactory.initRecipeIngListResponseDtoPage(recipe);
+        recommendListResponseDtoList = TestObjectFactory.initRecommendListResponseDtoList(recipe);
+
         bookmarkList = new Long[]{bookmark.getRecipeId().getRecipeId()};
-        newUserRatingsDic.put(recipe.getRecipeId(), 3.0);
-
-        mockMvc = MockMvcBuilders.standaloneSetup(recommendController).build();
     }
 
     @Test
-    void 초기_평점을_위한_랜덤_레시피_목록_조회() throws Exception {
-        // given
-        List<RecommendListResponseDto> recommendListResponseDtoList = new ArrayList<>();
-        recommendListResponseDtoList.add(new RecommendListResponseDto(recipe));
+    @DisplayName("초기 평점을 위한 랜덤 레시피 목록 조회 테스트")
+    void testRandomRecipeList() throws Exception {
         when(ratingsService.findRandomRecipeListForResearch()).thenReturn(recommendListResponseDtoList);
 
-        // when, then
-        mockMvc.perform(get("/api/recommend/initial"))
+        mockMvc.perform(get("/api/recommend/initial")
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(recommendListResponseDtoList.size())));
     }
 
     @Test
-    void 레시피_평점_조회() throws Exception {
-        // given
-        RatingResponseDto ratingRequestDto = new RatingResponseDto(ratings);
-        when(ratingsService.findUserRating(anyLong(), anyLong())).thenReturn(ratingRequestDto);
+    @DisplayName("레시피 평점 조회 테스트")
+    void testUserRatingDetails() throws Exception {
+        when(ratingsService.findUserRating(anyLong(), anyLong())).thenReturn(ratingResponseDto);
 
-        // when, then
         mockMvc.perform(get("/api/recommend/rating")
                         .param("userId", String.valueOf(user.getId()))
-                        .param("recipeId", String.valueOf(recipe.getRecipeId())))
+                        .param("recipeId", String.valueOf(recipe.getRecipeId()))
+                        .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(user.getId()))
-                .andExpect(jsonPath("$.recipeId").value(recipe.getRecipeId()))
-                .andExpect(jsonPath("$.rating").value(RATING));
+                .andExpect(jsonPath("$.userId").value(ratingResponseDto.getUserId()))
+                .andExpect(jsonPath("$.recipeId").value(ratingResponseDto.getRecipeId()))
+                .andExpect(jsonPath("$.rating").value(ratingResponseDto.getRating()));
     }
 
     @Test
-    void 레시피_평점_조회_및_업데이트() throws Exception {
-        // given
-        when(ratingsService.updateUserRating(any(RatingRequestDto.class))).thenReturn(true);
+    @DisplayName("레시피 평점 추가 또는 업데이트 테스트")
+    void testUserRatingSave() throws Exception {
+        when(ratingsService.addOrUpdateUserRating(any(RatingRequestDto.class))).thenReturn(true);
 
-        // when, then
-        RatingRequestDto ratingRequestDto = new RatingRequestDto(user.getId(), newUserRatingsDic);
         mockMvc.perform(post("/api/recommend/rating")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(ratingRequestDto)))
+                        .content(new ObjectMapper().writeValueAsString(ratingRequestDto))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(true));
     }
 
     @Test
-    void 레시피_평점_삭제() throws Exception {
-        // given
+    @DisplayName("레시피 평점 삭제 테스트")
+    void testUserRatingRemove() throws Exception {
         when(ratingsService.removeUserRating(anyLong(), anyLong())).thenReturn(true);
 
-        // when, then
         mockMvc.perform(delete("/api/recommend/rating")
                         .param("userId", String.valueOf(user.getId()))
-                        .param("recipeId", String.valueOf(recipe.getRecipeId())))
+                        .param("recipeId", String.valueOf(recipe.getRecipeId()))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(true));
     }
 
     @Test
-    void 재료로_레시피_목록_조회() throws Exception {
-        // given
-        List<RecipeIngListResponseDto> recipeListResponseDtoList = new ArrayList<>();
-        recipeListResponseDtoList.add(new RecipeIngListResponseDto(ingredients, recipe, isBookmark));
-        Page<RecipeIngListResponseDto> pagedRecipeList = new PageImpl<>(recipeListResponseDtoList);
-        when(recommendService.findRecipePageByIngredientsDetection(any(RecipeIngRequestDto.class))).thenReturn(pagedRecipeList);
+    @DisplayName("재료 인식에 따른 추천 레시피 조회 테스트")
+    void testRecipePageByIngredientsDetection() throws Exception {
+        when(recommendService.findRecipePageByIngredientsDetection(any(RecipeIngRequestDto.class))).thenReturn(recipeIngListResponseDtoPage);
 
-        // when, then
-        RecipeIngRequestDto recipeIngRequestDto = new RecipeIngRequestDto(user.getId(), ingredients, TIME.getTimeName(),
-                DIFFICULTY.getDifficulty(),
-                COMPOSITION.getComposition(), PAGE, SIZE);
         mockMvc.perform(post("/api/recommend/ingredients/list")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(recipeIngRequestDto)))
+                        .content(new ObjectMapper().writeValueAsString(recipeIngRequestDto))
+                        .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(pagedRecipeList.getSize())));
+                .andExpect(jsonPath("$.content", hasSize(recipeIngListResponseDtoPage.getSize())));
     }
 
     @Test
-    void 북마크_추천_레시피_목록_조회() throws Exception {
-        // given
-        List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
-        recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, isBookmark));
-        when(recommendService.findRecipeIdListByBookmarkRecommend(anyLong(), anyInt())).thenReturn(recipeIdList);
+    @DisplayName("북마크에 따른 추천 레시피 조회 테스트")
+    void testRecipeListByBookmarkRecommend() throws Exception {
         when(recommendService.findBookmarkOrRatingRecommendList(any(RecommendRequestDto.class))).thenReturn(recipeListResponseDtoList);
 
-        // when, then
         mockMvc.perform(get("/api/recommend/bookmark/list")
                         .param("userId", String.valueOf(user.getId()))
                         .param("recipeId", String.valueOf(recipe.getRecipeId()))
-                        .param("page", String.valueOf(PAGE)))
+                        .param("page", String.valueOf(PAGE))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(recipeListResponseDtoList.size())));
     }
 
     @Test
-    void 평점_추천_레시피_목록_조회() throws Exception {
-        // given
-        List<RecipeListResponseDto> recipeListResponseDtoList = new ArrayList<>();
-        recipeListResponseDtoList.add(new RecipeListResponseDto(recipe, isBookmark));
-        when(recommendService.findRecipeIdListByRatingRecommend(anyLong(), anyInt(), any())).thenReturn(recipeIdList);
+    @DisplayName("레시피 평점에 따른 추천 레시피 조회 테스트")
+    void testRecipeListByRatingRecommend() throws Exception {
         when(recommendService.findBookmarkOrRatingRecommendList(any(RecommendRequestDto.class))).thenReturn(recipeListResponseDtoList);
 
-        // when, then
         mockMvc.perform(get("/api/recommend/bookmark/list")
                         .param("userId", String.valueOf(user.getId()))
                         .param("page", String.valueOf(PAGE))
-                        .param("bookmarkList", String.valueOf(bookmarkList[0])))
+                        .param("bookmarkList", String.valueOf(bookmarkList[0]))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(recipeListResponseDtoList.size())));
     }

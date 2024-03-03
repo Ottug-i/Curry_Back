@@ -1,6 +1,6 @@
 package com.ottugi.curry.domain.recipe;
 
-import static com.ottugi.curry.TestConstants.INGREDIENT;
+import static com.ottugi.curry.TestConstants.INGREDIENT1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,21 +36,21 @@ class RecipeRepositoryTest {
     @Test
     @DisplayName("레시피 재료로 레시피 목록 조회 테스트")
     void testFindByIngredientsContaining() {
-        List<Recipe> foundRecipeList = recipeRepository.findByIngredientsContaining(INGREDIENT);
+        List<Recipe> foundRecipeList = recipeRepository.findByIngredientsContaining(INGREDIENT1);
 
         assertNotNull(foundRecipeList);
         assertEquals(1, foundRecipeList.size());
-        assertTrue(foundRecipeList.get(0).getIngredients().contains(INGREDIENT));
+        assertTrue(foundRecipeList.get(0).getIngredients().contains(INGREDIENT1));
     }
 
     @Test
     @DisplayName("레시피 이름으로 레시피 목록 조회 테스트")
     void testFindByNameContaining() {
-        List<Recipe> foundRecipeList = recipeRepository.findByNameContaining(INGREDIENT);
+        List<Recipe> foundRecipeList = recipeRepository.findByNameContaining(INGREDIENT1);
 
         assertNotNull(foundRecipeList);
         assertEquals(1, foundRecipeList.size());
-        assertTrue(foundRecipeList.get(0).getName().contains(INGREDIENT));
+        assertTrue(foundRecipeList.get(0).getName().contains(INGREDIENT1));
     }
 
     @Test

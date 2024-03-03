@@ -1,30 +1,14 @@
 package com.ottugi.curry.web.controller;
 
-import static com.ottugi.curry.TestConstants.COMPOSITION;
-import static com.ottugi.curry.TestConstants.DIFFICULTY;
-import static com.ottugi.curry.TestConstants.EMAIL;
-import static com.ottugi.curry.TestConstants.FAVORITE_GENRE;
-import static com.ottugi.curry.TestConstants.GENRE;
-import static com.ottugi.curry.TestConstants.ID;
-import static com.ottugi.curry.TestConstants.INGREDIENTS;
-import static com.ottugi.curry.TestConstants.NAME;
-import static com.ottugi.curry.TestConstants.NICKNAME;
-import static com.ottugi.curry.TestConstants.ORDERS;
 import static com.ottugi.curry.TestConstants.PAGE;
-import static com.ottugi.curry.TestConstants.PHOTO;
-import static com.ottugi.curry.TestConstants.RECIPE_ID;
-import static com.ottugi.curry.TestConstants.ROLE;
-import static com.ottugi.curry.TestConstants.SERVINGS;
 import static com.ottugi.curry.TestConstants.SIZE;
-import static com.ottugi.curry.TestConstants.THUMBNAIL;
-import static com.ottugi.curry.TestConstants.TIME;
-import static com.ottugi.curry.TestConstants.USER_ID;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -32,115 +16,108 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ottugi.curry.TestObjectFactory;
+import com.ottugi.curry.config.SecurityConfig;
 import com.ottugi.curry.domain.bookmark.Bookmark;
-import com.ottugi.curry.domain.recipe.Recipe;
-import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.jwt.JwtAuthenticationFilter;
 import com.ottugi.curry.service.bookmark.BookmarkService;
 import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(controllers = BookmarkController.class, excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class),
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
+@WithMockUser
 class BookmarkControllerTest {
-
-    private User user;
-    private Recipe recipe;
     private Bookmark bookmark;
+    private BookmarkRequestDto bookmarkRequestDto;
+    private Page<BookmarkListResponseDto> bookmarkListResponseDtoPage;
 
-    private final Boolean isBookmark = true;
-
+    @Autowired
     private MockMvc mockMvc;
 
-    @Mock
+    @MockBean
     private BookmarkService bookmarkService;
-
-    @InjectMocks
-    private BookmarkController bookmarkController;
 
     @BeforeEach
     public void setUp() {
-        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        bookmark = new Bookmark();
-        bookmark.setUser(user);
-        bookmark.setRecipe(recipe);
-        mockMvc = MockMvcBuilders.standaloneSetup(bookmarkController).build();
+        bookmark = TestObjectFactory.initBookmark();
+        bookmark.setUser(TestObjectFactory.initUser());
+        bookmark.setRecipe(TestObjectFactory.initRecipe());
+
+        bookmarkRequestDto = TestObjectFactory.initBookmarkRequestDto(bookmark);
+        bookmarkListResponseDtoPage = TestObjectFactory.initBookmarkListResponseDtoPage(bookmark);
     }
 
     @Test
-    void 북마크_추가_및_삭제() throws Exception {
-        // given
+    @DisplayName("북마크 추가 테스트")
+    void testBookmarkAdd() throws Exception {
         when(bookmarkService.addOrRemoveBookmark(any(BookmarkRequestDto.class))).thenReturn(true);
 
-        // when, then
-        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(user.getId(), recipe.getRecipeId());
         mockMvc.perform(post("/api/bookmark")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(bookmarkRequestDto)))
+                        .content(new ObjectMapper().writeValueAsString(bookmarkRequestDto))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
+    }
 
-        // given
+    @Test
+    @DisplayName("북마크 삭제 테스트")
+    void testBookmarkRemove() throws Exception {
         when(bookmarkService.addOrRemoveBookmark(any(BookmarkRequestDto.class))).thenReturn(false);
 
-        // when, then
         mockMvc.perform(post("/api/bookmark")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(bookmarkRequestDto)))
+                        .content(new ObjectMapper().writeValueAsString(bookmarkRequestDto))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("false"));
     }
 
     @Test
-    void 북마크_목록_조회() throws Exception {
-        // given
-        List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
-        bookmarkListResponseDtoList.add(new BookmarkListResponseDto(bookmark.getRecipeId(), isBookmark));
-        Page<BookmarkListResponseDto> bookmarkListResponseDtoPage = new PageImpl<>(bookmarkListResponseDtoList);
+    @DisplayName("북마크 목록 페이지 조회 테스트")
+    void testBookmarkPage() throws Exception {
         when(bookmarkService.findBookmarkPageByUserId(anyLong(), anyInt(), anyInt())).thenReturn(bookmarkListResponseDtoPage);
 
-        // when, then
         mockMvc.perform(get("/api/bookmark/list")
-                        .param("userId", String.valueOf(user.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("userId", String.valueOf(bookmark.getUserId().getId()))
                         .param("page", String.valueOf(PAGE))
                         .param("size", String.valueOf(SIZE))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(bookmarkListResponseDtoPage.getSize())));
     }
 
     @Test
-    void 북마크_레시피_검색() throws Exception {
-        // given
-        List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
-        bookmarkListResponseDtoList.add(new BookmarkListResponseDto(bookmark.getRecipeId(), isBookmark));
-        Page<BookmarkListResponseDto> bookmarkListResponseDtoPage = new PageImpl<>(bookmarkListResponseDtoList);
-        when(bookmarkService.findBookmarkPageByOption(anyLong(), anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString())).thenReturn(
-                bookmarkListResponseDtoPage);
+    @DisplayName("옵션에 따른 북마크 목록 페이지 조회 테스트")
+    void testBookmarkSearchOptionPage() throws Exception {
+        when(bookmarkService.findBookmarkPageByOption(anyLong(), anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(bookmarkListResponseDtoPage);
 
-        // when, then
         mockMvc.perform(get("/api/bookmark/search")
-                        .param("userId", String.valueOf(user.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("userId", String.valueOf(bookmark.getUserId().getId()))
                         .param("page", String.valueOf(PAGE))
                         .param("size", String.valueOf(SIZE))
-                        .param("name", recipe.getName())
-                        .param("time", recipe.getTime().getTimeName())
-                        .param("difficulty", recipe.getDifficulty().getDifficulty())
-                        .param("composition", recipe.getComposition().getComposition())
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .param("name", bookmark.getRecipeId().getName())
+                        .param("time", bookmark.getRecipeId().getTime().getTimeName())
+                        .param("difficulty", bookmark.getRecipeId().getDifficulty().getDifficulty())
+                        .param("composition", bookmark.getRecipeId().getComposition().getComposition())
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(bookmarkListResponseDtoPage.getSize())));
     }

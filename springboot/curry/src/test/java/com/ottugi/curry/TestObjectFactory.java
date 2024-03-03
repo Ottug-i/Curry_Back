@@ -8,7 +8,8 @@ import static com.ottugi.curry.TestConstants.EXPIRED_TIME;
 import static com.ottugi.curry.TestConstants.FAVORITE_GENRE;
 import static com.ottugi.curry.TestConstants.GENRE;
 import static com.ottugi.curry.TestConstants.ID;
-import static com.ottugi.curry.TestConstants.INGREDIENT;
+import static com.ottugi.curry.TestConstants.INGREDIENT1;
+import static com.ottugi.curry.TestConstants.INGREDIENT2;
 import static com.ottugi.curry.TestConstants.INGREDIENTS;
 import static com.ottugi.curry.TestConstants.KEYWORD;
 import static com.ottugi.curry.TestConstants.LATELY_ID;
@@ -38,14 +39,26 @@ import com.ottugi.curry.domain.token.Token;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.web.dto.auth.TokenResponseDto;
 import com.ottugi.curry.web.dto.auth.UserSaveRequestDto;
+import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
+import com.ottugi.curry.web.dto.lately.LatelyListResponseDto;
+import com.ottugi.curry.web.dto.rank.RankResponseDto;
 import com.ottugi.curry.web.dto.ratings.RatingRequestDto;
+import com.ottugi.curry.web.dto.ratings.RatingResponseDto;
+import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
+import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
+import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDto;
+import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
+import com.ottugi.curry.web.dto.user.UserResponseDto;
 import com.ottugi.curry.web.dto.user.UserUpdateRequestDto;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 public class TestObjectFactory {
     public static User initUser() {
@@ -70,6 +83,10 @@ public class TestObjectFactory {
                 .id(user.getId())
                 .nickName(NEW_NICKNAME)
                 .build();
+    }
+
+    public static UserResponseDto initUserResponseDto(User user) {
+        return new UserResponseDto(user);
     }
 
     public static Token initToken() {
@@ -101,6 +118,18 @@ public class TestObjectFactory {
                 .build();
     }
 
+    public static RecipeResponseDto initRecipeResponseDto(Recipe recipe) {
+        return new RecipeResponseDto(recipe, true);
+    }
+
+    public static List<RecipeListResponseDto> initRecipeListResponseDtoList(Recipe recipe) {
+        return Collections.singletonList(new RecipeListResponseDto(recipe, true));
+    }
+
+    public static Page<RecipeListResponseDto> initRecipeListResponseDtoPage(Recipe recipe) {
+        return new PageImpl<>(initRecipeListResponseDtoList(recipe));
+    }
+
     public static Bookmark initBookmark() {
         return Bookmark.builder()
                 .id(BOOKMARK_ID)
@@ -114,16 +143,28 @@ public class TestObjectFactory {
                 .build();
     }
 
+    public static Page<BookmarkListResponseDto> initBookmarkListResponseDtoPage(Bookmark bookmark) {
+        return new PageImpl<>(Collections.singletonList(new BookmarkListResponseDto(bookmark)));
+    }
+
     public static Lately initLately() {
         return Lately.builder()
                 .id(LATELY_ID)
                 .build();
     }
 
+    public static List<LatelyListResponseDto> initLatelyListResponseDtoList(Lately lately) {
+        return Collections.singletonList(new LatelyListResponseDto(lately));
+    }
+
     public static Rank initRank() {
         return Rank.builder()
                 .name(KEYWORD)
                 .build();
+    }
+
+    public static List<RankResponseDto> initRankResponseDtoList(Rank rank) {
+        return Collections.singletonList(new RankResponseDto(rank));
     }
 
     public static Ratings initRatings() {
@@ -144,10 +185,14 @@ public class TestObjectFactory {
                 .build();
     }
 
+    public static RatingResponseDto initRatingResponseDto(Ratings ratings) {
+        return new RatingResponseDto(ratings);
+    }
+
     public static RecipeIngRequestDto initRecipeIngRequestDto(User user, Recipe recipe) {
         return RecipeIngRequestDto.builder()
                 .userId(user.getId())
-                .ingredients(Collections.singletonList(INGREDIENT))
+                .ingredients(Collections.singletonList(INGREDIENT1))
                 .time(recipe.getTime().getTimeName())
                 .difficulty(recipe.getDifficulty().getDifficulty())
                 .composition(recipe.getComposition().getComposition())
@@ -156,10 +201,18 @@ public class TestObjectFactory {
                 .build();
     }
 
+    public static Page<RecipeIngListResponseDto> initRecipeIngListResponseDtoPage(Recipe recipe) {
+        return new PageImpl<>(Collections.singletonList(new RecipeIngListResponseDto(List.of(INGREDIENT1, INGREDIENT2), recipe, true, true)));
+    }
+
     public static RecommendRequestDto initRecommendRequestDto(User user, Recipe recipe) {
         return RecommendRequestDto.builder()
                 .userId(user.getId())
                 .recipeId(Collections.singletonList(recipe.getId()))
                 .build();
+    }
+
+    public static List<RecommendListResponseDto> initRecommendListResponseDtoList(Recipe recipe) {
+        return Collections.singletonList(new RecommendListResponseDto(recipe));
     }
 }
