@@ -2,6 +2,8 @@ package com.ottugi.curry.web.controller;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -60,6 +62,8 @@ class LatelyControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(latelyListResponseDtoList.size())));
+
+        verify(latelyService, times(1)).findLatelyListByUserId(anyLong());
     }
 
     @Test
@@ -72,5 +76,7 @@ class LatelyControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("vegetable"));
+
+        verify(latelyService, times(1)).findLatelyGenreFor3DCharacter(anyLong());
     }
 }

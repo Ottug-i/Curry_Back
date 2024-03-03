@@ -2,6 +2,8 @@ package com.ottugi.curry.web.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -67,6 +69,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.email").value(userResponseDto.getEmail()))
                 .andExpect(jsonPath("$.nickName").value(userResponseDto.getNickName()))
                 .andExpect(jsonPath("$.role").value(userResponseDto.getRole()));
+
+        verify(userService, times(1)).findUserProfileByUserId(anyLong());
     }
 
     @Test
@@ -83,6 +87,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.email").value(userResponseDto.getEmail()))
                 .andExpect(jsonPath("$.nickName").value(userResponseDto.getNickName()))
                 .andExpect(jsonPath("$.role").value(userResponseDto.getRole()));
+
+        verify(userService, times(1)).modifyUserProfile(any(UserUpdateRequestDto.class));
     }
 
     @Test
@@ -95,5 +101,7 @@ public class UserControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
+
+        verify(userService, times(1)).withdrawUserAccount(anyLong());
     }
 }

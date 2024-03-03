@@ -11,6 +11,8 @@ import static com.ottugi.curry.TestConstants.ID;
 import static com.ottugi.curry.TestConstants.INGREDIENT1;
 import static com.ottugi.curry.TestConstants.INGREDIENT2;
 import static com.ottugi.curry.TestConstants.INGREDIENTS;
+import static com.ottugi.curry.TestConstants.IS_BOOKMARK;
+import static com.ottugi.curry.TestConstants.IS_FAVORITE_GENRE;
 import static com.ottugi.curry.TestConstants.KEYWORD;
 import static com.ottugi.curry.TestConstants.LATELY_ID;
 import static com.ottugi.curry.TestConstants.NAME;
@@ -119,11 +121,11 @@ public class TestObjectFactory {
     }
 
     public static RecipeResponseDto initRecipeResponseDto(Recipe recipe) {
-        return new RecipeResponseDto(recipe, true);
+        return new RecipeResponseDto(recipe, IS_BOOKMARK);
     }
 
     public static List<RecipeListResponseDto> initRecipeListResponseDtoList(Recipe recipe) {
-        return Collections.singletonList(new RecipeListResponseDto(recipe, true));
+        return Collections.singletonList(new RecipeListResponseDto(recipe, IS_BOOKMARK));
     }
 
     public static Page<RecipeListResponseDto> initRecipeListResponseDtoPage(Recipe recipe) {
@@ -143,8 +145,16 @@ public class TestObjectFactory {
                 .build();
     }
 
+    public static BookmarkListResponseDto initBookmarkListResponseDto(Bookmark bookmark) {
+        return new BookmarkListResponseDto(bookmark);
+    }
+
+    public static List<BookmarkListResponseDto> initBookmarkListResponseDtoList(Bookmark bookmark) {
+        return Collections.singletonList(initBookmarkListResponseDto(bookmark));
+    }
+
     public static Page<BookmarkListResponseDto> initBookmarkListResponseDtoPage(Bookmark bookmark) {
-        return new PageImpl<>(Collections.singletonList(new BookmarkListResponseDto(bookmark)));
+        return new PageImpl<>(initBookmarkListResponseDtoList(bookmark));
     }
 
     public static Lately initLately() {
@@ -153,8 +163,12 @@ public class TestObjectFactory {
                 .build();
     }
 
+    public static LatelyListResponseDto initLatelyListResponseDto(Lately lately) {
+        return new LatelyListResponseDto(lately);
+    }
+
     public static List<LatelyListResponseDto> initLatelyListResponseDtoList(Lately lately) {
-        return Collections.singletonList(new LatelyListResponseDto(lately));
+        return Collections.singletonList(initLatelyListResponseDto(lately));
     }
 
     public static Rank initRank() {
@@ -163,8 +177,12 @@ public class TestObjectFactory {
                 .build();
     }
 
+    public static RankResponseDto initRankResponseDto(Rank rank) {
+        return new RankResponseDto(rank);
+    }
+
     public static List<RankResponseDto> initRankResponseDtoList(Rank rank) {
-        return Collections.singletonList(new RankResponseDto(rank));
+        return Collections.singletonList(initRankResponseDto(rank));
     }
 
     public static Ratings initRatings() {
@@ -202,7 +220,8 @@ public class TestObjectFactory {
     }
 
     public static Page<RecipeIngListResponseDto> initRecipeIngListResponseDtoPage(Recipe recipe) {
-        return new PageImpl<>(Collections.singletonList(new RecipeIngListResponseDto(List.of(INGREDIENT1, INGREDIENT2), recipe, true, true)));
+        return new PageImpl<>(
+                Collections.singletonList(new RecipeIngListResponseDto(List.of(INGREDIENT1, INGREDIENT2), recipe, IS_FAVORITE_GENRE, IS_BOOKMARK)));
     }
 
     public static RecommendRequestDto initRecommendRequestDto(User user, Recipe recipe) {

@@ -2,6 +2,8 @@ package com.ottugi.curry.web.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -66,6 +68,8 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.role").value(tokenResponseDto.getRole()))
                 .andExpect(jsonPath("$.token").value(tokenResponseDto.getToken()))
                 .andExpect(jsonPath("$.isNew").value(tokenResponseDto.getIsNew()));
+
+        verify(authService, times(1)).signUpOrSignInAndIssueToken(any(UserSaveRequestDto.class), any(HttpServletResponse.class));
     }
 
     @Test
@@ -82,5 +86,7 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.role").value(tokenResponseDto.getRole()))
                 .andExpect(jsonPath("$.token").value(tokenResponseDto.getToken()))
                 .andExpect(jsonPath("$.isNew").value(tokenResponseDto.getIsNew()));
+
+        verify(authService, times(1)).reissueToken(anyString(), any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
 }

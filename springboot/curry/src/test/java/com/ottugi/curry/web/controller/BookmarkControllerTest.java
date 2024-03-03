@@ -7,6 +7,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -72,6 +74,8 @@ class BookmarkControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
+
+        verify(bookmarkService, times(1)).addOrRemoveBookmark(any(BookmarkRequestDto.class));
     }
 
     @Test
@@ -85,6 +89,8 @@ class BookmarkControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("false"));
+
+        verify(bookmarkService, times(1)).addOrRemoveBookmark(any(BookmarkRequestDto.class));
     }
 
     @Test
@@ -100,6 +106,8 @@ class BookmarkControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(bookmarkListResponseDtoPage.getSize())));
+
+        verify(bookmarkService, times(1)).findBookmarkPageByUserId(anyLong(), anyInt(), anyInt());
     }
 
     @Test
@@ -120,5 +128,7 @@ class BookmarkControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(bookmarkListResponseDtoPage.getSize())));
+
+        verify(bookmarkService, times(1)).findBookmarkPageByOption(anyLong(), anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString());
     }
 }

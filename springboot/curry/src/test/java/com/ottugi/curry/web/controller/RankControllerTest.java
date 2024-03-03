@@ -1,6 +1,8 @@
 package com.ottugi.curry.web.controller;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -55,5 +57,7 @@ class RankControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(rankResponseDtoList.size())));
+
+        verify(rankService, times(1)).findTopRankList();
     }
 }

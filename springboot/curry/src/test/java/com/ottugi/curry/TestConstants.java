@@ -40,9 +40,11 @@ public class TestConstants {
     public static final String ORDERS = "|1. 바삭하게 튀기는 꿀팁|2. 달콤한 소스 꿀팁|3. 더 건강하게 먹는 꿀팁";
     public static final String PHOTO = "|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/4c9918cf77a109d28b389e6bc753b4bd1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/66e8c5f5932e195e7b5405d110a6e67e1.jpg|https://recipe1.ezmember.co.kr/cache/recipe/2016/01/29/8628264d141fa54487461d41a45d905f1.jpg";
     public static final String GENRE = "ing13|ing21";
+    public static final Boolean IS_FAVORITE_GENRE = true;
 
     // Bookmark
     public static final Long BOOKMARK_ID = 1L;
+    public static final Boolean IS_BOOKMARK = true;
 
     // Lately
     public static final Long LATELY_ID = 1L;

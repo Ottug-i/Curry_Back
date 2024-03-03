@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -78,6 +80,8 @@ class RecipeControllerTest {
                 .andExpect(jsonPath("$.orders").value(recipeResponseDto.getOrders()))
                 .andExpect(jsonPath("$.photo").value(recipeResponseDto.getPhoto()))
                 .andExpect(jsonPath("$.isBookmark").value(recipeResponseDto.getIsBookmark()));
+
+        verify(recipeService, times(1)).findRecipeByUserIdAndRecipeId(anyLong(), anyLong());
     }
 
     @Test
@@ -97,5 +101,7 @@ class RecipeControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(recipeListResponseDtoPage.getSize())));
+
+        verify(recipeService, times(1)).findRecipePageBySearchBox(anyLong(), anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString());
     }
 }

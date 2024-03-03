@@ -4,6 +4,8 @@ import static com.ottugi.curry.TestConstants.PAGE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -95,6 +97,8 @@ class RecommendControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(recommendListResponseDtoList.size())));
+
+        verify(ratingsService, times(1)).findRandomRecipeListForResearch();
     }
 
     @Test
@@ -110,6 +114,8 @@ class RecommendControllerTest {
                 .andExpect(jsonPath("$.userId").value(ratingResponseDto.getUserId()))
                 .andExpect(jsonPath("$.recipeId").value(ratingResponseDto.getRecipeId()))
                 .andExpect(jsonPath("$.rating").value(ratingResponseDto.getRating()));
+
+        verify(ratingsService, times(1)).findUserRating(anyLong(), anyLong());
     }
 
     @Test
@@ -123,6 +129,8 @@ class RecommendControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(true));
+
+        verify(ratingsService, times(1)).addOrUpdateUserRating(any(RatingRequestDto.class));
     }
 
     @Test
@@ -136,6 +144,8 @@ class RecommendControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(true));
+
+        verify(ratingsService, times(1)).removeUserRating(anyLong(), anyLong());
     }
 
     @Test
@@ -149,6 +159,8 @@ class RecommendControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(recipeIngListResponseDtoPage.getSize())));
+
+        verify(recommendService, times(1)).findRecipePageByIngredientsDetection(any(RecipeIngRequestDto.class));
     }
 
     @Test
@@ -163,6 +175,8 @@ class RecommendControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(recipeListResponseDtoList.size())));
+
+        verify(recommendService, times(1)).findBookmarkOrRatingRecommendList(any(RecommendRequestDto.class));
     }
 
     @Test
@@ -177,5 +191,7 @@ class RecommendControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(recipeListResponseDtoList.size())));
+
+        verify(recommendService, times(1)).findBookmarkOrRatingRecommendList(any(RecommendRequestDto.class));
     }
 }
