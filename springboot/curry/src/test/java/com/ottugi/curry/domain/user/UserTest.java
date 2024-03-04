@@ -1,31 +1,43 @@
 package com.ottugi.curry.domain.user;
 
-import static com.ottugi.curry.TestConstants.EMAIL;
-import static com.ottugi.curry.TestConstants.FAVORITE_GENRE;
-import static com.ottugi.curry.TestConstants.NEW_FAVORITE_GENRE;
-import static com.ottugi.curry.TestConstants.NEW_NICKNAME;
-import static com.ottugi.curry.TestConstants.NEW_ROLE;
-import static com.ottugi.curry.TestConstants.NICKNAME;
-import static com.ottugi.curry.TestConstants.ROLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.lately.Lately;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class UserTest {
+public class UserTest {
+    public static final Long USER_ID = 1L;
+    public static final String EMAIL = "curry@gmail.com";
+    public static final String NICKNAME = "카레";
+    public static final String NEW_NICKNAME = "김카레";
+    public static final String FAVORITE_GENRE = "ing15";
+    public static final String NEW_FAVORITE_GENRE = "ing16";
+    public static final Role ROLE = Role.ofRole("일반 사용자");
+    public static final Role NEW_ROLE = Role.ofRole("관리자");
+    public static final Boolean IS_NEW = true;
+
+    public static User initUser() {
+        return User.builder()
+                .id(USER_ID)
+                .email(EMAIL)
+                .nickName(NICKNAME)
+                .favoriteGenre(FAVORITE_GENRE)
+                .role(ROLE)
+                .build();
+    }
+
     private User user;
 
     @BeforeEach
     public void setUp() {
-        user = TestObjectFactory.initUser();
+        user = initUser();
     }
 
     @Test
@@ -35,7 +47,7 @@ class UserTest {
         assertEquals(EMAIL, user.getEmail());
         assertEquals(NICKNAME, user.getNickName());
         assertEquals(FAVORITE_GENRE, user.getFavoriteGenre());
-        assertEquals(true, user.getIsNew());
+        assertEquals(IS_NEW, user.getIsNew());
         assertEquals(ROLE, user.getRole());
     }
 
@@ -68,7 +80,7 @@ class UserTest {
     void testMarkAsExistingUser() {
         user.markAsExistingUser();
 
-        assertEquals(false, user.getIsNew());
+        assertEquals(!IS_NEW, user.getIsNew());
     }
 
     @Test

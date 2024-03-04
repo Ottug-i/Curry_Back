@@ -2,8 +2,8 @@ package com.ottugi.curry.web.dto.recipe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.RecipeTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ class RecipeSaveRequestDtoTest {
 
     @BeforeEach
     public void setUp() {
-        recipe = TestObjectFactory.initRecipe();
+        recipe = RecipeTest.initRecipe();
     }
 
     @Test

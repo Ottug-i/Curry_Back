@@ -1,6 +1,6 @@
 package com.ottugi.curry.web.controller;
 
-import static com.ottugi.curry.TestConstants.PAGE;
+import static com.ottugi.curry.domain.recipe.RecipeTest.PAGE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -15,22 +15,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.config.SecurityConfig;
 import com.ottugi.curry.domain.bookmark.Bookmark;
+import com.ottugi.curry.domain.bookmark.BookmarkTest;
 import com.ottugi.curry.domain.ratings.Ratings;
+import com.ottugi.curry.domain.ratings.RatingsTest;
 import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.RecipeTest;
 import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.jwt.JwtAuthenticationFilter;
 import com.ottugi.curry.service.ratings.RatingsService;
 import com.ottugi.curry.service.recommend.RecommendService;
 import com.ottugi.curry.web.dto.ratings.RatingRequestDto;
+import com.ottugi.curry.web.dto.ratings.RatingRequestDtoTest;
 import com.ottugi.curry.web.dto.ratings.RatingResponseDto;
+import com.ottugi.curry.web.dto.ratings.RatingResponseDtoTest;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
+import com.ottugi.curry.web.dto.recipe.RecipeListResponseDtoTest;
 import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
+import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDtoTest;
 import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDto;
+import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDtoTest;
 import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
+import com.ottugi.curry.web.dto.recommend.RecommendListResponseDtoTest;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,6 +51,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,7 +60,19 @@ import org.springframework.test.web.servlet.MockMvc;
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class),
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
 @WithMockUser
-class RecommendControllerTest {
+public class RecommendControllerTest {
+    public static List<RecipeListResponseDto> initRecipeListResponseDtoList(Recipe recipe) {
+        return Collections.singletonList(RecipeListResponseDtoTest.initRecipeListResponseDto(recipe));
+    }
+
+    public static Page<RecipeIngListResponseDto> initRecipeIngListResponseDtoPage(Recipe recipe) {
+        return new PageImpl<>(Collections.singletonList(RecipeIngListResponseDtoTest.initRecommendRequestDto(recipe)));
+    }
+
+    public static List<RecommendListResponseDto> initRecommendListResponseDtoList(Recipe recipe) {
+        return Collections.singletonList(RecommendListResponseDtoTest.initRecommendListResponseDto(recipe));
+    }
+
     private User user;
     private Recipe recipe;
     private RatingRequestDto ratingRequestDto;
@@ -71,19 +94,19 @@ class RecommendControllerTest {
 
     @BeforeEach
     public void setUp() {
-        user = TestObjectFactory.initUser();
-        recipe = TestObjectFactory.initRecipe();
-        Bookmark bookmark = TestObjectFactory.initBookmark();
+        user = UserTest.initUser();
+        recipe = RecipeTest.initRecipe();
+        Bookmark bookmark = BookmarkTest.initBookmark();
         bookmark.setUser(user);
         bookmark.setRecipe(recipe);
-        Ratings ratings = TestObjectFactory.initRatings();
+        Ratings ratings = RatingsTest.initRatings(user, recipe);
 
-        ratingRequestDto = TestObjectFactory.initRatingRequestDto(ratings);
-        ratingResponseDto = TestObjectFactory.initRatingResponseDto(ratings);
-        recipeIngRequestDto = TestObjectFactory.initRecipeIngRequestDto(user, recipe);
-        recipeListResponseDtoList = TestObjectFactory.initRecipeListResponseDtoList(recipe);
-        recipeIngListResponseDtoPage = TestObjectFactory.initRecipeIngListResponseDtoPage(recipe);
-        recommendListResponseDtoList = TestObjectFactory.initRecommendListResponseDtoList(recipe);
+        ratingRequestDto = RatingRequestDtoTest.initRatingRequestDto(ratings);
+        ratingResponseDto = RatingResponseDtoTest.initRatingResponseDto(ratings);
+        recipeIngRequestDto = RecipeIngRequestDtoTest.initRecipeIngRequestDto(user, recipe);
+        recipeListResponseDtoList = initRecipeListResponseDtoList(recipe);
+        recipeIngListResponseDtoPage = initRecipeIngListResponseDtoPage(recipe);
+        recommendListResponseDtoList = initRecommendListResponseDtoList(recipe);
 
         bookmarkList = new Long[]{bookmark.getRecipeId().getRecipeId()};
     }

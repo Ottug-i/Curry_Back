@@ -1,5 +1,6 @@
 package com.ottugi.curry.web.controller;
 
+import static com.ottugi.curry.web.dto.rank.RankResponseDtoTest.initRankResponseDto;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -9,12 +10,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.config.SecurityConfig;
 import com.ottugi.curry.domain.rank.Rank;
+import com.ottugi.curry.domain.rank.RankTest;
 import com.ottugi.curry.jwt.JwtAuthenticationFilter;
 import com.ottugi.curry.service.rank.RankService;
 import com.ottugi.curry.web.dto.rank.RankResponseDto;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +33,11 @@ import org.springframework.test.web.servlet.MockMvc;
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class),
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
 @WithMockUser
-class RankControllerTest {
+public class RankControllerTest {
+    public static List<RankResponseDto> initRankResponseDtoList(Rank rank) {
+        return Collections.singletonList(initRankResponseDto(rank));
+    }
+
     private Rank rank;
     private List<RankResponseDto> rankResponseDtoList;
 
@@ -43,9 +49,9 @@ class RankControllerTest {
 
     @BeforeEach
     public void setUp() {
-        rank = TestObjectFactory.initRank();
+        rank = RankTest.initRank();
 
-        rankResponseDtoList = TestObjectFactory.initRankResponseDtoList(rank);
+        rankResponseDtoList = initRankResponseDtoList(rank);
     }
 
     @Test

@@ -1,21 +1,27 @@
 package com.ottugi.curry.domain.rank;
 
-import static com.ottugi.curry.TestConstants.KEYWORD;
-import static com.ottugi.curry.TestConstants.SCORE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.ottugi.curry.TestObjectFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class RankTest {
+public class RankTest {
+    public static final String KEYWORD = "망고";
+    public static final int SCORE = 1;
+
+    public static Rank initRank() {
+        return Rank.builder()
+                .name(KEYWORD)
+                .build();
+    }
+
     private Rank rank;
 
     @BeforeEach
     public void setUp() {
-        rank = TestObjectFactory.initRank();
+        rank = initRank();
     }
 
     @Test

@@ -9,9 +9,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.rank.Rank;
 import com.ottugi.curry.domain.rank.RankRepository;
+import com.ottugi.curry.domain.rank.RankTest;
 import com.ottugi.curry.web.dto.rank.RankResponseDto;
 import java.util.Collections;
 import java.util.Date;
@@ -40,7 +40,7 @@ class RankServiceTest {
 
     @BeforeEach
     public void setUp() {
-        rank = TestObjectFactory.initRank();
+        rank = RankTest.initRank();
     }
 
     @Test

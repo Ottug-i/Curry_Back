@@ -14,13 +14,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.config.SecurityConfig;
 import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.jwt.JwtAuthenticationFilter;
 import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.user.UserResponseDto;
+import com.ottugi.curry.web.dto.user.UserResponseDtoTest;
 import com.ottugi.curry.web.dto.user.UserUpdateRequestDto;
+import com.ottugi.curry.web.dto.user.UserUpdateRequestDtoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,10 +52,10 @@ public class UserControllerTest {
 
     @BeforeEach
     public void setUp() {
-        user = TestObjectFactory.initUser();
+        user = UserTest.initUser();
 
-        userUpdateRequestDto = TestObjectFactory.initUserUpdateRequestDto(user);
-        userResponseDto = TestObjectFactory.initUserResponseDto(user);
+        userUpdateRequestDto = UserUpdateRequestDtoTest.initUserUpdateRequestDto(user);
+        userResponseDto = UserResponseDtoTest.initUserResponseDto(user);
     }
 
     @Test

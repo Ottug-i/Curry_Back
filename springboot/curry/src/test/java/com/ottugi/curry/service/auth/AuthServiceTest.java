@@ -9,15 +9,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.token.Token;
 import com.ottugi.curry.domain.token.TokenRepository;
+import com.ottugi.curry.domain.token.TokenTest;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
+import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.jwt.TokenProvider;
 import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.auth.TokenResponseDto;
 import com.ottugi.curry.web.dto.auth.UserSaveRequestDto;
+import com.ottugi.curry.web.dto.auth.UserSaveRequestDtoTest;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,7 +42,7 @@ class AuthServiceTest {
 
     @Mock
     private TokenProvider tokenProvider;
-    
+
     @Mock
     private UserRepository userRepository;
 
@@ -52,9 +54,9 @@ class AuthServiceTest {
 
     @BeforeEach
     public void setUp() {
-        user = TestObjectFactory.initUser();
-        userSaveRequestDto = TestObjectFactory.initUserSaveRequestDto(user);
-        token = TestObjectFactory.initToken();
+        user = UserTest.initUser();
+        userSaveRequestDto = UserSaveRequestDtoTest.initUserSaveRequestDto(user);
+        token = TokenTest.initToken(user);
     }
 
     @Test

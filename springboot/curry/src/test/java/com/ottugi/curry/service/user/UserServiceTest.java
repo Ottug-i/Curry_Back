@@ -1,6 +1,6 @@
 package com.ottugi.curry.service.user;
 
-import static com.ottugi.curry.TestConstants.NEW_NICKNAME;
+import static com.ottugi.curry.domain.user.UserTest.NEW_NICKNAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,11 +10,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserRepository;
+import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.web.dto.user.UserResponseDto;
 import com.ottugi.curry.web.dto.user.UserUpdateRequestDto;
+import com.ottugi.curry.web.dto.user.UserUpdateRequestDtoTest;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,8 +38,8 @@ class UserServiceTest {
 
     @BeforeEach
     public void setUp() {
-        user = TestObjectFactory.initUser();
-        userUpdateRequestDto = TestObjectFactory.initUserUpdateRequestDto(user);
+        user = UserTest.initUser();
+        userUpdateRequestDto = UserUpdateRequestDtoTest.initUserUpdateRequestDto(user);
     }
 
     @Test

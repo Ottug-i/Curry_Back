@@ -46,6 +46,8 @@ dependencies {
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'io.lettuce:lettuce-core:6.1.5.RELEASE'
+    implementation 'it.ozimov:embedded-redis:0.7.1'
+    implementation 'redis.clients:jedis:3.7.0'
 
     // common
     implementation 'org.apache.commons:commons-lang3'

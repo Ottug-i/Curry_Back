@@ -9,9 +9,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.lately.Lately;
 import com.ottugi.curry.domain.lately.LatelyRepository;
+import com.ottugi.curry.domain.lately.LatelyTest;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.service.user.UserService;
@@ -40,7 +40,7 @@ class LatelyServiceTest {
 
     @BeforeEach
     public void setUp() {
-        lately = TestObjectFactory.initLately();
+        lately = LatelyTest.initLately();
         lately.setUser(mock(User.class));
         lately.setRecipe(mock(Recipe.class));
     }

@@ -1,7 +1,7 @@
 package com.ottugi.curry.web.controller;
 
-import static com.ottugi.curry.TestConstants.PAGE;
-import static com.ottugi.curry.TestConstants.SIZE;
+import static com.ottugi.curry.domain.recipe.RecipeTest.PAGE;
+import static com.ottugi.curry.domain.recipe.RecipeTest.SIZE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -18,13 +18,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.config.SecurityConfig;
 import com.ottugi.curry.domain.bookmark.Bookmark;
+import com.ottugi.curry.domain.bookmark.BookmarkTest;
+import com.ottugi.curry.domain.recipe.RecipeTest;
+import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.jwt.JwtAuthenticationFilter;
 import com.ottugi.curry.service.bookmark.BookmarkService;
 import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
+import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDtoTest;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
+import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDtoTest;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +40,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,6 +50,14 @@ import org.springframework.test.web.servlet.MockMvc;
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
 @WithMockUser
 class BookmarkControllerTest {
+    public static List<BookmarkListResponseDto> initBookmarkListResponseDtoList(Bookmark bookmark) {
+        return Collections.singletonList(BookmarkListResponseDtoTest.initBookmarkListResponseDto(bookmark));
+    }
+
+    public static Page<BookmarkListResponseDto> initBookmarkListResponseDtoPage(Bookmark bookmark) {
+        return new PageImpl<>(initBookmarkListResponseDtoList(bookmark));
+    }
+
     private Bookmark bookmark;
     private BookmarkRequestDto bookmarkRequestDto;
     private Page<BookmarkListResponseDto> bookmarkListResponseDtoPage;
@@ -55,12 +70,12 @@ class BookmarkControllerTest {
 
     @BeforeEach
     public void setUp() {
-        bookmark = TestObjectFactory.initBookmark();
-        bookmark.setUser(TestObjectFactory.initUser());
-        bookmark.setRecipe(TestObjectFactory.initRecipe());
+        bookmark = BookmarkTest.initBookmark();
+        bookmark.setUser(UserTest.initUser());
+        bookmark.setRecipe(RecipeTest.initRecipe());
 
-        bookmarkRequestDto = TestObjectFactory.initBookmarkRequestDto(bookmark);
-        bookmarkListResponseDtoPage = TestObjectFactory.initBookmarkListResponseDtoPage(bookmark);
+        bookmarkRequestDto = BookmarkRequestDtoTest.initBookmarkRequestDto(bookmark);
+        bookmarkListResponseDtoPage = initBookmarkListResponseDtoPage(bookmark);
     }
 
     @Test

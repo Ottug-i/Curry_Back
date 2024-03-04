@@ -5,23 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.ottugi.curry.TestObjectFactory;
-import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeRepository;
-import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.recipe.RecipeTest;
 import com.ottugi.curry.domain.user.UserRepository;
+import com.ottugi.curry.domain.user.UserTest;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@DataJpaTest
+@SpringBootTest
 class BookmarkRepositoryTest {
-    private User user;
-    private Recipe recipe;
+    private Bookmark bookmark;
 
     @Autowired
     private BookmarkRepository bookmarkRepository;
@@ -32,29 +30,23 @@ class BookmarkRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        user = TestObjectFactory.initUser();
-        user = userRepository.save(user);
-
-        recipe = TestObjectFactory.initRecipe();
-        recipe = recipeRepository.save(recipe);
-
-        Bookmark bookmark = TestObjectFactory.initBookmark();
-        bookmark.setUser(user);
-        bookmark.setRecipe(recipe);
-        bookmarkRepository.save(bookmark);
+        bookmark = BookmarkTest.initBookmark();
+        bookmark.setUser(userRepository.save(UserTest.initUser()));
+        bookmark.setRecipe(recipeRepository.save(RecipeTest.initRecipe()));
+        bookmark = bookmarkRepository.save(bookmark);
     }
 
     @AfterEach
     public void clean() {
         bookmarkRepository.deleteAll();
-        recipeRepository.deleteAll();
         userRepository.deleteAll();
+        recipeRepository.deleteAll();
     }
 
     @Test
     @DisplayName("회원 아이디와 레시피 아이디로 북마크 존재 확인 테스트")
     void testExistsByUserIdAndRecipeId() {
-        boolean existBookmark = bookmarkRepository.existsByUserIdAndRecipeId(user, recipe);
+        boolean existBookmark = bookmarkRepository.existsByUserIdAndRecipeId(bookmark.getUserId(), bookmark.getRecipeId());
 
         assertTrue(existBookmark);
     }
@@ -62,16 +54,16 @@ class BookmarkRepositoryTest {
     @Test
     @DisplayName("회원 아이디와 레시피 아이디로 북마크 조회 테스트")
     void testFindByUserIdAndRecipeId() {
-        Bookmark foundBookmark = bookmarkRepository.findByUserIdAndRecipeId(user, recipe);
+        Bookmark foundBookmark = bookmarkRepository.findByUserIdAndRecipeId(bookmark.getUserId(), bookmark.getRecipeId());
 
-        assertEquals(user.getId(), foundBookmark.getUserId().getId());
-        assertEquals(recipe.getId(), foundBookmark.getRecipeId().getId());
+        assertEquals(bookmark.getUserId().getId(), foundBookmark.getUserId().getId());
+        assertEquals(bookmark.getRecipeId().getId(), foundBookmark.getRecipeId().getId());
     }
 
     @Test
     @DisplayName("회원 아이디로 북마크 목록 조회 테스트")
     void testFindByUserId() {
-        List<Bookmark> foundBookmarkList = bookmarkRepository.findByUserId(user);
+        List<Bookmark> foundBookmarkList = bookmarkRepository.findByUserId(bookmark.getUserId());
 
         assertNotNull(foundBookmarkList);
         assertEquals(1, foundBookmarkList.size());
@@ -80,8 +72,8 @@ class BookmarkRepositoryTest {
     @Test
     @DisplayName("회원 아이디와 레시피 아이디로 북마크 삭제 테스트")
     void testDeleteByUserIdAndRecipeId() {
-        bookmarkRepository.deleteByUserIdAndRecipeId(user, recipe);
-        boolean existBookmark = bookmarkRepository.existsByUserIdAndRecipeId(user, recipe);
+        bookmarkRepository.deleteByUserIdAndRecipeId(bookmark.getUserId(), bookmark.getRecipeId());
+        boolean existBookmark = bookmarkRepository.existsByUserIdAndRecipeId(bookmark.getUserId(), bookmark.getRecipeId());
 
         assertFalse(existBookmark);
     }

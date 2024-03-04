@@ -6,25 +6,33 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class LatelyTest {
+public class LatelyTest {
+    public static final Long LATELY_ID = 1L;
+
+    public static Lately initLately() {
+        return Lately.builder()
+                .id(LATELY_ID)
+                .build();
+    }
+
     private Lately lately;
 
     @BeforeEach
     public void setUp() {
-        lately = TestObjectFactory.initLately();
+        lately = initLately();
     }
 
     @Test
     @DisplayName("최근 본 레시피 추가 테스트")
     void testLately() {
         assertNotNull(lately);
+        assertEquals(LATELY_ID, lately.getId());
     }
 
     @Test
@@ -34,7 +42,7 @@ class LatelyTest {
         lately.setUser(user);
 
         assertEquals(lately.getUserId(), user);
-        verify(user, times(1)).getBookmarkList();
+        verify(user, times(2)).getLatelyList();
     }
 
     @Test

@@ -10,13 +10,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.config.SecurityConfig;
 import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.jwt.JwtAuthenticationFilter;
 import com.ottugi.curry.service.auth.AuthService;
 import com.ottugi.curry.web.dto.auth.TokenResponseDto;
+import com.ottugi.curry.web.dto.auth.TokenResponseDtoTest;
 import com.ottugi.curry.web.dto.auth.UserSaveRequestDto;
+import com.ottugi.curry.web.dto.auth.UserSaveRequestDtoTest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,9 +50,9 @@ class AuthControllerTest {
 
     @BeforeEach
     public void setUp() {
-        user = TestObjectFactory.initUser();
-        userSaveRequestDto = TestObjectFactory.initUserSaveRequestDto(user);
-        tokenResponseDto = TestObjectFactory.initTokenResponseDto(user);
+        user = UserTest.initUser();
+        userSaveRequestDto = UserSaveRequestDtoTest.initUserSaveRequestDto(user);
+        tokenResponseDto = TokenResponseDtoTest.initTokenResponseDto(user);
     }
 
     @Test

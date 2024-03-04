@@ -1,8 +1,8 @@
 package com.ottugi.curry.service.recipe;
 
-import static com.ottugi.curry.TestConstants.INGREDIENT1;
-import static com.ottugi.curry.TestConstants.PAGE;
-import static com.ottugi.curry.TestConstants.SIZE;
+import static com.ottugi.curry.domain.recipe.RecipeTest.INGREDIENT1;
+import static com.ottugi.curry.domain.recipe.RecipeTest.PAGE;
+import static com.ottugi.curry.domain.recipe.RecipeTest.SIZE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,11 +15,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.bookmark.Bookmark;
+import com.ottugi.curry.domain.bookmark.BookmarkTest;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeRepository;
+import com.ottugi.curry.domain.recipe.RecipeTest;
 import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.service.lately.LatelyService;
 import com.ottugi.curry.service.rank.RankService;
 import com.ottugi.curry.service.user.UserService;
@@ -60,10 +62,10 @@ class RecipeServiceTest {
 
     @BeforeEach
     public void setUp() {
-        user = TestObjectFactory.initUser();
-        recipe = TestObjectFactory.initRecipe();
+        user = UserTest.initUser();
+        recipe = RecipeTest.initRecipe();
 
-        Bookmark bookmark = TestObjectFactory.initBookmark();
+        Bookmark bookmark = BookmarkTest.initBookmark();
         bookmark.setUser(user);
         bookmark.setRecipe(recipe);
         user.addBookmarkList(bookmark);

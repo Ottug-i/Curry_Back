@@ -1,27 +1,31 @@
 package com.ottugi.curry.web.dto.auth;
 
-import static com.ottugi.curry.TestConstants.IS_NEW;
-import static com.ottugi.curry.TestConstants.VALUE;
+import static com.ottugi.curry.domain.token.TokenTest.VALUE;
+import static com.ottugi.curry.domain.user.UserTest.IS_NEW;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class TokenResponseDtoTest {
+public class TokenResponseDtoTest {
+    public static TokenResponseDto initTokenResponseDto(User user) {
+        return new TokenResponseDto(user, VALUE);
+    }
+
     private User user;
 
     @BeforeEach
     public void setUp() {
-        user = TestObjectFactory.initUser();
+        user = UserTest.initUser();
     }
 
     @Test
     @DisplayName("TokenResponseDto 생성 테스트")
     void testTokenResponseDto() {
-        TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE);
+        TokenResponseDto tokenResponseDto = initTokenResponseDto(user);
 
         assertEquals(user.getId(), tokenResponseDto.getId());
         assertEquals(user.getEmail(), tokenResponseDto.getEmail());

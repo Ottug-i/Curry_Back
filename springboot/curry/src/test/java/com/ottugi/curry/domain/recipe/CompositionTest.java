@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.ottugi.curry.TestObjectFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +33,7 @@ class CompositionTest {
     @Test
     @DisplayName("동일한 구성 일치 테스트")
     void testIsCompositionMatching() {
-        Recipe recipe = TestObjectFactory.initRecipe();
+        Recipe recipe = RecipeTest.initRecipe();
         String composition = Composition.LIGHTLY.getComposition();
 
         Boolean result = Composition.isCompositionMatching(recipe, composition);

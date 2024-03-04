@@ -2,22 +2,20 @@ package com.ottugi.curry.domain.lately;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.ottugi.curry.TestObjectFactory;
-import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeRepository;
-import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.recipe.RecipeTest;
 import com.ottugi.curry.domain.user.UserRepository;
+import com.ottugi.curry.domain.user.UserTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@DataJpaTest
+@SpringBootTest
 class LatelyRepositoryTest {
-    private User user;
-    private Recipe recipe;
+    private Lately lately;
 
     @Autowired
     private LatelyRepository latelyRepository;
@@ -28,16 +26,10 @@ class LatelyRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        user = TestObjectFactory.initUser();
-        user = userRepository.save(user);
-
-        recipe = TestObjectFactory.initRecipe();
-        recipe = recipeRepository.save(recipe);
-
-        Lately lately = TestObjectFactory.initLately();
-        lately.setUser(user);
-        lately.setRecipe(recipe);
-        latelyRepository.save(lately);
+        lately = LatelyTest.initLately();
+        lately.setUser(userRepository.save(UserTest.initUser()));
+        lately.setRecipe(recipeRepository.save(RecipeTest.initRecipe()));
+        lately = latelyRepository.save(lately);
     }
 
     @AfterEach
@@ -50,9 +42,9 @@ class LatelyRepositoryTest {
     @Test
     @DisplayName("회원 아이디에 따라 가장 최근 본 레시피 확인")
     void testFindTop1ByUserIdOrderByIdDesc() {
-        Lately foundLately = latelyRepository.findTop1ByUserIdOrderByIdDesc(user);
+        Lately foundLately = latelyRepository.findTop1ByUserIdOrderByIdDesc(lately.getUserId());
 
-        assertEquals(user.getId(), foundLately.getUserId().getId());
-        assertEquals(recipe.getId(), foundLately.getRecipeId().getId());
+        assertEquals(lately.getUserId().getId(), foundLately.getUserId().getId());
+        assertEquals(lately.getRecipeId().getId(), foundLately.getRecipeId().getId());
     }
 }

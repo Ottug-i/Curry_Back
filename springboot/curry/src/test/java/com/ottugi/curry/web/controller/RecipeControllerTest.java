@@ -1,7 +1,7 @@
 package com.ottugi.curry.web.controller;
 
-import static com.ottugi.curry.TestConstants.PAGE;
-import static com.ottugi.curry.TestConstants.SIZE;
+import static com.ottugi.curry.domain.recipe.RecipeTest.PAGE;
+import static com.ottugi.curry.domain.recipe.RecipeTest.SIZE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -14,14 +14,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.config.SecurityConfig;
 import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.RecipeTest;
 import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.jwt.JwtAuthenticationFilter;
 import com.ottugi.curry.service.recipe.RecipeService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
+import com.ottugi.curry.web.dto.recipe.RecipeListResponseDtoTest;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
+import com.ottugi.curry.web.dto.recipe.RecipeResponseDtoTest;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +36,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -38,7 +44,15 @@ import org.springframework.test.web.servlet.MockMvc;
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class),
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
 @WithMockUser
-class RecipeControllerTest {
+public class RecipeControllerTest {
+    public static List<RecipeListResponseDto> initRecipeListResponseDtoList(Recipe recipe) {
+        return Collections.singletonList(RecipeListResponseDtoTest.initRecipeListResponseDto(recipe));
+    }
+
+    public static Page<RecipeListResponseDto> initRecipeListResponseDtoPage(Recipe recipe) {
+        return new PageImpl<>(initRecipeListResponseDtoList(recipe));
+    }
+
     private User user;
     private Recipe recipe;
     private RecipeResponseDto recipeResponseDto;
@@ -52,11 +66,11 @@ class RecipeControllerTest {
 
     @BeforeEach
     public void setUp() {
-        user = TestObjectFactory.initUser();
-        recipe = TestObjectFactory.initRecipe();
+        user = UserTest.initUser();
+        recipe = RecipeTest.initRecipe();
 
-        recipeResponseDto = TestObjectFactory.initRecipeResponseDto(recipe);
-        recipeListResponseDtoPage = TestObjectFactory.initRecipeListResponseDtoPage(recipe);
+        recipeResponseDto = RecipeResponseDtoTest.initRecipeResponseDto(recipe);
+        recipeListResponseDtoPage = initRecipeListResponseDtoPage(recipe);
     }
 
     @Test

@@ -1,6 +1,6 @@
 package com.ottugi.curry.service.recommend;
 
-import static com.ottugi.curry.TestConstants.PAGE;
+import static com.ottugi.curry.domain.recipe.RecipeTest.PAGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.any;
@@ -13,17 +13,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.config.GlobalConfig;
 import com.ottugi.curry.domain.bookmark.Bookmark;
+import com.ottugi.curry.domain.bookmark.BookmarkTest;
 import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.RecipeTest;
 import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.service.recipe.RecipeService;
 import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDto;
+import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDtoTest;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
+import com.ottugi.curry.web.dto.recommend.RecommendRequestDtoTest;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
@@ -64,14 +68,14 @@ class RecommendServiceTest {
 
     @BeforeEach
     public void setUp() {
-        user = TestObjectFactory.initUser();
-        recipe = TestObjectFactory.initRecipe();
-        bookmark = TestObjectFactory.initBookmark();
+        user = UserTest.initUser();
+        recipe = RecipeTest.initRecipe();
+        bookmark = BookmarkTest.initBookmark();
         bookmark.setUser(user);
         bookmark.setRecipe(recipe);
 
-        recipeIngRequestDto = TestObjectFactory.initRecipeIngRequestDto(user, recipe);
-        recommendRequestDto = TestObjectFactory.initRecommendRequestDto(user, recipe);
+        recipeIngRequestDto = RecipeIngRequestDtoTest.initRecipeIngRequestDto(user, recipe);
+        recommendRequestDto = RecommendRequestDtoTest.initRecommendRequestDto(user, recipe);
     }
 
     @Test

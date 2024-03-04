@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.ottugi.curry.TestObjectFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +33,7 @@ class TimeTest {
     @Test
     @DisplayName("동일한 시간 일치 테스트")
     void testIsTimeMatching() {
-        Recipe recipe = TestObjectFactory.initRecipe();
+        Recipe recipe = RecipeTest.initRecipe();
         String time = Time.SIXTY_MINUTES.getTimeName();
 
         Boolean result = Time.isTimeMatching(recipe, time);

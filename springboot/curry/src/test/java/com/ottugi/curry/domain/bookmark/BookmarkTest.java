@@ -6,25 +6,34 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class BookmarkTest {
+public class BookmarkTest {
+    public static final Long BOOKMARK_ID = 1L;
+    public static final Boolean IS_BOOKMARK = Boolean.TRUE;
+
+    public static Bookmark initBookmark() {
+        return Bookmark.builder()
+                .id(BOOKMARK_ID)
+                .build();
+    }
+
     private Bookmark bookmark;
 
     @BeforeEach
     public void setUp() {
-        bookmark = TestObjectFactory.initBookmark();
+        bookmark = initBookmark();
     }
 
     @Test
     @DisplayName("북마크 추가 테스트")
     void testBookmark() {
         assertNotNull(bookmark);
+        assertEquals(BOOKMARK_ID, bookmark.getId());
     }
 
     @Test
@@ -34,7 +43,7 @@ class BookmarkTest {
         bookmark.setUser(user);
 
         assertEquals(bookmark.getUserId(), user);
-        verify(user, times(1)).getBookmarkList();
+        verify(user, times(2)).getBookmarkList();
     }
 
     @Test

@@ -11,12 +11,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.ratings.Ratings;
 import com.ottugi.curry.domain.ratings.RatingsRepository;
+import com.ottugi.curry.domain.ratings.RatingsTest;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeRepository;
+import com.ottugi.curry.domain.recipe.RecipeTest;
+import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.web.dto.ratings.RatingRequestDto;
+import com.ottugi.curry.web.dto.ratings.RatingRequestDtoTest;
 import com.ottugi.curry.web.dto.ratings.RatingResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
 import java.util.Collections;
@@ -46,9 +50,11 @@ class RatingsServiceTest {
 
     @BeforeEach
     public void setUp() {
-        ratings = TestObjectFactory.initRatings();
-        ratingRequestDto = TestObjectFactory.initRatingRequestDto(ratings);
-        recipe = TestObjectFactory.initRecipe();
+        User user = UserTest.initUser();
+        recipe = RecipeTest.initRecipe();
+
+        ratings = RatingsTest.initRatings(user, recipe);
+        ratingRequestDto = RatingRequestDtoTest.initRatingRequestDto(ratings);
     }
 
     @Test

@@ -2,18 +2,22 @@ package com.ottugi.curry.web.dto.recommend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.RecipeTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class RecommendListResponseDtoTest {
+public class RecommendListResponseDtoTest {
+    public static RecommendListResponseDto initRecommendListResponseDto(Recipe recipe) {
+        return new RecommendListResponseDto(recipe);
+    }
+
     private Recipe recipe;
 
     @BeforeEach
     public void setUp() {
-        recipe = TestObjectFactory.initRecipe();
+        recipe = RecipeTest.initRecipe();
     }
 
     @Test

@@ -9,6 +9,4 @@ public interface RankRepository extends CrudRepository<Rank, String> {
     Rank findByName(String name);
 
     List<Rank> findAllByOrderByScoreDesc();
-
-    List<Rank> findTopNByOrderByScoreDesc(int N);
 }
