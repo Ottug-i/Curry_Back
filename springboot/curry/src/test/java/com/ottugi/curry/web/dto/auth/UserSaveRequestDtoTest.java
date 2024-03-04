@@ -1,19 +1,30 @@
 package com.ottugi.curry.web.dto.auth;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.ottugi.curry.TestObjectFactory;
+import com.ottugi.curry.domain.user.User;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 class UserSaveRequestDtoTest {
+    private User user;
+
+    @BeforeEach
+    public void setUp() {
+        user = TestObjectFactory.initUser();
+    }
 
     @Test
-    void 회원_저장_요청_Dto_롬복() {
-        // when
-        UserSaveRequestDto userSaveRequestDto = new UserSaveRequestDto(EMAIL, NICKNAME);
+    @DisplayName("UserSaveRequestDto 생성 테스트")
+    void testUserSaveRequestDto() {
+        UserSaveRequestDto userSaveRequestDto = UserSaveRequestDto.builder()
+                .email(user.getEmail())
+                .nickName(user.getNickName())
+                .build();
 
-        // then
-        assertEquals(EMAIL, userSaveRequestDto.getEmail());
-        assertEquals(NICKNAME, userSaveRequestDto.getNickName());
+        assertEquals(user.getEmail(), userSaveRequestDto.getEmail());
+        assertEquals(user.getNickName(), userSaveRequestDto.getNickName());
     }
 }

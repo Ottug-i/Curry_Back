@@ -1,37 +1,27 @@
 package com.ottugi.curry.web.dto.recipe;
 
-import com.ottugi.curry.domain.recipe.*;
+import static com.ottugi.curry.TestConstants.IS_BOOKMARK;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.ottugi.curry.TestObjectFactory;
+import com.ottugi.curry.domain.recipe.Recipe;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 class RecipeListResponseDtoTest {
+    private Recipe recipe;
 
-    private Boolean isBookmark = true;
+    @BeforeEach
+    public void setUp() {
+        recipe = TestObjectFactory.initRecipe();
+    }
 
     @Test
-    void 레시피_목록_응답_Dto_롬복() {
-        // given
-        Recipe recipe = Recipe.builder()
-                .id(ID)
-                .recipeId(RECIPE_ID)
-                .name(NAME)
-                .thumbnail(THUMBNAIL)
-                .time(TIME)
-                .difficulty(DIFFICULTY)
-                .composition(COMPOSITION)
-                .ingredients(INGREDIENTS)
-                .servings(SERVINGS)
-                .orders(ORDERS)
-                .photo(PHOTO)
-                .genre(GENRE)
-                .build();
-
-        // when
-        RecipeListResponseDto recipeListResponseDto = new RecipeListResponseDto(recipe, isBookmark);
-
-        // then
+    @DisplayName("RecipeListResponseDto 생성 테스트")
+    void testRecipeListResponseDto() {
+        RecipeListResponseDto recipeListResponseDto = new RecipeListResponseDto(recipe, IS_BOOKMARK);
+        
         assertEquals(recipe.getRecipeId(), recipeListResponseDto.getRecipeId());
         assertEquals(recipe.getName(), recipeListResponseDto.getName());
         assertEquals(recipe.getThumbnail(), recipeListResponseDto.getThumbnail());
@@ -40,6 +30,6 @@ class RecipeListResponseDtoTest {
         assertEquals(recipe.getComposition().getComposition(), recipeListResponseDto.getComposition());
         assertEquals(recipe.getIngredients(), recipeListResponseDto.getIngredients());
         assertEquals("vegetable", recipeListResponseDto.getMainGenre());
-        assertEquals(isBookmark, recipeListResponseDto.getIsBookmark());
+        assertEquals(IS_BOOKMARK, recipeListResponseDto.getIsBookmark());
     }
 }

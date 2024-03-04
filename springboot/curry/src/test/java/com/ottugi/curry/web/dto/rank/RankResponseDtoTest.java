@@ -1,26 +1,26 @@
 package com.ottugi.curry.web.dto.rank;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.rank.Rank;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 class RankResponseDtoTest {
-
     private Rank rank;
 
-    @Test
-    void 검색어_응답_Dto_롬복() {
-        // given
-        rank = Rank.builder()
-                .name(KEYWORD)
-                .build();
+    @BeforeEach
+    public void setUp() {
+        rank = TestObjectFactory.initRank();
+    }
 
-        // when
+    @Test
+    @DisplayName("RankResponseDto 생성 테스트")
+    void testRankResponseDto() {
         RankResponseDto rankResponseDto = new RankResponseDto(rank);
 
-        // then
         assertEquals(rank.getName(), rankResponseDto.getName());
         assertEquals(rank.getScore(), rankResponseDto.getScore());
     }

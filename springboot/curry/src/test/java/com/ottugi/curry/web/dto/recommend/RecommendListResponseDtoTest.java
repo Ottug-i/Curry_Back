@@ -1,37 +1,26 @@
 package com.ottugi.curry.web.dto.recommend;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.ottugi.curry.TestObjectFactory;
 import com.ottugi.curry.domain.recipe.Recipe;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 class RecommendListResponseDtoTest {
-
     private Recipe recipe;
 
-    @Test
-    void 추천_레시피_목록_Dto_롬복() {
-        // given
-        recipe = Recipe.builder()
-                .id(ID)
-                .recipeId(RECIPE_ID)
-                .name(NAME)
-                .thumbnail(THUMBNAIL)
-                .time(TIME)
-                .difficulty(DIFFICULTY)
-                .composition(COMPOSITION)
-                .ingredients(INGREDIENTS)
-                .servings(SERVINGS)
-                .orders(ORDERS)
-                .photo(PHOTO)
-                .genre(GENRE)
-                .build();
+    @BeforeEach
+    public void setUp() {
+        recipe = TestObjectFactory.initRecipe();
+    }
 
-        // when
+    @Test
+    @DisplayName("RecommendListResponseDto 생성 테스트")
+    void testRecommendListResponseDto() {
         RecommendListResponseDto recommendListResponseDto = new RecommendListResponseDto(recipe);
 
-        // then
         assertEquals(recipe.getRecipeId(), recommendListResponseDto.getRecipeId());
         assertEquals(recipe.getName(), recommendListResponseDto.getName());
         assertEquals(recipe.getThumbnail(), recommendListResponseDto.getThumbnail());

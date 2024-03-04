@@ -124,8 +124,12 @@ public class TestObjectFactory {
         return new RecipeResponseDto(recipe, IS_BOOKMARK);
     }
 
+    public static RecipeListResponseDto initRecipeListResponseDto(Recipe recipe) {
+        return new RecipeListResponseDto(recipe, IS_BOOKMARK);
+    }
+
     public static List<RecipeListResponseDto> initRecipeListResponseDtoList(Recipe recipe) {
-        return Collections.singletonList(new RecipeListResponseDto(recipe, IS_BOOKMARK));
+        return Collections.singletonList(initRecipeListResponseDto(recipe));
     }
 
     public static Page<RecipeListResponseDto> initRecipeListResponseDtoPage(Recipe recipe) {

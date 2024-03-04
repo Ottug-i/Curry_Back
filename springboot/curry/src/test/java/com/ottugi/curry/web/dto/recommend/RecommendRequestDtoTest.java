@@ -1,24 +1,34 @@
 package com.ottugi.curry.web.dto.recommend;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.ottugi.curry.TestObjectFactory;
+import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.user.User;
+import java.util.Collections;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 class RecommendRequestDtoTest {
+    private Recipe recipe;
+    private User user;
 
-    private List<Long> recipeIdList = Arrays.asList(RECIPE_ID);
+    @BeforeEach
+    public void setUp() {
+        recipe = TestObjectFactory.initRecipe();
+        user = TestObjectFactory.initUser();
+    }
 
     @Test
-    void 추천_레시피_요청_Dto_롬복() {
-        // when
-        RecommendRequestDto recommendRequestDto = new RecommendRequestDto(USER_ID, recipeIdList);
+    @DisplayName("RecommendRequestDto 생성 테스트")
+    void testRecommendRequestDto() {
+        RecommendRequestDto recommendRequestDto = RecommendRequestDto.builder()
+                .userId(user.getId())
+                .recipeId(Collections.singletonList(recipe.getId()))
+                .build();
 
-        // then
-        assertEquals(USER_ID, recommendRequestDto.getUserId());
-        assertEquals(RECIPE_ID, recommendRequestDto.getRecipeId().get(0));
+        assertEquals(user.getId(), recommendRequestDto.getUserId());
+        assertEquals(recipe.getRecipeId(), recommendRequestDto.getRecipeId().get(0));
     }
 }

@@ -1,45 +1,36 @@
 package com.ottugi.curry.web.dto.bookmark;
 
-import com.ottugi.curry.domain.recipe.*;
+import static com.ottugi.curry.TestConstants.IS_BOOKMARK;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.ottugi.curry.TestObjectFactory;
+import com.ottugi.curry.domain.bookmark.Bookmark;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 class BookmarkListResponseDtoTest {
+    private Bookmark bookmark;
 
-    private Recipe recipe;
-    private Boolean isBookmark = true;
+    @BeforeEach
+    public void setUp() {
+        bookmark = TestObjectFactory.initBookmark();
+        bookmark.setUser(TestObjectFactory.initUser());
+        bookmark.setRecipe(TestObjectFactory.initRecipe());
+    }
 
     @Test
-    void 북마크_목록_응답_Dto_롬복() {
-        // given
-        recipe = Recipe.builder()
-                .id(ID)
-                .recipeId(RECIPE_ID)
-                .name(NAME)
-                .thumbnail(THUMBNAIL)
-                .time(TIME)
-                .difficulty(DIFFICULTY)
-                .composition(COMPOSITION)
-                .ingredients(INGREDIENTS)
-                .servings(SERVINGS)
-                .orders(ORDERS)
-                .photo(PHOTO)
-                .genre(GENRE)
-                .build();
+    @DisplayName("BookmarkListResponseDto 생성 테스트")
+    void testBookmarkListResponseDto() {
+        BookmarkListResponseDto bookmarkListResponseDto = new BookmarkListResponseDto(bookmark);
 
-        // when
-        BookmarkListResponseDto bookmarkListResponseDto = new BookmarkListResponseDto(recipe, isBookmark);
-
-        // then
-        assertEquals(recipe.getRecipeId(), bookmarkListResponseDto.getRecipeId());
-        assertEquals(recipe.getName(), bookmarkListResponseDto.getName());
-        assertEquals(recipe.getThumbnail(), bookmarkListResponseDto.getThumbnail());
-        assertEquals(recipe.getTime().getTimeName(), bookmarkListResponseDto.getTime());
-        assertEquals(recipe.getDifficulty().getDifficulty(), bookmarkListResponseDto.getDifficulty());
-        assertEquals(recipe.getComposition().getComposition(), bookmarkListResponseDto.getComposition());
-        assertEquals(recipe.getIngredients(), bookmarkListResponseDto.getIngredients());
-        assertEquals(isBookmark, bookmarkListResponseDto.getIsBookmark());
+        assertEquals(bookmark.getRecipeId().getRecipeId(), bookmarkListResponseDto.getRecipeId());
+        assertEquals(bookmark.getRecipeId().getName(), bookmarkListResponseDto.getName());
+        assertEquals(bookmark.getRecipeId().getThumbnail(), bookmarkListResponseDto.getThumbnail());
+        assertEquals(bookmark.getRecipeId().getTime().getTimeName(), bookmarkListResponseDto.getTime());
+        assertEquals(bookmark.getRecipeId().getDifficulty().getDifficulty(), bookmarkListResponseDto.getDifficulty());
+        assertEquals(bookmark.getRecipeId().getComposition().getComposition(), bookmarkListResponseDto.getComposition());
+        assertEquals(bookmark.getRecipeId().getIngredients(), bookmarkListResponseDto.getIngredients());
+        assertEquals(IS_BOOKMARK, bookmarkListResponseDto.getIsBookmark());
     }
 }

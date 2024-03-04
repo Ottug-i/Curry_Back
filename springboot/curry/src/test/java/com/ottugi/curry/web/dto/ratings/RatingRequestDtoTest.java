@@ -1,27 +1,34 @@
 package com.ottugi.curry.web.dto.ratings;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.ottugi.curry.TestObjectFactory;
+import com.ottugi.curry.domain.ratings.Ratings;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class RatingRequestDtoTest {
+    private Ratings ratings;
+    private final Map<Long, Double> ratingMap = new HashMap<>();
 
-    private Map<Long, Double> newUserRatingsDic = new HashMap<>();
+    @BeforeEach
+    public void setUp() {
+        ratings = TestObjectFactory.initRatings();
+        ratingMap.put(ratings.getRecipeId(), 3.0);
+    }
 
     @Test
-    void 평점_요청_Dto_롬복() {
-        // given
-        newUserRatingsDic.put(6847060L, 3.0);
+    @DisplayName("RatingRequestDto 생성 테스트")
+    void testRatingRequestDto() {
+        RatingRequestDto ratingRequestDto = RatingRequestDto.builder()
+                .userId(ratings.getUserId())
+                .newUserRatingsDic(ratingMap)
+                .build();
 
-        // when
-        RatingRequestDto ratingRequestDto = new RatingRequestDto(USER_ID, newUserRatingsDic);
-
-        // then
-        assertEquals(USER_ID, ratingRequestDto.getUserId());
-        assertEquals(newUserRatingsDic, ratingRequestDto.getNewUserRatingsDic());
+        assertEquals(ratings.getUserId(), ratingRequestDto.getUserId());
+        assertEquals(ratingMap, ratingRequestDto.getNewUserRatingsDic());
     }
 }

@@ -1,19 +1,31 @@
 package com.ottugi.curry.web.dto.user;
 
+import static com.ottugi.curry.TestConstants.NEW_NICKNAME;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.ottugi.curry.TestObjectFactory;
+import com.ottugi.curry.domain.user.User;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 class UserUpdateRequestDtoTest {
+    private User user;
+
+    @BeforeEach
+    public void setUp() {
+        user = TestObjectFactory.initUser();
+    }
 
     @Test
-    void 회원_수정_요청_Dto_롬복() {
-        // when
-        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(USER_ID, NICKNAME);
+    @DisplayName("UserUpdateRequestDto 생성 테스트")
+    void testUserUpdateRequestDto() {
+        UserUpdateRequestDto userUpdateRequestDto = UserUpdateRequestDto.builder()
+                .id(user.getId())
+                .nickName(NEW_NICKNAME)
+                .build();
 
-        // then
-        assertEquals(USER_ID, userUpdateRequestDto.getId());
-        assertEquals(NICKNAME, userUpdateRequestDto.getNickName());
+        assertEquals(user.getId(), userUpdateRequestDto.getId());
+        assertEquals(NEW_NICKNAME, userUpdateRequestDto.getNickName());
     }
 }

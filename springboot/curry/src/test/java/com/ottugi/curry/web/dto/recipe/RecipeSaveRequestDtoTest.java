@@ -1,28 +1,48 @@
 package com.ottugi.curry.web.dto.recipe;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.ottugi.curry.TestObjectFactory;
+import com.ottugi.curry.domain.recipe.Recipe;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 class RecipeSaveRequestDtoTest {
+    private Recipe recipe;
+
+    @BeforeEach
+    public void setUp() {
+        recipe = TestObjectFactory.initRecipe();
+    }
 
     @Test
-    void 레시피_저장_요청_Dto_롬복() {
-        // when
-        RecipeSaveRequestDto recipeSaveRequestDto = new RecipeSaveRequestDto(RECIPE_ID, NAME, COMPOSITION.getComposition(), INGREDIENTS, SERVINGS.getServings(), DIFFICULTY.getDifficulty(), THUMBNAIL, TIME.getTimeName(), ORDERS, PHOTO, GENRE);
+    @DisplayName("RecipeSaveRequestDto 생성 테스트")
+    void testRecipeSaveRequestDto() {
+        RecipeSaveRequestDto recipeSaveRequestDto = RecipeSaveRequestDto.builder()
+                .recipeId(recipe.getRecipeId())
+                .name(recipe.getName())
+                .composition(recipe.getComposition().getComposition())
+                .ingredients(recipe.getIngredients())
+                .servings(recipe.getServings().getServings())
+                .difficulty(recipe.getDifficulty().getDifficulty())
+                .thumbnail(recipe.getThumbnail())
+                .time(recipe.getTime().getTimeName())
+                .orders(recipe.getOrders())
+                .photo(recipe.getPhoto())
+                .genre(recipe.getGenre())
+                .build();
 
-        // then
-        assertEquals(RECIPE_ID, recipeSaveRequestDto.getRecipeId());
-        assertEquals(NAME, recipeSaveRequestDto.getName());
-        assertEquals(COMPOSITION.getComposition(), recipeSaveRequestDto.getComposition());
-        assertEquals(INGREDIENTS, recipeSaveRequestDto.getIngredients());
-        assertEquals(SERVINGS.getServings(), recipeSaveRequestDto.getServings());
-        assertEquals(DIFFICULTY.getDifficulty(), recipeSaveRequestDto.getDifficulty());
-        assertEquals(THUMBNAIL, recipeSaveRequestDto.getThumbnail());
-        assertEquals(TIME.getTimeName(), recipeSaveRequestDto.getTime());
-        assertEquals(ORDERS, recipeSaveRequestDto.getOrders());
-        assertEquals(PHOTO, recipeSaveRequestDto.getPhoto());
-        assertEquals(GENRE, recipeSaveRequestDto.getGenre());
+        assertEquals(recipe.getRecipeId(), recipeSaveRequestDto.getRecipeId());
+        assertEquals(recipe.getName(), recipeSaveRequestDto.getName());
+        assertEquals(recipe.getComposition().getComposition(), recipeSaveRequestDto.getComposition());
+        assertEquals(recipe.getIngredients(), recipeSaveRequestDto.getIngredients());
+        assertEquals(recipe.getServings().getServings(), recipeSaveRequestDto.getServings());
+        assertEquals(recipe.getDifficulty().getDifficulty(), recipeSaveRequestDto.getDifficulty());
+        assertEquals(recipe.getThumbnail(), recipeSaveRequestDto.getThumbnail());
+        assertEquals(recipe.getTime().getTimeName(), recipeSaveRequestDto.getTime());
+        assertEquals(recipe.getOrders(), recipeSaveRequestDto.getOrders());
+        assertEquals(recipe.getPhoto(), recipeSaveRequestDto.getPhoto());
+        assertEquals(recipe.getGenre(), recipeSaveRequestDto.getGenre());
     }
 }
