@@ -3,6 +3,7 @@ package com.ottugi.curry.web.dto.recommend;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -16,7 +17,7 @@ public class RecipeIngRequestDto {
     @ApiModelProperty(notes = "회원 기본키", example = "1", required = true)
     private Long userId;
 
-    @NotBlank
+    @NotEmpty
     @ApiModelProperty(notes = "재료", example = "[달걀, 베이컨, 양파]", required = true)
     private List<String> ingredients;
 

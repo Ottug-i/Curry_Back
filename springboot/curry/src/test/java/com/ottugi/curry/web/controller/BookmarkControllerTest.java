@@ -29,8 +29,6 @@ import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDtoTest;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDtoTest;
-import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +38,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -50,21 +47,12 @@ import org.springframework.test.web.servlet.MockMvc;
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
 @WithMockUser
 class BookmarkControllerTest {
-    public static List<BookmarkListResponseDto> initBookmarkListResponseDtoList(Bookmark bookmark) {
-        return Collections.singletonList(BookmarkListResponseDtoTest.initBookmarkListResponseDto(bookmark));
-    }
-
-    public static Page<BookmarkListResponseDto> initBookmarkListResponseDtoPage(Bookmark bookmark) {
-        return new PageImpl<>(initBookmarkListResponseDtoList(bookmark));
-    }
-
     private Bookmark bookmark;
     private BookmarkRequestDto bookmarkRequestDto;
     private Page<BookmarkListResponseDto> bookmarkListResponseDtoPage;
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private BookmarkService bookmarkService;
 
@@ -73,9 +61,8 @@ class BookmarkControllerTest {
         bookmark = BookmarkTest.initBookmark();
         bookmark.setUser(UserTest.initUser());
         bookmark.setRecipe(RecipeTest.initRecipe());
-
         bookmarkRequestDto = BookmarkRequestDtoTest.initBookmarkRequestDto(bookmark);
-        bookmarkListResponseDtoPage = initBookmarkListResponseDtoPage(bookmark);
+        bookmarkListResponseDtoPage = BookmarkListResponseDtoTest.initBookmarkListResponseDtoPage(bookmark);
     }
 
     @Test

@@ -39,18 +39,14 @@ class AuthServiceTest {
 
     @Mock
     private UserService userService;
-
     @Mock
     private TokenProvider tokenProvider;
-
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private TokenRepository tokenRepository;
-
     @InjectMocks
-    private AuthService authService;
+    private AuthServiceImpl authService;
 
     @BeforeEach
     public void setUp() {

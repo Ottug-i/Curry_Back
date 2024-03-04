@@ -5,13 +5,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeTest;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 public class RecipeListResponseDtoTest {
     public static RecipeListResponseDto initRecipeListResponseDto(Recipe recipe) {
         return new RecipeListResponseDto(recipe, IS_BOOKMARK);
+    }
+
+    public static List<RecipeListResponseDto> initRecipeListResponseDtoList(Recipe recipe) {
+        return Collections.singletonList(initRecipeListResponseDto(recipe));
+    }
+
+    public static Page<RecipeListResponseDto> initRecipeListResponseDtoPage(Recipe recipe) {
+        return new PageImpl<>(initRecipeListResponseDtoList(recipe));
     }
 
     private Recipe recipe;

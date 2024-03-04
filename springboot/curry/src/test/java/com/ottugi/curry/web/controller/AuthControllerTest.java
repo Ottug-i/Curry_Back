@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,7 +45,6 @@ class AuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private AuthService authService;
 
@@ -62,7 +62,8 @@ class AuthControllerTest {
 
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(userSaveRequestDto)))
+                        .content(new ObjectMapper().writeValueAsString(userSaveRequestDto))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(tokenResponseDto.getId()))
                 .andExpect(jsonPath("$.email").value(tokenResponseDto.getEmail()))
@@ -80,7 +81,8 @@ class AuthControllerTest {
         when(authService.reissueToken(anyString(), any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
 
         mockMvc.perform(post("/auth/reissue")
-                        .param("email", user.getEmail()))
+                        .param("email", user.getEmail())
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(tokenResponseDto.getId()))
                 .andExpect(jsonPath("$.email").value(tokenResponseDto.getEmail()))

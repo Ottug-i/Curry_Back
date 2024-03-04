@@ -31,7 +31,7 @@ public class IngredientPrioritySorter {
     // 재료 우선순위에 따라 순서 변경
     private static String prioritizeIngredientOrder(String ingredientSection, List<String> priorityIngredients) {
         String[] sectionParts = splitIngredients(ingredientSection);
-        List<String> allIngredients = Arrays.asList(sectionParts[1].split("\\|"));
+        List<String> allIngredients = new ArrayList<>(Arrays.asList(sectionParts[1].split("\\|")));
         List<String> modifiedIngredients = new ArrayList<>();
         for (String priorityIngredient : priorityIngredients) {
             Iterator<String> iterator = allIngredients.iterator();

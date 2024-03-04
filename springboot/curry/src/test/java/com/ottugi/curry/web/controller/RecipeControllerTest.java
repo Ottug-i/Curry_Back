@@ -25,8 +25,6 @@ import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDtoTest;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeResponseDtoTest;
-import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +34,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -45,14 +42,6 @@ import org.springframework.test.web.servlet.MockMvc;
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
 @WithMockUser
 public class RecipeControllerTest {
-    public static List<RecipeListResponseDto> initRecipeListResponseDtoList(Recipe recipe) {
-        return Collections.singletonList(RecipeListResponseDtoTest.initRecipeListResponseDto(recipe));
-    }
-
-    public static Page<RecipeListResponseDto> initRecipeListResponseDtoPage(Recipe recipe) {
-        return new PageImpl<>(initRecipeListResponseDtoList(recipe));
-    }
-
     private User user;
     private Recipe recipe;
     private RecipeResponseDto recipeResponseDto;
@@ -60,7 +49,6 @@ public class RecipeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private RecipeService recipeService;
 
@@ -68,9 +56,8 @@ public class RecipeControllerTest {
     public void setUp() {
         user = UserTest.initUser();
         recipe = RecipeTest.initRecipe();
-
         recipeResponseDto = RecipeResponseDtoTest.initRecipeResponseDto(recipe);
-        recipeListResponseDtoPage = initRecipeListResponseDtoPage(recipe);
+        recipeListResponseDtoPage = RecipeListResponseDtoTest.initRecipeListResponseDtoPage(recipe);
     }
 
     @Test

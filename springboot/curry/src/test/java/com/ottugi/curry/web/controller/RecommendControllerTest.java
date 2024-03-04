@@ -3,6 +3,7 @@ package com.ottugi.curry.web.controller;
 import static com.ottugi.curry.domain.recipe.RecipeTest.PAGE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,7 +41,7 @@ import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDtoTest;
 import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
 import com.ottugi.curry.web.dto.recommend.RecommendListResponseDtoTest;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,7 +52,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -61,34 +61,20 @@ import org.springframework.test.web.servlet.MockMvc;
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
 @WithMockUser
 public class RecommendControllerTest {
-    public static List<RecipeListResponseDto> initRecipeListResponseDtoList(Recipe recipe) {
-        return Collections.singletonList(RecipeListResponseDtoTest.initRecipeListResponseDto(recipe));
-    }
-
-    public static Page<RecipeIngListResponseDto> initRecipeIngListResponseDtoPage(Recipe recipe) {
-        return new PageImpl<>(Collections.singletonList(RecipeIngListResponseDtoTest.initRecommendRequestDto(recipe)));
-    }
-
-    public static List<RecommendListResponseDto> initRecommendListResponseDtoList(Recipe recipe) {
-        return Collections.singletonList(RecommendListResponseDtoTest.initRecommendListResponseDto(recipe));
-    }
-
     private User user;
     private Recipe recipe;
+    private List<RecommendListResponseDto> recommendListResponseDtoList;
     private RatingRequestDto ratingRequestDto;
     private RatingResponseDto ratingResponseDto;
     private RecipeIngRequestDto recipeIngRequestDto;
-    private List<RecipeListResponseDto> recipeListResponseDtoList;
     private Page<RecipeIngListResponseDto> recipeIngListResponseDtoPage;
-    private List<RecommendListResponseDto> recommendListResponseDtoList;
+    private List<RecipeListResponseDto> recipeListResponseDtoList;
     private Long[] bookmarkList;
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private RecommendService recommendService;
-
     @MockBean
     private RatingsService ratingsService;
 
@@ -100,14 +86,12 @@ public class RecommendControllerTest {
         bookmark.setUser(user);
         bookmark.setRecipe(recipe);
         Ratings ratings = RatingsTest.initRatings(user, recipe);
-
+        recommendListResponseDtoList = RecommendListResponseDtoTest.initRecommendListResponseDtoList(recipe);
         ratingRequestDto = RatingRequestDtoTest.initRatingRequestDto(ratings);
         ratingResponseDto = RatingResponseDtoTest.initRatingResponseDto(ratings);
         recipeIngRequestDto = RecipeIngRequestDtoTest.initRecipeIngRequestDto(user, recipe);
-        recipeListResponseDtoList = initRecipeListResponseDtoList(recipe);
-        recipeIngListResponseDtoPage = initRecipeIngListResponseDtoPage(recipe);
-        recommendListResponseDtoList = initRecommendListResponseDtoList(recipe);
-
+        recipeListResponseDtoList = RecipeListResponseDtoTest.initRecipeListResponseDtoList(recipe);
+        recipeIngListResponseDtoPage = RecipeIngListResponseDtoTest.initRecipeIngListResponseDtoPage(recipe);
         bookmarkList = new Long[]{bookmark.getRecipeId().getRecipeId()};
     }
 
@@ -189,6 +173,7 @@ public class RecommendControllerTest {
     @Test
     @DisplayName("북마크에 따른 추천 레시피 조회 테스트")
     void testRecipeListByBookmarkRecommend() throws Exception {
+        when(recommendService.findRecipeIdListByBookmarkRecommend(anyLong(), anyInt())).thenReturn(new ArrayList<>());
         when(recommendService.findBookmarkOrRatingRecommendList(any(RecommendRequestDto.class))).thenReturn(recipeListResponseDtoList);
 
         mockMvc.perform(get("/api/recommend/bookmark/list")
@@ -199,15 +184,17 @@ public class RecommendControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(recipeListResponseDtoList.size())));
 
+        verify(recommendService, times(1)).findRecipeIdListByBookmarkRecommend(anyLong(), anyInt());
         verify(recommendService, times(1)).findBookmarkOrRatingRecommendList(any(RecommendRequestDto.class));
     }
 
     @Test
     @DisplayName("레시피 평점에 따른 추천 레시피 조회 테스트")
     void testRecipeListByRatingRecommend() throws Exception {
+        when(recommendService.findRecipeIdListByRatingRecommend(anyLong(), anyInt(), any())).thenReturn(new ArrayList<>());
         when(recommendService.findBookmarkOrRatingRecommendList(any(RecommendRequestDto.class))).thenReturn(recipeListResponseDtoList);
 
-        mockMvc.perform(get("/api/recommend/bookmark/list")
+        mockMvc.perform(get("/api/recommend/rating/list")
                         .param("userId", String.valueOf(user.getId()))
                         .param("page", String.valueOf(PAGE))
                         .param("bookmarkList", String.valueOf(bookmarkList[0]))

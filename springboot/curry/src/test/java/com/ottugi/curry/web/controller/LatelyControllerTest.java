@@ -1,6 +1,5 @@
 package com.ottugi.curry.web.controller;
 
-import static com.ottugi.curry.web.dto.lately.LatelyListResponseDtoTest.initLatelyListResponseDto;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
@@ -20,7 +19,7 @@ import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.jwt.JwtAuthenticationFilter;
 import com.ottugi.curry.service.lately.LatelyService;
 import com.ottugi.curry.web.dto.lately.LatelyListResponseDto;
-import java.util.Collections;
+import com.ottugi.curry.web.dto.lately.LatelyListResponseDtoTest;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,16 +37,11 @@ import org.springframework.test.web.servlet.MockMvc;
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
 @WithMockUser
 public class LatelyControllerTest {
-    public static List<LatelyListResponseDto> initLatelyListResponseDtoList(Lately lately) {
-        return Collections.singletonList(initLatelyListResponseDto(lately));
-    }
-
     private Lately lately;
     private List<LatelyListResponseDto> latelyListResponseDtoList;
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private LatelyService latelyService;
 
@@ -56,8 +50,7 @@ public class LatelyControllerTest {
         lately = LatelyTest.initLately();
         lately.setUser(UserTest.initUser());
         lately.setRecipe(RecipeTest.initRecipe());
-
-        latelyListResponseDtoList = initLatelyListResponseDtoList(lately);
+        latelyListResponseDtoList = LatelyListResponseDtoTest.initLatelyListResponseDtoList(lately);
     }
 
     @Test

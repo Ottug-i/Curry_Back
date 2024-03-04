@@ -22,9 +22,10 @@ public class RecipeTest {
     public static final String ORDERS = "|1. 바삭하게 튀기는 꿀팁|2. 달콤한 소스 꿀팁|3. 더 건강하게 먹는 꿀팁";
     public static final String PHOTO = "photo.jpg";
     public static final String GENRE = "ing13|ing21";
+    public static final Boolean IS_FAVORITE_GENRE = true;
+
     public static final int PAGE = 1;
     public static final int SIZE = 1;
-    public static final Boolean IS_FAVORITE_GENRE = true;
 
     public static Recipe initRecipe() {
         return Recipe.builder()

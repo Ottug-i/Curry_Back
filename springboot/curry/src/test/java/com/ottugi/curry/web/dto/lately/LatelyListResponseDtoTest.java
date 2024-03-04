@@ -6,6 +6,8 @@ import com.ottugi.curry.domain.lately.Lately;
 import com.ottugi.curry.domain.lately.LatelyTest;
 import com.ottugi.curry.domain.recipe.RecipeTest;
 import com.ottugi.curry.domain.user.UserTest;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,10 @@ import org.junit.jupiter.api.Test;
 public class LatelyListResponseDtoTest {
     public static LatelyListResponseDto initLatelyListResponseDto(Lately lately) {
         return new LatelyListResponseDto(lately);
+    }
+
+    public static List<LatelyListResponseDto> initLatelyListResponseDtoList(Lately lately) {
+        return Collections.singletonList(initLatelyListResponseDto(lately));
     }
 
     private Lately lately;

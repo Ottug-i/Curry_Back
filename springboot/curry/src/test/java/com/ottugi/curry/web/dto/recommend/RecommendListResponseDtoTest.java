@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeTest;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,10 @@ import org.junit.jupiter.api.Test;
 public class RecommendListResponseDtoTest {
     public static RecommendListResponseDto initRecommendListResponseDto(Recipe recipe) {
         return new RecommendListResponseDto(recipe);
+    }
+
+    public static List<RecommendListResponseDto> initRecommendListResponseDtoList(Recipe recipe) {
+        return Collections.singletonList(initRecommendListResponseDto(recipe));
     }
 
     private Recipe recipe;

@@ -46,14 +46,12 @@ public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private UserService userService;
 
     @BeforeEach
     public void setUp() {
         user = UserTest.initUser();
-
         userUpdateRequestDto = UserUpdateRequestDtoTest.initUserUpdateRequestDto(user);
         userResponseDto = UserResponseDtoTest.initUserResponseDto(user);
     }
