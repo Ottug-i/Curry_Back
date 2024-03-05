@@ -1,7 +1,7 @@
 package com.ottugi.curry.domain.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,9 +26,10 @@ class UserRepositoryTest {
     @Test
     @DisplayName("이메일로 회원 조회 테스트")
     void testFindByEmail() {
-        Optional<User> foundUser = userRepository.findByEmail(user.getEmail());
+        Optional<User> foundUserOptional = userRepository.findByEmail(user.getEmail());
 
-        assertNotNull(foundUser);
-        assertEquals(user.getEmail(), foundUser.get().getEmail());
+        assertTrue(foundUserOptional.isPresent());
+        User foundUser = foundUserOptional.get();
+        assertEquals(user.getEmail(), foundUser.getEmail());
     }
 }

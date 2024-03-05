@@ -56,8 +56,7 @@ class BookmarkRepositoryTest {
     void testFindByUserIdAndRecipeId() {
         Bookmark foundBookmark = bookmarkRepository.findByUserIdAndRecipeId(bookmark.getUserId(), bookmark.getRecipeId());
 
-        assertEquals(bookmark.getUserId().getId(), foundBookmark.getUserId().getId());
-        assertEquals(bookmark.getRecipeId().getId(), foundBookmark.getRecipeId().getId());
+        assertBookmarkEquals(bookmark, foundBookmark);
     }
 
     @Test
@@ -67,6 +66,10 @@ class BookmarkRepositoryTest {
 
         assertNotNull(foundBookmarkList);
         assertEquals(1, foundBookmarkList.size());
+
+        Bookmark foundBookmark = foundBookmarkList.get(0);
+
+        assertBookmarkEquals(bookmark, foundBookmark);
     }
 
     @Test
@@ -76,5 +79,12 @@ class BookmarkRepositoryTest {
         boolean existBookmark = bookmarkRepository.existsByUserIdAndRecipeId(bookmark.getUserId(), bookmark.getRecipeId());
 
         assertFalse(existBookmark);
+    }
+
+    private void assertBookmarkEquals(Bookmark bookmark, Bookmark foundBookmark) {
+        assertNotNull(foundBookmark);
+        assertEquals(bookmark.getId(), foundBookmark.getId());
+        assertEquals(bookmark.getUserId().getId(), foundBookmark.getUserId().getId());
+        assertEquals(bookmark.getRecipeId().getId(), foundBookmark.getRecipeId().getId());
     }
 }

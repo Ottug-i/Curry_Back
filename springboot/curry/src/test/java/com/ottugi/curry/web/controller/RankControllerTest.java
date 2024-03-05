@@ -34,7 +34,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @WithMockUser
 public class RankControllerTest {
     private Rank rank;
-    private List<RankResponseDto> rankResponseDtoList;
 
     @Autowired
     private MockMvc mockMvc;
@@ -44,12 +43,12 @@ public class RankControllerTest {
     @BeforeEach
     public void setUp() {
         rank = RankTest.initRank();
-        rankResponseDtoList = RankResponseDtoTest.initRankResponseDtoList(rank);
     }
 
     @Test
     @DisplayName("인기 검색어 10개 목록 조회 테스트")
     void testRankList() throws Exception {
+        List<RankResponseDto> rankResponseDtoList = RankResponseDtoTest.initRankResponseDtoList(rank);
         when(rankService.findTopRankList()).thenReturn(rankResponseDtoList);
 
         mockMvc.perform(get("/api/rank/list")

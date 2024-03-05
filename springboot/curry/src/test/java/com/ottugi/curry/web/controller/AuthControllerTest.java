@@ -40,8 +40,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @WithMockUser
 class AuthControllerTest {
     private User user;
-    private UserSaveRequestDto userSaveRequestDto;
-    private TokenResponseDto tokenResponseDto;
 
     @Autowired
     private MockMvc mockMvc;
@@ -51,15 +49,15 @@ class AuthControllerTest {
     @BeforeEach
     public void setUp() {
         user = UserTest.initUser();
-        userSaveRequestDto = UserSaveRequestDtoTest.initUserSaveRequestDto(user);
-        tokenResponseDto = TokenResponseDtoTest.initTokenResponseDto(user);
     }
 
     @Test
     @DisplayName("회원 가입 또는 로그인 후 토큰 발급 테스트")
     void testSignUpOrSignIn() throws Exception {
+        TokenResponseDto tokenResponseDto = TokenResponseDtoTest.initTokenResponseDto(user);
         when(authService.signUpOrSignInAndIssueToken(any(UserSaveRequestDto.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
 
+        UserSaveRequestDto userSaveRequestDto = UserSaveRequestDtoTest.initUserSaveRequestDto(user);
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userSaveRequestDto))
@@ -78,6 +76,7 @@ class AuthControllerTest {
     @Test
     @DisplayName("토큰 재발급 테스트")
     void testReissueToken() throws Exception {
+        TokenResponseDto tokenResponseDto = TokenResponseDtoTest.initTokenResponseDto(user);
         when(authService.reissueToken(anyString(), any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn(tokenResponseDto);
 
         mockMvc.perform(post("/auth/reissue")

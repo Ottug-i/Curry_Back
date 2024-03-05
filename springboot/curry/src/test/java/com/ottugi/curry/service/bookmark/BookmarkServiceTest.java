@@ -1,8 +1,12 @@
 package com.ottugi.curry.service.bookmark;
 
+import static com.ottugi.curry.domain.recipe.RecipeTest.COMPOSITION;
+import static com.ottugi.curry.domain.recipe.RecipeTest.DIFFICULTY;
 import static com.ottugi.curry.domain.recipe.RecipeTest.PAGE;
 import static com.ottugi.curry.domain.recipe.RecipeTest.SIZE;
+import static com.ottugi.curry.domain.recipe.RecipeTest.TIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
@@ -23,6 +27,7 @@ import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDtoTest;
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,27 +40,21 @@ import org.springframework.data.domain.Page;
 @ExtendWith(MockitoExtension.class)
 class BookmarkServiceTest {
     private Bookmark bookmark;
-    private BookmarkRequestDto bookmarkRequestDto;
 
     @Mock
     private UserService userService;
-
     @Mock
     private RecipeService recipeService;
-
     @Mock
     private BookmarkRepository bookmarkRepository;
-
     @InjectMocks
-    private BookmarkService bookmarkService;
+    private BookmarkServiceImpl bookmarkService;
 
     @BeforeEach
     public void setUp() {
         bookmark = BookmarkTest.initBookmark();
         bookmark.setUser(mock(User.class));
         bookmark.setRecipe(mock(Recipe.class));
-
-        bookmarkRequestDto = BookmarkRequestDtoTest.initBookmarkRequestDto(bookmark);
     }
 
     @Test
@@ -66,6 +65,7 @@ class BookmarkServiceTest {
         when(bookmarkRepository.existsByUserIdAndRecipeId(any(User.class), any(Recipe.class))).thenReturn(false);
         when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(bookmark);
 
+        BookmarkRequestDto bookmarkRequestDto = BookmarkRequestDtoTest.initBookmarkRequestDto(bookmark);
         Boolean result = bookmarkService.addOrRemoveBookmark(bookmarkRequestDto);
 
         assertTrue(result);
@@ -84,9 +84,10 @@ class BookmarkServiceTest {
         when(bookmarkRepository.existsByUserIdAndRecipeId(any(User.class), any(Recipe.class))).thenReturn(true);
         doNothing().when(bookmarkRepository).deleteByUserIdAndRecipeId(any(User.class), any(Recipe.class));
 
+        BookmarkRequestDto bookmarkRequestDto = BookmarkRequestDtoTest.initBookmarkRequestDto(bookmark);
         Boolean result = bookmarkService.addOrRemoveBookmark(bookmarkRequestDto);
 
-        assertTrue(result);
+        assertFalse(result);
 
         verify(userService, times(1)).findUserByUserId(anyLong());
         verify(recipeService, times(1)).findRecipeByRecipeId(anyLong());
@@ -98,6 +99,10 @@ class BookmarkServiceTest {
     @DisplayName("회원 아이디에 따른 북마크 목록 페이지 조회 테스트")
     void testFindBookmarkPageByUserId() {
         when(userService.findUserByUserId(anyLong())).thenReturn(bookmark.getUserId());
+        when(bookmark.getRecipeId().getTime()).thenReturn(TIME);
+        when(bookmark.getRecipeId().getDifficulty()).thenReturn(DIFFICULTY);
+        when(bookmark.getRecipeId().getComposition()).thenReturn(COMPOSITION);
+        when(bookmark.getUserId().getBookmarkList()).thenReturn(Collections.singletonList(bookmark));
 
         Page<BookmarkListResponseDto> result = bookmarkService.findBookmarkPageByUserId(bookmark.getUserId().getId(), PAGE, SIZE);
 
@@ -110,6 +115,10 @@ class BookmarkServiceTest {
     @DisplayName("옵션에 따른 북마크 레시피 목록 페이지 조회 테스트")
     void testFindBookmarkPageByOption() {
         when(userService.findUserByUserId(anyLong())).thenReturn(bookmark.getUserId());
+        when(bookmark.getRecipeId().getTime()).thenReturn(TIME);
+        when(bookmark.getRecipeId().getDifficulty()).thenReturn(DIFFICULTY);
+        when(bookmark.getRecipeId().getComposition()).thenReturn(COMPOSITION);
+        when(bookmark.getUserId().getBookmarkList()).thenReturn(Collections.singletonList(bookmark));
         when(recipeService.isRecipeMatchingCriteria(any(Recipe.class), anyString(), anyString(), anyString())).thenReturn(true);
 
         Page<BookmarkListResponseDto> result = bookmarkService.findBookmarkPageByOption(bookmark.getUserId().getId(), PAGE, SIZE,

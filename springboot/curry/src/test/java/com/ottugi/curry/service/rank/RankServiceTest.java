@@ -14,7 +14,6 @@ import com.ottugi.curry.domain.rank.RankRepository;
 import com.ottugi.curry.domain.rank.RankTest;
 import com.ottugi.curry.web.dto.rank.RankResponseDto;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +22,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.scheduling.TaskScheduler;
 
 @ExtendWith(MockitoExtension.class)
 class RankServiceTest {
@@ -31,12 +29,8 @@ class RankServiceTest {
 
     @Mock
     private RankRepository rankRepository;
-
-    @Mock
-    private TaskScheduler taskScheduler;
-
     @InjectMocks
-    private RankService rankService;
+    private RankServiceImpl rankService;
 
     @BeforeEach
     public void setUp() {
@@ -84,7 +78,6 @@ class RankServiceTest {
     @DisplayName("일주일마다 검색어 순위 초기화 테스트")
     void testResetWeeklyRanking() {
         doNothing().when(rankRepository).deleteAll();
-        when(taskScheduler.schedule(any(Runnable.class), any(Date.class))).thenReturn(null);
 
         rankService.resetWeeklyRanking();
 

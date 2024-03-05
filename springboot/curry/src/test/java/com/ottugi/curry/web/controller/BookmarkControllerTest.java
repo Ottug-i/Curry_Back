@@ -48,8 +48,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @WithMockUser
 class BookmarkControllerTest {
     private Bookmark bookmark;
-    private BookmarkRequestDto bookmarkRequestDto;
-    private Page<BookmarkListResponseDto> bookmarkListResponseDtoPage;
 
     @Autowired
     private MockMvc mockMvc;
@@ -61,8 +59,6 @@ class BookmarkControllerTest {
         bookmark = BookmarkTest.initBookmark();
         bookmark.setUser(UserTest.initUser());
         bookmark.setRecipe(RecipeTest.initRecipe());
-        bookmarkRequestDto = BookmarkRequestDtoTest.initBookmarkRequestDto(bookmark);
-        bookmarkListResponseDtoPage = BookmarkListResponseDtoTest.initBookmarkListResponseDtoPage(bookmark);
     }
 
     @Test
@@ -70,6 +66,7 @@ class BookmarkControllerTest {
     void testBookmarkAdd() throws Exception {
         when(bookmarkService.addOrRemoveBookmark(any(BookmarkRequestDto.class))).thenReturn(true);
 
+        BookmarkRequestDto bookmarkRequestDto = BookmarkRequestDtoTest.initBookmarkRequestDto(bookmark);
         mockMvc.perform(post("/api/bookmark")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(bookmarkRequestDto))
@@ -85,6 +82,7 @@ class BookmarkControllerTest {
     void testBookmarkRemove() throws Exception {
         when(bookmarkService.addOrRemoveBookmark(any(BookmarkRequestDto.class))).thenReturn(false);
 
+        BookmarkRequestDto bookmarkRequestDto = BookmarkRequestDtoTest.initBookmarkRequestDto(bookmark);
         mockMvc.perform(post("/api/bookmark")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(bookmarkRequestDto))
@@ -98,6 +96,7 @@ class BookmarkControllerTest {
     @Test
     @DisplayName("북마크 목록 페이지 조회 테스트")
     void testBookmarkPage() throws Exception {
+        Page<BookmarkListResponseDto> bookmarkListResponseDtoPage = BookmarkListResponseDtoTest.initBookmarkListResponseDtoPage(bookmark);
         when(bookmarkService.findBookmarkPageByUserId(anyLong(), anyInt(), anyInt())).thenReturn(bookmarkListResponseDtoPage);
 
         mockMvc.perform(get("/api/bookmark/list")
@@ -115,8 +114,8 @@ class BookmarkControllerTest {
     @Test
     @DisplayName("옵션에 따른 북마크 목록 페이지 조회 테스트")
     void testBookmarkSearchOptionPage() throws Exception {
-        when(bookmarkService.findBookmarkPageByOption(anyLong(), anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(bookmarkListResponseDtoPage);
+        Page<BookmarkListResponseDto> bookmarkListResponseDtoPage = BookmarkListResponseDtoTest.initBookmarkListResponseDtoPage(bookmark);
+        when(bookmarkService.findBookmarkPageByOption(anyLong(), anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString())).thenReturn(bookmarkListResponseDtoPage);
 
         mockMvc.perform(get("/api/bookmark/search")
                         .contentType(MediaType.APPLICATION_JSON)

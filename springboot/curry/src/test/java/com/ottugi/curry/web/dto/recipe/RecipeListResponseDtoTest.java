@@ -14,7 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 public class RecipeListResponseDtoTest {
-    public static RecipeListResponseDto initRecipeListResponseDto(Recipe recipe) {
+    private static RecipeListResponseDto initRecipeListResponseDto(Recipe recipe) {
         return new RecipeListResponseDto(recipe, IS_BOOKMARK);
     }
 

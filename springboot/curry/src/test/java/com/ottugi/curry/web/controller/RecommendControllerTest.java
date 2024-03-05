@@ -63,13 +63,8 @@ import org.springframework.test.web.servlet.MockMvc;
 public class RecommendControllerTest {
     private User user;
     private Recipe recipe;
-    private List<RecommendListResponseDto> recommendListResponseDtoList;
-    private RatingRequestDto ratingRequestDto;
-    private RatingResponseDto ratingResponseDto;
-    private RecipeIngRequestDto recipeIngRequestDto;
-    private Page<RecipeIngListResponseDto> recipeIngListResponseDtoPage;
-    private List<RecipeListResponseDto> recipeListResponseDtoList;
-    private Long[] bookmarkList;
+    private Bookmark bookmark;
+    private Ratings ratings;
 
     @Autowired
     private MockMvc mockMvc;
@@ -82,22 +77,16 @@ public class RecommendControllerTest {
     public void setUp() {
         user = UserTest.initUser();
         recipe = RecipeTest.initRecipe();
-        Bookmark bookmark = BookmarkTest.initBookmark();
+        bookmark = BookmarkTest.initBookmark();
         bookmark.setUser(user);
         bookmark.setRecipe(recipe);
-        Ratings ratings = RatingsTest.initRatings(user, recipe);
-        recommendListResponseDtoList = RecommendListResponseDtoTest.initRecommendListResponseDtoList(recipe);
-        ratingRequestDto = RatingRequestDtoTest.initRatingRequestDto(ratings);
-        ratingResponseDto = RatingResponseDtoTest.initRatingResponseDto(ratings);
-        recipeIngRequestDto = RecipeIngRequestDtoTest.initRecipeIngRequestDto(user, recipe);
-        recipeListResponseDtoList = RecipeListResponseDtoTest.initRecipeListResponseDtoList(recipe);
-        recipeIngListResponseDtoPage = RecipeIngListResponseDtoTest.initRecipeIngListResponseDtoPage(recipe);
-        bookmarkList = new Long[]{bookmark.getRecipeId().getRecipeId()};
+        ratings = RatingsTest.initRatings(user, recipe);
     }
 
     @Test
     @DisplayName("초기 평점을 위한 랜덤 레시피 목록 조회 테스트")
     void testRandomRecipeList() throws Exception {
+        List<RecommendListResponseDto> recommendListResponseDtoList = RecommendListResponseDtoTest.initRecommendListResponseDtoList(recipe);
         when(ratingsService.findRandomRecipeListForResearch()).thenReturn(recommendListResponseDtoList);
 
         mockMvc.perform(get("/api/recommend/initial")
@@ -111,6 +100,7 @@ public class RecommendControllerTest {
     @Test
     @DisplayName("레시피 평점 조회 테스트")
     void testUserRatingDetails() throws Exception {
+        RatingResponseDto ratingResponseDto = RatingResponseDtoTest.initRatingResponseDto(ratings);
         when(ratingsService.findUserRating(anyLong(), anyLong())).thenReturn(ratingResponseDto);
 
         mockMvc.perform(get("/api/recommend/rating")
@@ -130,6 +120,7 @@ public class RecommendControllerTest {
     void testUserRatingSave() throws Exception {
         when(ratingsService.addOrUpdateUserRating(any(RatingRequestDto.class))).thenReturn(true);
 
+        RatingRequestDto ratingRequestDto = RatingRequestDtoTest.initRatingRequestDto(ratings);
         mockMvc.perform(post("/api/recommend/rating")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(ratingRequestDto))
@@ -158,8 +149,10 @@ public class RecommendControllerTest {
     @Test
     @DisplayName("재료 인식에 따른 추천 레시피 조회 테스트")
     void testRecipePageByIngredientsDetection() throws Exception {
+        Page<RecipeIngListResponseDto> recipeIngListResponseDtoPage = RecipeIngListResponseDtoTest.initRecipeIngListResponseDtoPage(recipe);
         when(recommendService.findRecipePageByIngredientsDetection(any(RecipeIngRequestDto.class))).thenReturn(recipeIngListResponseDtoPage);
 
+        RecipeIngRequestDto recipeIngRequestDto = RecipeIngRequestDtoTest.initRecipeIngRequestDto(user, recipe);
         mockMvc.perform(post("/api/recommend/ingredients/list")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(recipeIngRequestDto))
@@ -173,6 +166,7 @@ public class RecommendControllerTest {
     @Test
     @DisplayName("북마크에 따른 추천 레시피 조회 테스트")
     void testRecipeListByBookmarkRecommend() throws Exception {
+        List<RecipeListResponseDto> recipeListResponseDtoList = RecipeListResponseDtoTest.initRecipeListResponseDtoList(recipe);
         when(recommendService.findRecipeIdListByBookmarkRecommend(anyLong(), anyInt())).thenReturn(new ArrayList<>());
         when(recommendService.findBookmarkOrRatingRecommendList(any(RecommendRequestDto.class))).thenReturn(recipeListResponseDtoList);
 
@@ -191,13 +185,14 @@ public class RecommendControllerTest {
     @Test
     @DisplayName("레시피 평점에 따른 추천 레시피 조회 테스트")
     void testRecipeListByRatingRecommend() throws Exception {
+        List<RecipeListResponseDto> recipeListResponseDtoList = RecipeListResponseDtoTest.initRecipeListResponseDtoList(recipe);
         when(recommendService.findRecipeIdListByRatingRecommend(anyLong(), anyInt(), any())).thenReturn(new ArrayList<>());
         when(recommendService.findBookmarkOrRatingRecommendList(any(RecommendRequestDto.class))).thenReturn(recipeListResponseDtoList);
 
         mockMvc.perform(get("/api/recommend/rating/list")
                         .param("userId", String.valueOf(user.getId()))
                         .param("page", String.valueOf(PAGE))
-                        .param("bookmarkList", String.valueOf(bookmarkList[0]))
+                        .param("bookmarkList", String.valueOf(bookmark.getRecipeId().getRecipeId()))
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(recipeListResponseDtoList.size())));

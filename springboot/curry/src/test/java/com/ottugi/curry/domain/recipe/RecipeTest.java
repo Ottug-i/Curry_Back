@@ -15,11 +15,10 @@ public class RecipeTest {
     public static final Time TIME = Time.SIXTY_MINUTES;
     public static final Difficulty DIFFICULTY = Difficulty.BEGINNER;
     public static final Composition COMPOSITION = Composition.LIGHTLY;
-    public static final String INGREDIENT1 = "고구마";
-    public static final String INGREDIENT2 = "올리고당";
-    public static final String INGREDIENTS = "[재료] 고구마| 식용유| 황설탕| 올리고당| 견과류| 물";
+    public static final String INGREDIENT = "고구마";
+    public static final String INGREDIENTS = "[재료] 고구마| 식용유";
     public static final Servings SERVINGS = Servings.TWO;
-    public static final String ORDERS = "|1. 바삭하게 튀기는 꿀팁|2. 달콤한 소스 꿀팁|3. 더 건강하게 먹는 꿀팁";
+    public static final String ORDERS = "|1. |2. |3. ";
     public static final String PHOTO = "photo.jpg";
     public static final String GENRE = "ing13|ing21";
     public static final Boolean IS_FAVORITE_GENRE = true;

@@ -1,8 +1,7 @@
 package com.ottugi.curry.web.dto.recommend;
 
 import static com.ottugi.curry.domain.bookmark.BookmarkTest.IS_BOOKMARK;
-import static com.ottugi.curry.domain.recipe.RecipeTest.INGREDIENT1;
-import static com.ottugi.curry.domain.recipe.RecipeTest.INGREDIENT2;
+import static com.ottugi.curry.domain.recipe.RecipeTest.INGREDIENT;
 import static com.ottugi.curry.domain.recipe.RecipeTest.IS_FAVORITE_GENRE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -17,8 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 public class RecipeIngListResponseDtoTest {
-    public static RecipeIngListResponseDto initRecommendRequestDto(Recipe recipe) {
-        return new RecipeIngListResponseDto(List.of(INGREDIENT1, INGREDIENT2), recipe, IS_FAVORITE_GENRE, IS_BOOKMARK);
+    private static RecipeIngListResponseDto initRecommendRequestDto(Recipe recipe) {
+        return new RecipeIngListResponseDto(List.of(INGREDIENT), recipe, IS_FAVORITE_GENRE, IS_BOOKMARK);
     }
 
     public static Page<RecipeIngListResponseDto> initRecipeIngListResponseDtoPage(Recipe recipe) {

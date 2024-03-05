@@ -2,6 +2,7 @@ package com.ottugi.curry.service.ratings;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyList;
@@ -36,31 +37,26 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class RatingsServiceTest {
     private Ratings ratings;
-    private RatingRequestDto ratingRequestDto;
     private Recipe recipe;
 
     @Mock
-    private RatingsRepository ratingsRepository;
-
-    @Mock
     private RecipeRepository recipeRepository;
-
+    @Mock
+    private RatingsRepository ratingsRepository;
     @InjectMocks
-    private RatingsService ratingsService;
+    private RatingsServiceImpl ratingsService;
 
     @BeforeEach
     public void setUp() {
         User user = UserTest.initUser();
         recipe = RecipeTest.initRecipe();
-
         ratings = RatingsTest.initRatings(user, recipe);
-        ratingRequestDto = RatingRequestDtoTest.initRatingRequestDto(ratings);
     }
 
     @Test
     @DisplayName("초기 평점 수집을 위한 랜덤 레시피 목록 조회 테스트")
     void testFindRandomRecipeListForResearch() {
-        when(recipeRepository.count()).thenReturn(1L);
+        when(recipeRepository.count()).thenReturn(10L);
         when(recipeRepository.findByIdIn(anyList())).thenReturn(Collections.singletonList(recipe));
 
         List<RecommendListResponseDto> result = ratingsService.findRandomRecipeListForResearch();
@@ -89,11 +85,24 @@ class RatingsServiceTest {
     }
 
     @Test
+    @DisplayName("회원에 따른 레시피 평점 조회 불가 테스트")
+    void testNotFindUserRating() {
+        when(ratingsRepository.existsByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(false);
+
+        RatingResponseDto result = ratingsService.findUserRating(ratings.getUserId(), ratings.getRecipeId());
+
+        assertNull(result);
+
+        verify(ratingsRepository, times(1)).existsByUserIdAndRecipeId(anyLong(), anyLong());
+    }
+
+    @Test
     @DisplayName("회원에 따른 레시피 평점 추가 테스트")
     void testAddUserRating() {
         when(ratingsRepository.existsByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(false);
         when(ratingsRepository.save(any(Ratings.class))).thenReturn(ratings);
 
+        RatingRequestDto ratingRequestDto = RatingRequestDtoTest.initRatingRequestDto(ratings);
         Boolean result = ratingsService.addOrUpdateUserRating(ratingRequestDto);
 
         assertTrue(result);
@@ -108,6 +117,7 @@ class RatingsServiceTest {
         when(ratingsRepository.existsByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(true);
         when(ratingsRepository.findByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(ratings);
 
+        RatingRequestDto ratingRequestDto = RatingRequestDtoTest.initRatingRequestDto(ratings);
         Boolean result = ratingsService.addOrUpdateUserRating(ratingRequestDto);
 
         assertTrue(result);

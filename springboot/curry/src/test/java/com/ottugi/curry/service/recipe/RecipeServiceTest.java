@@ -1,6 +1,6 @@
 package com.ottugi.curry.service.recipe;
 
-import static com.ottugi.curry.domain.recipe.RecipeTest.INGREDIENT1;
+import static com.ottugi.curry.domain.recipe.RecipeTest.INGREDIENT;
 import static com.ottugi.curry.domain.recipe.RecipeTest.PAGE;
 import static com.ottugi.curry.domain.recipe.RecipeTest.SIZE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,25 +46,20 @@ class RecipeServiceTest {
     private Recipe recipe;
 
     @Mock
+    private UserService userService;
+    @Mock
     private LatelyService latelyService;
-
     @Mock
     private RankService rankService;
-
-    @Mock
-    private UserService userService;
-
     @Mock
     private RecipeRepository recipeRepository;
-
     @InjectMocks
-    private RecipeService recipeService;
+    private RecipeServiceImpl recipeService;
 
     @BeforeEach
     public void setUp() {
         user = UserTest.initUser();
         recipe = RecipeTest.initRecipe();
-
         Bookmark bookmark = BookmarkTest.initBookmark();
         bookmark.setUser(user);
         bookmark.setRecipe(recipe);
@@ -123,16 +118,7 @@ class RecipeServiceTest {
         Recipe result = recipeService.findRecipeByRecipeId(recipe.getRecipeId());
 
         assertNotNull(result);
-        assertEquals(recipe.getRecipeId(), result.getRecipeId());
-        assertEquals(recipe.getName(), result.getName());
-        assertEquals(recipe.getThumbnail(), result.getThumbnail());
-        assertEquals(recipe.getTime(), result.getTime());
-        assertEquals(recipe.getDifficulty(), result.getDifficulty());
-        assertEquals(recipe.getComposition(), result.getComposition());
-        assertEquals(recipe.getIngredients(), result.getIngredients());
-        assertEquals(recipe.getServings(), result.getServings());
-        assertEquals(recipe.getOrders(), result.getOrders());
-        assertEquals(recipe.getPhoto(), result.getPhoto());
+        assertEquals(recipe, result);
 
         verify(recipeRepository, times(1)).findByRecipeId(anyLong());
     }
@@ -146,7 +132,7 @@ class RecipeServiceTest {
 
         assertEquals(1, result.size());
 
-        verify(recipeRepository, times(1)).findByIdIn(anyList());
+        verify(recipeRepository, times(1)).findByRecipeIdIn(anyList());
     }
 
     @Test
@@ -154,10 +140,10 @@ class RecipeServiceTest {
     void testFindByRecipeListByIngredientsContaining() {
         when(recipeRepository.findByIngredientsContaining(anyString())).thenReturn(Collections.singletonList(recipe));
 
-        List<Recipe> result = recipeService.findByRecipeListByIngredientsContaining(INGREDIENT1);
+        List<Recipe> result = recipeService.findByRecipeListByIngredientsContaining(INGREDIENT);
 
         assertEquals(1, result.size());
-        assertTrue(result.get(0).getIngredients().contains(INGREDIENT1));
+        assertTrue(result.get(0).getIngredients().contains(INGREDIENT));
 
         verify(recipeRepository, times(1)).findByIngredientsContaining(anyString());
     }
@@ -169,8 +155,14 @@ class RecipeServiceTest {
                 recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficulty(), recipe.getComposition().getComposition());
 
         assertTrue(result.test(recipe));
+    }
 
-        verify(recipeService, times(1)).filterPredicateForOptions(anyString(), anyString(), anyString());
+    @Test
+    @DisplayName("레시피 옵션에 따른 레시피 매칭 설정 시 모든 옵션 제외 테스트")
+    void testFilterPredicateForOptionsWithAllBlank() {
+        Predicate<Recipe> result = recipeService.filterPredicateForOptions("", "", "");
+
+        assertTrue(result.test(recipe));
     }
 
     @Test
@@ -180,8 +172,15 @@ class RecipeServiceTest {
                 recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficulty(), recipe.getComposition().getComposition());
 
         assertTrue(result);
+    }
 
-        verify(recipeService, times(1)).isRecipeMatchingCriteria(any(Recipe.class), anyString(), anyString(), anyString());
+    @Test
+    @DisplayName("레시피 옵션에 따른 레시피 매칭 설정 시 시간 옵션 제외 테스트")
+    void testIsRecipeMatchingCriteriaWithTimeNull() {
+        Boolean result = recipeService.isRecipeMatchingCriteria(recipe,
+                null, recipe.getDifficulty().getDifficulty(), recipe.getComposition().getComposition());
+
+        assertTrue(result);
     }
 
     @Test
@@ -190,7 +189,5 @@ class RecipeServiceTest {
         Boolean result = recipeService.isRecipeBookmarked(user, recipe);
 
         assertTrue(result);
-
-        verify(recipeService, times(1)).isRecipeBookmarked(any(User.class), any(Recipe.class));
     }
 }

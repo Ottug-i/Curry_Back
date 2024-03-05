@@ -42,7 +42,7 @@ public class BookmarkTest {
         User user = mock(User.class);
         bookmark.setUser(user);
 
-        assertEquals(bookmark.getUserId(), user);
+        assertEquals(user, bookmark.getUserId());
         verify(user, times(2)).getBookmarkList();
     }
 
@@ -52,6 +52,6 @@ public class BookmarkTest {
         Recipe recipe = mock(Recipe.class);
         bookmark.setRecipe(recipe);
 
-        assertEquals(bookmark.getRecipeId(), recipe);
+        assertEquals(recipe, bookmark.getRecipeId());
     }
 }

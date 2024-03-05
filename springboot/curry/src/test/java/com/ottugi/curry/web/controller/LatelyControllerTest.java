@@ -38,7 +38,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @WithMockUser
 public class LatelyControllerTest {
     private Lately lately;
-    private List<LatelyListResponseDto> latelyListResponseDtoList;
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,12 +49,12 @@ public class LatelyControllerTest {
         lately = LatelyTest.initLately();
         lately.setUser(UserTest.initUser());
         lately.setRecipe(RecipeTest.initRecipe());
-        latelyListResponseDtoList = LatelyListResponseDtoTest.initLatelyListResponseDtoList(lately);
     }
 
     @Test
     @DisplayName("최근 본 레시피 목록 조회 테스트")
     void testLatelyList() throws Exception {
+        List<LatelyListResponseDto> latelyListResponseDtoList = LatelyListResponseDtoTest.initLatelyListResponseDtoList(lately);
         when(latelyService.findLatelyListByUserId(anyLong())).thenReturn(latelyListResponseDtoList);
 
         mockMvc.perform(get("/api/lately/list")

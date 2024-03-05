@@ -44,8 +44,6 @@ import org.springframework.test.web.servlet.MockMvc;
 public class RecipeControllerTest {
     private User user;
     private Recipe recipe;
-    private RecipeResponseDto recipeResponseDto;
-    private Page<RecipeListResponseDto> recipeListResponseDtoPage;
 
     @Autowired
     private MockMvc mockMvc;
@@ -56,13 +54,12 @@ public class RecipeControllerTest {
     public void setUp() {
         user = UserTest.initUser();
         recipe = RecipeTest.initRecipe();
-        recipeResponseDto = RecipeResponseDtoTest.initRecipeResponseDto(recipe);
-        recipeListResponseDtoPage = RecipeListResponseDtoTest.initRecipeListResponseDtoPage(recipe);
     }
 
     @Test
     @DisplayName("레시피 조회 테스트")
     void testRecipeDetails() throws Exception {
+        RecipeResponseDto recipeResponseDto = RecipeResponseDtoTest.initRecipeResponseDto(recipe);
         when(recipeService.findRecipeByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(recipeResponseDto);
 
         mockMvc.perform(get("/api/recipe")
@@ -88,8 +85,8 @@ public class RecipeControllerTest {
     @Test
     @DisplayName("검색창으로 레시피 조회 테스트")
     void testRecipeSearchOptionPage() throws Exception {
-        when(recipeService.findRecipePageBySearchBox(anyLong(), anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(recipeListResponseDtoPage);
+        Page<RecipeListResponseDto> recipeListResponseDtoPage = RecipeListResponseDtoTest.initRecipeListResponseDtoPage(recipe);
+        when(recipeService.findRecipePageBySearchBox(anyLong(), anyInt(), anyInt(), anyString(), anyString(), anyString(), anyString())).thenReturn(recipeListResponseDtoPage);
 
         mockMvc.perform(get("/api/recipe/search")
                         .param("userId", String.valueOf(user.getId()))

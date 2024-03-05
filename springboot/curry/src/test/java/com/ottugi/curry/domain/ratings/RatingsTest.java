@@ -2,11 +2,10 @@ package com.ottugi.curry.domain.ratings;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 import com.ottugi.curry.domain.recipe.Recipe;
-import com.ottugi.curry.domain.recipe.RecipeTest;
 import com.ottugi.curry.domain.user.User;
-import com.ottugi.curry.domain.user.UserTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,8 +30,8 @@ public class RatingsTest {
 
     @BeforeEach
     public void setUp() {
-        user = UserTest.initUser();
-        recipe = RecipeTest.initRecipe();
+        user = mock(User.class);
+        recipe = mock(Recipe.class);
         ratings = initRatings(user, recipe);
     }
 

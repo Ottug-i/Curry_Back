@@ -1,6 +1,6 @@
 package com.ottugi.curry.domain.recipe;
 
-import static com.ottugi.curry.domain.recipe.RecipeTest.INGREDIENT1;
+import static com.ottugi.curry.domain.recipe.RecipeTest.INGREDIENT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,20 +35,20 @@ class RecipeRepositoryTest {
     @Test
     @DisplayName("레시피 재료로 레시피 목록 조회 테스트")
     void testFindByIngredientsContaining() {
-        List<Recipe> foundRecipeList = recipeRepository.findByIngredientsContaining(INGREDIENT1);
+        List<Recipe> foundRecipeList = recipeRepository.findByIngredientsContaining(INGREDIENT);
 
         assertNotNull(foundRecipeList);
         assertEquals(1, foundRecipeList.size());
-        assertTrue(foundRecipeList.get(0).getIngredients().contains(INGREDIENT1));
+        assertTrue(foundRecipeList.get(0).getIngredients().contains(INGREDIENT));
     }
 
     @Test
     @DisplayName("레시피 이름으로 레시피 목록 조회 테스트")
     void testFindByNameContaining() {
-        List<Recipe> foundRecipeList = recipeRepository.findByNameContaining(INGREDIENT1);
+        List<Recipe> foundRecipeList = recipeRepository.findByNameContaining(INGREDIENT);
 
         assertNotNull(foundRecipeList);
-        assertTrue(foundRecipeList.get(0).getName().contains(INGREDIENT1));
+        assertTrue(foundRecipeList.get(0).getName().contains(INGREDIENT));
     }
 
     @Test
@@ -76,9 +76,10 @@ class RecipeRepositoryTest {
     @Test
     @DisplayName("레시피 아이디로 레시피 조회 테스트")
     void testFindByRecipeId() {
-        Optional<Recipe> foundRecipe = recipeRepository.findByRecipeId(recipe.getRecipeId());
+        Optional<Recipe> foundRecipeOptional = recipeRepository.findByRecipeId(recipe.getRecipeId());
 
-        assertNotNull(foundRecipe);
-        assertEquals(recipe.getRecipeId(), foundRecipe.get().getRecipeId());
+        assertTrue(foundRecipeOptional.isPresent());
+        Recipe foundRecipe = foundRecipeOptional.get();
+        assertEquals(recipe.getRecipeId(), foundRecipe.getRecipeId());
     }
 }

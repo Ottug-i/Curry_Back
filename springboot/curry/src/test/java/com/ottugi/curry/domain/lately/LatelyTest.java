@@ -41,7 +41,7 @@ public class LatelyTest {
         User user = mock(User.class);
         lately.setUser(user);
 
-        assertEquals(lately.getUserId(), user);
+        assertEquals(user, lately.getUserId());
         verify(user, times(2)).getLatelyList();
     }
 
@@ -51,6 +51,6 @@ public class LatelyTest {
         Recipe recipe = mock(Recipe.class);
         lately.setRecipe(recipe);
 
-        assertEquals(lately.getRecipeId(), recipe);
+        assertEquals(recipe, lately.getRecipeId());
     }
 }

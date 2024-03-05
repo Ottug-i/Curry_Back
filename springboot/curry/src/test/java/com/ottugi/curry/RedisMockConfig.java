@@ -10,17 +10,20 @@ import redis.embedded.RedisServer;
 
 @TestConfiguration
 public class RedisMockConfig {
+    private static final String HOST = "localhost";
+    private static final Integer PORT_NUMBER = 6379;
+    
     private final RedisServer redisServer;
 
     public RedisMockConfig() throws IOException {
-        redisServer = new RedisServer(6379);
+        redisServer = new RedisServer(PORT_NUMBER);
         redisServer.start();
     }
 
     @Bean
     @Primary
     public Jedis jedis() {
-        return new Jedis("localhost", 6379);
+        return new Jedis(HOST, PORT_NUMBER);
     }
 
     @PreDestroy

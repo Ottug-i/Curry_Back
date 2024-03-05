@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class RankResponseDtoTest {
-    public static RankResponseDto initRankResponseDto(Rank rank) {
+    private static RankResponseDto initRankResponseDto(Rank rank) {
         return new RankResponseDto(rank);
     }
 

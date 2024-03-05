@@ -9,17 +9,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class RecipeSaveRequestDtoTest {
-    private Recipe recipe;
-
-    @BeforeEach
-    public void setUp() {
-        recipe = RecipeTest.initRecipe();
-    }
-
-    @Test
-    @DisplayName("RecipeSaveRequestDto 생성 테스트")
-    void testRecipeSaveRequestDto() {
-        RecipeSaveRequestDto recipeSaveRequestDto = RecipeSaveRequestDto.builder()
+    private static RecipeSaveRequestDto initRecipeSaveRequestDto(Recipe recipe) {
+        return RecipeSaveRequestDto.builder()
                 .recipeId(recipe.getRecipeId())
                 .name(recipe.getName())
                 .composition(recipe.getComposition().getComposition())
@@ -32,6 +23,19 @@ class RecipeSaveRequestDtoTest {
                 .photo(recipe.getPhoto())
                 .genre(recipe.getGenre())
                 .build();
+    }
+
+    private Recipe recipe;
+
+    @BeforeEach
+    public void setUp() {
+        recipe = RecipeTest.initRecipe();
+    }
+
+    @Test
+    @DisplayName("RecipeSaveRequestDto 생성 테스트")
+    void testRecipeSaveRequestDto() {
+        RecipeSaveRequestDto recipeSaveRequestDto = initRecipeSaveRequestDto(recipe);
 
         assertEquals(recipe.getRecipeId(), recipeSaveRequestDto.getRecipeId());
         assertEquals(recipe.getName(), recipeSaveRequestDto.getName());

@@ -28,18 +28,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
     private User user;
-    private UserUpdateRequestDto userUpdateRequestDto;
 
     @Mock
     private UserRepository userRepository;
-
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @BeforeEach
     public void setUp() {
         user = UserTest.initUser();
-        userUpdateRequestDto = UserUpdateRequestDtoTest.initUserUpdateRequestDto(user);
     }
 
     @Test
@@ -93,8 +90,9 @@ class UserServiceTest {
     @Test
     @DisplayName("회원 프로필 수정 테스트")
     void testModifyUserProfile() {
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
 
+        UserUpdateRequestDto userUpdateRequestDto = UserUpdateRequestDtoTest.initUserUpdateRequestDto(user);
         UserResponseDto result = userService.modifyUserProfile(userUpdateRequestDto);
 
         assertNotNull(result);
@@ -103,7 +101,7 @@ class UserServiceTest {
         assertEquals(user.getNickName(), NEW_NICKNAME);
         assertEquals(user.getRole().getRole(), result.getRole());
 
-        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(userRepository, times(1)).findById(anyLong());
     }
 
     @Test

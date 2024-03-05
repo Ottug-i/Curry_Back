@@ -33,11 +33,17 @@ class TimeTest {
     @Test
     @DisplayName("동일한 시간 일치 테스트")
     void testIsTimeMatching() {
-        Recipe recipe = RecipeTest.initRecipe();
-        String time = Time.SIXTY_MINUTES.getTimeName();
+        Recipe recipe1 = RecipeTest.initRecipe();
+        String time1 = Time.SIXTY_MINUTES.getTimeName();
 
-        Boolean result = Time.isTimeMatching(recipe, time);
+        Recipe recipe2 = RecipeTest.initRecipe();
+        recipe2.setTime(Time.TWO_HOURS);
+        String time2 = Time.TWO_HOURS.getTimeName();
 
-        assertTrue(result);
+        Boolean result1 = Time.isTimeMatching(recipe1, time1);
+        Boolean result2 = Time.isTimeMatching(recipe2, time2);
+
+        assertTrue(result1);
+        assertTrue(result2);
     }
 }

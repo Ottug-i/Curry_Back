@@ -1,5 +1,6 @@
 package com.ottugi.curry.service.recommend;
 
+import static com.ottugi.curry.domain.bookmark.BookmarkTest.BOOKMARK_ID;
 import static com.ottugi.curry.domain.recipe.RecipeTest.PAGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -30,7 +31,6 @@ import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
 import com.ottugi.curry.web.dto.recommend.RecommendRequestDtoTest;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,39 +43,27 @@ import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(MockitoExtension.class)
 class RecommendServiceTest {
-    private final Predicate<Recipe> mockPredicate = recipe -> true;
-
     private User user;
     private Recipe recipe;
-    private Bookmark bookmark;
-    private RecipeIngRequestDto recipeIngRequestDto;
-    private RecommendRequestDto recommendRequestDto;
 
     @Mock
     private UserService userService;
-
     @Mock
     private RecipeService recipeService;
-
     @Mock
     private GlobalConfig config;
-
     @Mock
     private RestTemplate restTemplate;
-
     @InjectMocks
-    private RecommendService recommendService;
+    private RecommendServiceImpl recommendService;
 
     @BeforeEach
     public void setUp() {
         user = UserTest.initUser();
         recipe = RecipeTest.initRecipe();
-        bookmark = BookmarkTest.initBookmark();
+        Bookmark bookmark = BookmarkTest.initBookmark();
         bookmark.setUser(user);
         bookmark.setRecipe(recipe);
-
-        recipeIngRequestDto = RecipeIngRequestDtoTest.initRecipeIngRequestDto(user, recipe);
-        recommendRequestDto = RecommendRequestDtoTest.initRecommendRequestDto(user, recipe);
     }
 
     @Test
@@ -83,9 +71,10 @@ class RecommendServiceTest {
     void testFindRecipePageByIngredientsDetection() {
         when(userService.findUserByUserId(anyLong())).thenReturn(user);
         when(recipeService.findByRecipeListByIngredientsContaining(anyString())).thenReturn(Collections.singletonList(recipe));
-        when(recipeService.filterPredicateForOptions(anyString(), anyString(), anyString())).thenReturn(mockPredicate);
+        when(recipeService.filterPredicateForOptions(anyString(), anyString(), anyString())).thenReturn(recipe -> true);
         when(recipeService.isRecipeBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
 
+        RecipeIngRequestDto recipeIngRequestDto = RecipeIngRequestDtoTest.initRecipeIngRequestDto(user, recipe);
         Page<RecipeIngListResponseDto> result = recommendService.findRecipePageByIngredientsDetection(recipeIngRequestDto);
 
         assertNotNull(result);
@@ -111,12 +100,40 @@ class RecommendServiceTest {
     }
 
     @Test
+    @DisplayName("북마크 추천 레시피 아이디 목록 조회 시 빈 리스트 반환 테스트")
+    void testFindRecipeIdListByBookmarkRecommendWithEmpty() throws JsonProcessingException {
+        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(null);
+
+        List<Long> result = recommendService.findRecipeIdListByBookmarkRecommend(recipe.getRecipeId(), PAGE);
+
+        assertNotNull(result);
+        assertEquals(0, result.size());
+
+        verify(restTemplate, times(1)).getForObject(anyString(), eq(String.class));
+    }
+
+    @Test
     @DisplayName("평점 추천 레시피 아이디 목록 조회 테스트")
     void testFindRecipeIdListByRatingRecommend() throws JsonProcessingException {
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("[\"ing15\", [1]]");
         when(userService.findUserByUserId(anyLong())).thenReturn(user);
 
-        List<Long> result = recommendService.findRecipeIdListByRatingRecommend(user.getId(), PAGE, new Long[]{bookmark.getId()});
+        List<Long> result = recommendService.findRecipeIdListByRatingRecommend(user.getId(), PAGE, new Long[]{BOOKMARK_ID});
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+
+        verify(restTemplate, times(1)).getForObject(anyString(), eq(String.class));
+        verify(userService, times(1)).findUserByUserId(anyLong());
+    }
+
+    @Test
+    @DisplayName("평점 추천 레시피 아이디 목록 조회 시 빈 북마크 리스트 테스트")
+    void testFindRecipeIdListByRatingRecommendWithEmptyBookmark() throws JsonProcessingException {
+        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn("[\"ing15\", [1]]");
+        when(userService.findUserByUserId(anyLong())).thenReturn(user);
+
+        List<Long> result = recommendService.findRecipeIdListByRatingRecommend(user.getId(), PAGE, new Long[]{});
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -132,6 +149,7 @@ class RecommendServiceTest {
         when(recipeService.findRecipeListByRecipeIdIn(anyList())).thenReturn(Collections.singletonList(recipe));
         when(recipeService.isRecipeBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
 
+        RecommendRequestDto recommendRequestDto = RecommendRequestDtoTest.initRecommendRequestDto(user, recipe);
         List<RecipeListResponseDto> result = recommendService.findBookmarkOrRatingRecommendList(recommendRequestDto);
 
         assertNotNull(result);

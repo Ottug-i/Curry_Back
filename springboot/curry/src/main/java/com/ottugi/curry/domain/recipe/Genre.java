@@ -15,7 +15,7 @@ public enum Genre {
     TOFU(List.of("ing10"), "tofu"),
     EGG(List.of("ing11"), "egg"),
     MUSHROOM(List.of("ing12"), "mushroom"),
-    VEGETABLE(List.of("ing12", "ing13", "ing14", "ing15", "ing16", "ing17", "ing18"), "vegetable"),
+    VEGETABLE(List.of("ing13", "ing14", "ing15", "ing16", "ing17", "ing18"), "vegetable"),
     FRUIT(List.of("ing19", "ing20", "ing21", "ing22", "ing23", "ing24"), "vegetable"),
     MILK(List.of("ing25"), "egg");
 
@@ -52,6 +52,9 @@ public enum Genre {
 
     private static String[] convertToGenreArray(Recipe recipe) {
         final String SPLIT_VALUE = "\\|";
-        return recipe.getGenre().split(SPLIT_VALUE);
+        if (recipe.getGenre().contains("|")) {
+            return recipe.getGenre().split(SPLIT_VALUE);
+        }
+        return new String[]{recipe.getGenre()};
     }
 }

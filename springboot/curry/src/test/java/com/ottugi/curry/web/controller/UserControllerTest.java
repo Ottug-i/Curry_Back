@@ -41,8 +41,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @WithMockUser
 public class UserControllerTest {
     private User user;
-    private UserUpdateRequestDto userUpdateRequestDto;
-    private UserResponseDto userResponseDto;
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,13 +50,12 @@ public class UserControllerTest {
     @BeforeEach
     public void setUp() {
         user = UserTest.initUser();
-        userUpdateRequestDto = UserUpdateRequestDtoTest.initUserUpdateRequestDto(user);
-        userResponseDto = UserResponseDtoTest.initUserResponseDto(user);
     }
 
     @Test
     @DisplayName("회원 정보 조회 테스트")
     void testUserProfileDetails() throws Exception {
+        UserResponseDto userResponseDto = UserResponseDtoTest.initUserResponseDto(user);
         when(userService.findUserProfileByUserId(anyLong())).thenReturn(userResponseDto);
 
         mockMvc.perform(get("/api/user")
@@ -76,8 +73,10 @@ public class UserControllerTest {
     @Test
     @DisplayName("회원 정보 수정 테스트")
     void testUserProfileModify() throws Exception {
+        UserResponseDto userResponseDto = UserResponseDtoTest.initUserResponseDto(user);
         when(userService.modifyUserProfile(any(UserUpdateRequestDto.class))).thenReturn(userResponseDto);
 
+        UserUpdateRequestDto userUpdateRequestDto = UserUpdateRequestDtoTest.initUserUpdateRequestDto(user);
         mockMvc.perform(put("/api/user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userUpdateRequestDto))

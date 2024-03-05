@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class RecommendListResponseDtoTest {
-    public static RecommendListResponseDto initRecommendListResponseDto(Recipe recipe) {
+    private static RecommendListResponseDto initRecommendListResponseDto(Recipe recipe) {
         return new RecommendListResponseDto(recipe);
     }
 
