@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -89,7 +90,7 @@ public class RecommendController {
     })
     public ResponseEntity<List<RecipeListResponseDto>> recipeListByBookmarkRecommend(@RequestParam @NotNull Long userId,
                                                                                      @RequestParam @NotNull Long recipeId,
-                                                                                     @RequestParam @NotNull int page)
+                                                                                     @RequestParam @Min(1) int page)
             throws JsonProcessingException {
         List<Long> recipeIdList = recommendService.findRecipeIdListByBookmarkRecommend(recipeId, page);
         return ResponseEntity.ok().body(recommendService.findBookmarkOrRatingRecommendList(new RecommendRequestDto(userId, recipeIdList)));
@@ -103,7 +104,7 @@ public class RecommendController {
             @ApiImplicitParam(name = "bookmarkList", value = "북마크한 레시피 아이디", required = true)
     })
     public ResponseEntity<List<RecipeListResponseDto>> recipeListByRatingRecommend(@RequestParam @NotNull Long userId,
-                                                                                   @RequestParam @NotNull int page,
+                                                                                   @RequestParam @Min(1) int page,
                                                                                    @RequestParam @NotNull Long[] bookmarkList)
             throws JsonProcessingException {
         List<Long> recipeIdList = recommendService.findRecipeIdListByRatingRecommend(userId, page, bookmarkList);

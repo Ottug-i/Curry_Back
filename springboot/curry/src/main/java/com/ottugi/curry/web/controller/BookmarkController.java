@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -44,8 +45,8 @@ public class BookmarkController {
             @ApiImplicitParam(name = "size", value = "페이지 사이즈", example = "10")
     })
     public ResponseEntity<Page<BookmarkListResponseDto>> bookmarkPage(@RequestParam @NotNull Long userId,
-                                                                      @RequestParam @NotNull int page,
-                                                                      @RequestParam @NotNull int size) {
+                                                                      @RequestParam @Min(1) int page,
+                                                                      @RequestParam @Min(1) int size) {
         return ResponseEntity.ok().body(bookmarkService.findBookmarkPageByUserId(userId, page, size));
     }
 
@@ -61,8 +62,8 @@ public class BookmarkController {
             @ApiImplicitParam(name = "composition", value = "레시피 구성", example = "든든하게")
     })
     public ResponseEntity<Page<BookmarkListResponseDto>> bookmarkSearchOptionPage(@RequestParam @NotNull Long userId,
-                                                                                  @RequestParam @NotNull int page,
-                                                                                  @RequestParam @NotNull int size,
+                                                                                  @RequestParam @Min(1) int page,
+                                                                                  @RequestParam @Min(1) int size,
                                                                                   @RequestParam(required = false) String name,
                                                                                   @RequestParam(required = false) String time,
                                                                                   @RequestParam(required = false) String difficulty,

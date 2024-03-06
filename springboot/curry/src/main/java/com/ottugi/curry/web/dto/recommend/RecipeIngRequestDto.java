@@ -2,6 +2,7 @@ package com.ottugi.curry.web.dto.recommend;
 
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -33,11 +34,11 @@ public class RecipeIngRequestDto {
     @ApiModelProperty(notes = "레시피 구성", example = "가볍게")
     private String composition;
 
-    @NotNull
+    @Min(1)
     @ApiModelProperty(notes = "페이지 번호", example = "1", required = true)
     private int page;
 
-    @NotNull
+    @Min(1)
     @ApiModelProperty(notes = "페이지 사이즈", example = "10", required = true)
     private int size;
 

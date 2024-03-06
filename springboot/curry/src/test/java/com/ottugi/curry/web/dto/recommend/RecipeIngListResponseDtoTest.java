@@ -43,6 +43,7 @@ public class RecipeIngListResponseDtoTest {
         assertEquals(recipe.getDifficulty().getDifficulty(), recipeIngListResponseDto.getDifficulty());
         assertEquals(recipe.getComposition().getComposition(), recipeIngListResponseDto.getComposition());
         assertEquals(recipe.getIngredients(), recipeIngListResponseDto.getIngredients());
+        assertEquals(IS_FAVORITE_GENRE, recipeIngListResponseDto.getIsFavoriteGenre());
         assertEquals(IS_BOOKMARK, recipeIngListResponseDto.getIsBookmark());
     }
 }

@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -50,8 +51,8 @@ public class RecipeController {
             @ApiImplicitParam(name = "composition", value = "레시피 구성", example = "가볍게")
     })
     public ResponseEntity<Page<RecipeListResponseDto>> recipeSearchOptionPage(@RequestParam @NotNull Long userId,
-                                                                              @RequestParam @NotNull int page,
-                                                                              @RequestParam @NotNull int size,
+                                                                              @RequestParam @Min(1) int page,
+                                                                              @RequestParam @Min(1) int size,
                                                                               @RequestParam(required = false) String name,
                                                                               @RequestParam(required = false) String time,
                                                                               @RequestParam(required = false) String difficulty,
