@@ -3,7 +3,6 @@ package com.ottugi.curry.config;
 import com.ottugi.curry.jwt.JwtAccessDeniedHandler;
 import com.ottugi.curry.jwt.JwtAuthenticationEntryPoint;
 import com.ottugi.curry.jwt.JwtAuthenticationFilter;
-import com.ottugi.curry.jwt.TokenProvider;
 import com.ottugi.curry.jwt.TokenValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +21,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final TokenProvider tokenProvider;
     private final TokenValidator tokenValidator;
 
     @Bean
@@ -55,7 +53,7 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
                 // .antMatchers("/api/**").authenticated()
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, tokenValidator), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(tokenValidator), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)
