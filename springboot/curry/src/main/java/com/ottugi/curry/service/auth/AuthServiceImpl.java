@@ -36,6 +36,7 @@ public class AuthServiceImpl implements AuthService {
         Token refreshToken = findRefreshTokenByEmail(email);
         validateRefreshToken(refreshToken, request);
         User user = userService.findUserByEmail(email);
+        user.markAsExistingUser();
         return issueToken(user, response);
     }
 

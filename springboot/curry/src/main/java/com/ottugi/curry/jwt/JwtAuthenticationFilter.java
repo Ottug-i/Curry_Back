@@ -16,7 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final TokenProvider tokenProvider;
     private final TokenValidator tokenValidator;
 
     @Override
@@ -26,7 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (path.startsWith("/auth")) {
                 filterChain.doFilter(request, response);
             } else {
-                String accessToken = tokenProvider.resolveAccessToken(request);
+                String accessToken = tokenValidator.resolveAccessToken(request);
                 boolean isTokenValid = tokenValidator.validateToken(accessToken, request);
                 if (StringUtils.hasText(accessToken) && isTokenValid) {
                     this.setAuthentication(accessToken);
@@ -42,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void setAuthentication(String token) {
-        Authentication authentication = tokenProvider.getAuthentication(token);
+        Authentication authentication = tokenValidator.getAuthentication(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
