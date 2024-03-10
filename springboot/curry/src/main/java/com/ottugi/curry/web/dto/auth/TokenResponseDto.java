@@ -29,7 +29,7 @@ public class TokenResponseDto {
         this.email = user.getEmail();
         this.nickName = user.getNickName();
         this.token = token;
-        this.role = user.getRole().getRole();
+        this.role = user.getRole().getRoleName();
         this.isNew = user.getIsNew();
     }
 }

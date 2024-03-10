@@ -22,6 +22,6 @@ public class UserResponseDto {
         this.id = user.getId();
         this.email = user.getEmail();
         this.nickName = user.getNickName();
-        this.role = user.getRole().getRole();
+        this.role = user.getRole().getRoleName();
     }
 }

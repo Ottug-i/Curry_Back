@@ -5,9 +5,7 @@ import com.ottugi.curry.domain.token.Token;
 import com.ottugi.curry.domain.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -76,18 +74,6 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(getUserEmail(token), token, getUserRole(token));
     }
 
-    public String getUserEmail(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
-    }
-
-    public List<GrantedAuthority> getUserRole(String token) {
-        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-
-        List<GrantedAuthority> roles = new ArrayList<>();
-        roles.add(new SimpleGrantedAuthority(claims.get("roles", String.class)));
-        return roles;
-    }
-
     public String resolveAccessToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(jwtHeader);
 
@@ -97,23 +83,19 @@ public class TokenProvider {
         return null;
     }
 
-    public boolean validateToken(String token, HttpServletRequest request) {
-        try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            return true;
-        } catch (SecurityException | MalformedJwtException e) {
-            log.error("Invalid JWT signature");
-            return false;
-        } catch (UnsupportedJwtException e) {
-            log.error("Unsupported JWT token");
-            return false;
-        } catch (IllegalArgumentException e) {
-            log.error("JWT token is invalid");
-            return false;
-        }
-    }
-
     public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
         response.setHeader(jwtHeader, accessToken);
+    }
+
+    private String getUserEmail(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    private List<GrantedAuthority> getUserRole(String token) {
+        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+
+        List<GrantedAuthority> roles = new ArrayList<>();
+        roles.add(new SimpleGrantedAuthority(claims.get("roles", String.class)));
+        return roles;
     }
 }

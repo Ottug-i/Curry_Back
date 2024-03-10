@@ -19,8 +19,8 @@ public class UserTest {
     public static final String NEW_NICKNAME = "김카레";
     public static final String FAVORITE_GENRE = "ing15";
     public static final String NEW_FAVORITE_GENRE = "ing16";
-    public static final Role ROLE = Role.ofRole("일반 사용자");
-    public static final Role NEW_ROLE = Role.ofRole("관리자");
+    public static final Role ROLE = Role.findByRoleName("일반 사용자");
+    public static final Role NEW_ROLE = Role.findByRoleName("관리자");
     public static final Boolean IS_NEW = true;
 
     public static User initUser() {

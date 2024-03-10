@@ -18,6 +18,7 @@ import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.except.JwtAuthenticationException;
 import com.ottugi.curry.jwt.TokenProvider;
+import com.ottugi.curry.jwt.TokenValidator;
 import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.auth.TokenResponseDto;
 import com.ottugi.curry.web.dto.auth.UserSaveRequestDto;
@@ -44,6 +45,8 @@ class AuthServiceTest {
     private UserRepository userRepository;
     @Mock
     private TokenProvider tokenProvider;
+    @Mock
+    private TokenValidator tokenValidator;
     @Mock
     private TokenRepository tokenRepository;
     @InjectMocks
@@ -99,7 +102,7 @@ class AuthServiceTest {
     @DisplayName("토큰 재발급 테스트")
     void testReissueToken() {
         when(tokenRepository.findById(any())).thenReturn(Optional.of(token));
-        when(tokenProvider.validateToken(anyString(), any(HttpServletRequest.class))).thenReturn(true);
+        when(tokenValidator.validateToken(anyString(), any(HttpServletRequest.class))).thenReturn(true);
         when(userService.findUserByEmail(anyString())).thenReturn(user);
         when(tokenProvider.createAccessToken(any(User.class))).thenReturn(token);
 
@@ -108,7 +111,7 @@ class AuthServiceTest {
         assertTokenResponseDto(result, true);
 
         verify(tokenRepository, times(1)).findById(any());
-        verify(tokenProvider, times(1)).validateToken(anyString(), any(HttpServletRequest.class));
+        verify(tokenValidator, times(1)).validateToken(anyString(), any(HttpServletRequest.class));
         verify(userService, times(1)).findUserByEmail(anyString());
         verify(tokenProvider, times(1)).createAccessToken(any(User.class));
     }
@@ -117,13 +120,13 @@ class AuthServiceTest {
     @DisplayName("토큰 재발급 시 리프레쉬 토큰 만료 예외 발생 테스트")
     void testReissueTokenJwtAuthenticationExcept() {
         when(tokenRepository.findById(any())).thenReturn(Optional.of(token));
-        when(tokenProvider.validateToken(anyString(), any(HttpServletRequest.class))).thenReturn(false);
+        when(tokenValidator.validateToken(anyString(), any(HttpServletRequest.class))).thenReturn(false);
 
         assertThatThrownBy(() -> authService.reissueToken(user.getEmail(), mock(HttpServletRequest.class), mock(HttpServletResponse.class)))
                 .isInstanceOf(JwtAuthenticationException.class);
 
         verify(tokenRepository, times(1)).findById(any());
-        verify(tokenProvider, times(1)).validateToken(anyString(), any(HttpServletRequest.class));
+        verify(tokenValidator, times(1)).validateToken(anyString(), any(HttpServletRequest.class));
     }
 
     private void assertTokenResponseDto(TokenResponseDto resultDto, boolean isNew) {
