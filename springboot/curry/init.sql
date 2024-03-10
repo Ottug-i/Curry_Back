@@ -110,6 +110,8 @@ create table users (
         favorite_genre varchar(100),
         nick_name varchar(100) not null,
         role varchar(255) not null,
+        is_new boolean not null,
+        withdraw boolean not null,
         primary key (user_id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

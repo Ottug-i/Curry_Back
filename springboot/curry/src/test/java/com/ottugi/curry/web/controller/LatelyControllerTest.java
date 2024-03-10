@@ -68,8 +68,8 @@ public class LatelyControllerTest {
 
     @Test
     @DisplayName("최근 본 레시피에 따른 3D 모델 캐릭터 조회 테스트")
-    void testLatelyGenreFor3DCharacter() throws Exception {
-        when(latelyService.findLatelyGenreFor3DCharacter(anyLong())).thenReturn("vegetable");
+    void testLatelyMainGenreCharacterFor3DCharacter() throws Exception {
+        when(latelyService.findLatelyMainGenreCharacterFor3DCharacter(anyLong())).thenReturn("vegetable");
 
         mockMvc.perform(get("/api/lately/character")
                         .param("userId", String.valueOf(lately.getUserId().getId()))
@@ -77,6 +77,6 @@ public class LatelyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("vegetable"));
 
-        verify(latelyService, times(1)).findLatelyGenreFor3DCharacter(anyLong());
+        verify(latelyService, times(1)).findLatelyMainGenreCharacterFor3DCharacter(anyLong());
     }
 }

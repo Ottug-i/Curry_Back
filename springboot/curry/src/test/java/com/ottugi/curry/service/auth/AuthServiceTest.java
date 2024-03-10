@@ -67,7 +67,7 @@ class AuthServiceTest {
         UserSaveRequestDto userSaveRequestDto = UserSaveRequestDtoTest.initUserSaveRequestDto(user);
         TokenResponseDto result = authService.signUpOrSignInAndIssueToken(userSaveRequestDto, mock(HttpServletResponse.class));
 
-        assertTokenResponseDto(result, user, true);
+        assertTokenResponseDto(result, true);
 
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(userRepository, times(1)).save(any(User.class));
@@ -87,7 +87,7 @@ class AuthServiceTest {
         UserSaveRequestDto userSaveRequestDto = UserSaveRequestDtoTest.initUserSaveRequestDto(user);
         TokenResponseDto result = authService.signUpOrSignInAndIssueToken(userSaveRequestDto, mock(HttpServletResponse.class));
 
-        assertTokenResponseDto(result, user, false);
+        assertTokenResponseDto(result, false);
 
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(tokenProvider, times(1)).createAccessToken(any(User.class));
@@ -105,7 +105,7 @@ class AuthServiceTest {
 
         TokenResponseDto result = authService.reissueToken(user.getEmail(), mock(HttpServletRequest.class), mock(HttpServletResponse.class));
 
-        assertTokenResponseDto(result, user, true);
+        assertTokenResponseDto(result, true);
 
         verify(tokenRepository, times(1)).findById(any());
         verify(tokenProvider, times(1)).validateToken(anyString(), any(HttpServletRequest.class));
@@ -126,12 +126,12 @@ class AuthServiceTest {
         verify(tokenProvider, times(1)).validateToken(anyString(), any(HttpServletRequest.class));
     }
 
-    private void assertTokenResponseDto(TokenResponseDto result, User user, boolean isNew) {
-        assertNotNull(result);
-        assertEquals(user.getId(), result.getId());
-        assertEquals(user.getEmail(), result.getEmail());
-        assertEquals(user.getNickName(), result.getNickName());
-        assertNotNull(result.getToken());
-        assertEquals(isNew, result.getIsNew());
+    private void assertTokenResponseDto(TokenResponseDto resultDto, boolean isNew) {
+        assertNotNull(resultDto);
+        assertEquals(user.getId(), resultDto.getId());
+        assertEquals(user.getEmail(), resultDto.getEmail());
+        assertEquals(user.getNickName(), resultDto.getNickName());
+        assertNotNull(resultDto.getToken());
+        assertEquals(isNew, resultDto.getIsNew());
     }
 }

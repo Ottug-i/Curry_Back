@@ -8,6 +8,7 @@ import com.ottugi.curry.domain.bookmark.BookmarkTest;
 import com.ottugi.curry.domain.recipe.RecipeTest;
 import com.ottugi.curry.domain.user.UserTest;
 import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,8 +20,12 @@ public class BookmarkListResponseDtoTest {
         return new BookmarkListResponseDto(bookmark);
     }
 
+    public static List<BookmarkListResponseDto> initBookmarkListResponseDtoList(Bookmark bookmark) {
+        return Collections.singletonList(initBookmarkListResponseDto(bookmark));
+    }
+
     public static Page<BookmarkListResponseDto> initBookmarkListResponseDtoPage(Bookmark bookmark) {
-        return new PageImpl<>(Collections.singletonList(initBookmarkListResponseDto(bookmark)));
+        return new PageImpl<>(initBookmarkListResponseDtoList(bookmark));
     }
 
     private Bookmark bookmark;
@@ -41,8 +46,8 @@ public class BookmarkListResponseDtoTest {
         assertEquals(bookmark.getRecipeId().getName(), bookmarkListResponseDto.getName());
         assertEquals(bookmark.getRecipeId().getThumbnail(), bookmarkListResponseDto.getThumbnail());
         assertEquals(bookmark.getRecipeId().getTime().getTimeName(), bookmarkListResponseDto.getTime());
-        assertEquals(bookmark.getRecipeId().getDifficulty().getDifficulty(), bookmarkListResponseDto.getDifficulty());
-        assertEquals(bookmark.getRecipeId().getComposition().getComposition(), bookmarkListResponseDto.getComposition());
+        assertEquals(bookmark.getRecipeId().getDifficulty().getDifficultyName(), bookmarkListResponseDto.getDifficulty());
+        assertEquals(bookmark.getRecipeId().getComposition().getCompositionName(), bookmarkListResponseDto.getComposition());
         assertEquals(bookmark.getRecipeId().getIngredients(), bookmarkListResponseDto.getIngredients());
         assertEquals(IS_BOOKMARK, bookmarkListResponseDto.getIsBookmark());
     }

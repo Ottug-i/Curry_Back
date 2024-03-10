@@ -16,7 +16,7 @@ public class UserUpdateRequestDto {
     private Long id;
 
     @NotBlank
-    @ApiModelProperty(notes = "회원 닉네임", example = "가경이", required = true)
+    @ApiModelProperty(notes = "회원 닉네임", example = "김카레", required = true)
     private String nickName;
 
     @Builder

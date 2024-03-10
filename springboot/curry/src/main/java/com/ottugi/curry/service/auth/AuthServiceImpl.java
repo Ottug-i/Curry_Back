@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenResponseDto reissueToken(String email, HttpServletRequest request, HttpServletResponse response) {
         Token refreshToken = findRefreshTokenByEmail(email);
-        validateToken(refreshToken, request);
+        validateRefreshToken(refreshToken, request);
         User user = userService.findUserByEmail(email);
         return issueToken(user, response);
     }
@@ -50,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new JwtAuthenticationException(BaseCode.JWT_REFRESH_TOKEN_EXPIRED));
     }
 
-    private void validateToken(Token refreshToken, HttpServletRequest request) {
+    private void validateRefreshToken(Token refreshToken, HttpServletRequest request) {
         if (!tokenProvider.validateToken(refreshToken.getValue(), request)) {
             throw new JwtAuthenticationException(BaseCode.JWT_REFRESH_TOKEN_EXPIRED);
         }

@@ -42,7 +42,7 @@ public class BookmarkController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
             @ApiImplicitParam(name = "page", value = "페이지 번호", example = "1"),
-            @ApiImplicitParam(name = "size", value = "페이지 사이즈", example = "10")
+            @ApiImplicitParam(name = "size", value = "페이지 크기", example = "10")
     })
     public ResponseEntity<Page<BookmarkListResponseDto>> bookmarkPage(@RequestParam @NotNull Long userId,
                                                                       @RequestParam @Min(1) int page,
@@ -55,7 +55,7 @@ public class BookmarkController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true),
             @ApiImplicitParam(name = "page", value = "페이지 번호", example = "1"),
-            @ApiImplicitParam(name = "size", value = "페이지 사이즈", example = "10"),
+            @ApiImplicitParam(name = "size", value = "페이지 크기", example = "10"),
             @ApiImplicitParam(name = "name", value = "레시피 이름", example = "고구마"),
             @ApiImplicitParam(name = "time", value = "레시피 시간", example = "15분 이내"),
             @ApiImplicitParam(name = "difficulty", value = "레시피 난이도", example = "아무나"),

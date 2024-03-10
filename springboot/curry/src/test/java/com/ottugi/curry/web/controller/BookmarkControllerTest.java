@@ -124,8 +124,8 @@ class BookmarkControllerTest {
                         .param("size", String.valueOf(SIZE))
                         .param("name", bookmark.getRecipeId().getName())
                         .param("time", bookmark.getRecipeId().getTime().getTimeName())
-                        .param("difficulty", bookmark.getRecipeId().getDifficulty().getDifficulty())
-                        .param("composition", bookmark.getRecipeId().getComposition().getComposition())
+                        .param("difficulty", bookmark.getRecipeId().getDifficulty().getDifficultyName())
+                        .param("composition", bookmark.getRecipeId().getComposition().getCompositionName())
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(bookmarkListResponseDtoPage.getSize())));

@@ -12,21 +12,21 @@ class TimeConverterTest {
     @Test
     @DisplayName("시간 열거형으로 정수형 데이터베이스 값으로 변환 테스트")
     void testConvertToDatabaseColumn() {
-        Time time = Time.FIVE_MINUTES;
+        Time entityTime = Time.FIVE_MINUTES;
 
-        int dbData = timeConverter.convertToDatabaseColumn(time);
+        int databaseTimeInMinutes = timeConverter.convertToDatabaseColumn(entityTime);
 
-        assertEquals(Time.FIVE_MINUTES.getTime(), dbData);
+        assertEquals(Time.FIVE_MINUTES.getTimeInMinutes(), databaseTimeInMinutes);
     }
 
     @Test
     @DisplayName("정수형 데이터베이스 값을 시간 열거형으로 변환 테스트")
     void testConvertToEntityAttribute() {
-        int dbData = Time.FIVE_MINUTES.getTime();
+        int databaseTimeInMinutes = Time.FIVE_MINUTES.getTimeInMinutes();
 
-        Time time = timeConverter.convertToEntityAttribute(dbData);
+        Time entityTime = timeConverter.convertToEntityAttribute(databaseTimeInMinutes);
 
-        assertNotNull(time);
-        assertEquals(Time.FIVE_MINUTES, time);
+        assertNotNull(entityTime);
+        assertEquals(Time.FIVE_MINUTES, entityTime);
     }
 }

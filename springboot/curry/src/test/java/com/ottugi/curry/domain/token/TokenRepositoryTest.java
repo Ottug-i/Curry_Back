@@ -38,9 +38,9 @@ public class TokenRepositoryTest {
     }
 
     @Test
-    @DisplayName("키인 이메일로 토큰 조회 테스트")
-    void testFindByKey() {
-        Optional<Token> foundToken = tokenRepository.findByKey(token.getKey());
+    @DisplayName("아이디(키)인 이메일로 토큰 조회 테스트")
+    void testFindById() {
+        Optional<Token> foundToken = tokenRepository.findById(token.getKey());
 
         assertEquals(token.getKey(), foundToken.get().getKey());
         assertEquals(token.getValue(), foundToken.get().getValue());

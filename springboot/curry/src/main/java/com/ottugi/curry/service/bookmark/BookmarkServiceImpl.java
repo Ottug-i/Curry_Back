@@ -23,7 +23,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     private final RecipeService recipeService;
 
     @Override
-    public Boolean addOrRemoveBookmark(BookmarkRequestDto requestDto) {
+    public boolean addOrRemoveBookmark(BookmarkRequestDto requestDto) {
         User user = userService.findUserByUserId(requestDto.getUserId());
         Recipe recipe = recipeService.findRecipeByRecipeId(requestDto.getRecipeId());
         if (isBookmarked(user, recipe)) {
@@ -39,7 +39,7 @@ public class BookmarkServiceImpl implements BookmarkService {
                 .stream()
                 .map(BookmarkListResponseDto::new)
                 .collect(Collectors.toList());
-        return PageConverter.convertToPage(bookmarkListResponseDtoList, page, size);
+        return PageConverter.convertListToPage(bookmarkListResponseDtoList, page, size);
     }
 
     @Override
@@ -48,15 +48,19 @@ public class BookmarkServiceImpl implements BookmarkService {
         User user = userService.findUserByUserId(userId);
         List<BookmarkListResponseDto> bookmarkListResponseDtoList = user.getBookmarkList()
                 .stream()
-                .filter(bookmark -> name == null || bookmark.getRecipeId().getName().contains(name))
-                .filter(bookmark -> recipeService.isRecipeMatchingCriteria(bookmark.getRecipeId(), time, difficulty, composition))
+                .filter(bookmark -> isNameMatched(bookmark, name))
+                .filter(bookmark -> recipeService.isRecipeMatchedCriteria(bookmark.getRecipeId(), time, difficulty, composition))
                 .map(BookmarkListResponseDto::new)
                 .collect(Collectors.toList());
-        return PageConverter.convertToPage(bookmarkListResponseDtoList, page, size);
+        return PageConverter.convertListToPage(bookmarkListResponseDtoList, page, size);
     }
 
-    private Boolean isBookmarked(User user, Recipe recipe) {
+    private boolean isBookmarked(User user, Recipe recipe) {
         return bookmarkRepository.existsByUserIdAndRecipeId(user, recipe);
+    }
+
+    private boolean isNameMatched(Bookmark bookmark, String name) {
+        return name == null || bookmark.getRecipeId().getName().contains(name);
     }
 
     private boolean createBookmark(User user, Recipe recipe) {

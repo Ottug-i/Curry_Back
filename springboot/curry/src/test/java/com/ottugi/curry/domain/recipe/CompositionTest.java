@@ -1,20 +1,25 @@
 package com.ottugi.curry.domain.recipe;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.ottugi.curry.except.InvalidException;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class CompositionTest {
     @Test
     @DisplayName("올바른 레시피 구성 열거형 값 테스트")
-    void testOfValidComposition() {
-        String validComposition = Composition.LIGHTLY.getComposition();
+    void testFindByValidCompositionName() {
+        String validComposition = Composition.LIGHTLY.getCompositionName();
 
-        Composition composition = Composition.ofComposition(validComposition);
+        Composition composition = Composition.findByCompositionName(validComposition);
 
         assertNotNull(composition);
         assertEquals(Composition.LIGHTLY, composition);
@@ -22,22 +27,29 @@ class CompositionTest {
 
     @Test
     @DisplayName("올바르지 않은 레시피 구성 열거형 값 테스트")
-    void testOfInvalidComposition() {
+    void testFindByInvalidCompositionName() {
         String invalidComposition = "부족하게";
 
-        Composition composition = Composition.ofComposition(invalidComposition);
-
-        assertNull(composition);
+        assertThatThrownBy(() -> Composition.findByCompositionName(invalidComposition))
+                .isInstanceOf(InvalidException.class);
     }
 
-    @Test
+    @ParameterizedTest
+    @MethodSource("provideCompositionTestValue")
     @DisplayName("동일한 구성 일치 테스트")
-    void testIsCompositionMatching() {
+    void testMatchesComposition(String composition) {
         Recipe recipe = RecipeTest.initRecipe();
-        String composition = Composition.LIGHTLY.getComposition();
 
-        Boolean result = Composition.isCompositionMatching(recipe, composition);
+        boolean result = Composition.matchesComposition(recipe, composition);
 
         assertTrue(result);
+    }
+
+    static Stream<Arguments> provideCompositionTestValue() {
+        return Stream.of(
+                Arguments.of(Composition.LIGHTLY.getCompositionName()),
+                Arguments.of(""),
+                null
+        );
     }
 }

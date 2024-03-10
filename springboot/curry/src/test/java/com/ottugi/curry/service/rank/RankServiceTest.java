@@ -68,8 +68,8 @@ class RankServiceTest {
 
         List<RankResponseDto> result = rankService.findTopRankList();
 
-        assertNotNull(result);
         assertEquals(1, result.size());
+        assertRankResponseDto(result.get(0));
 
         verify(rankRepository, times(1)).findAllByOrderByScoreDesc();
     }
@@ -82,5 +82,11 @@ class RankServiceTest {
         rankService.resetWeeklyRanking();
 
         verify(rankRepository, times(1)).deleteAll();
+    }
+
+    private void assertRankResponseDto(RankResponseDto resultDto) {
+        assertNotNull(resultDto);
+        assertEquals(rank.getName(), resultDto.getName());
+        assertEquals(rank.getScore(), resultDto.getScore());
     }
 }

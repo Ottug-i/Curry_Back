@@ -5,6 +5,6 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class NotFoundException extends IllegalArgumentException {
+public class InvalidException extends RuntimeException {
     private final BaseCode baseCode;
 }

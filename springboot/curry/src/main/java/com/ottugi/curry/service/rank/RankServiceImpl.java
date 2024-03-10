@@ -18,7 +18,7 @@ public class RankServiceImpl implements RankService {
 
     @Override
     public void updateOrAddRank(String name) {
-        if (isEmptySearchKeyword(name)) {
+        if (isEmptyName(name)) {
             return;
         }
         Rank rank = rankRepository.findByName(name);
@@ -43,7 +43,7 @@ public class RankServiceImpl implements RankService {
         rankRepository.deleteAll();
     }
 
-    private Boolean isEmptySearchKeyword(String name) {
+    private Boolean isEmptyName(String name) {
         return name == null || name.isEmpty();
     }
 

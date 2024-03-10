@@ -14,11 +14,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserSaveRequestDto {
     @Email
-    @ApiModelProperty(notes = "회원 이메일", example = "wn8926@sookmyung.ac.kr", required = true)
+    @ApiModelProperty(notes = "회원 이메일", example = "curry@gmail.com", required = true)
     private String email;
 
     @NotBlank
-    @ApiModelProperty(notes = "회원 닉네임", example = "가경이", required = true)
+    @ApiModelProperty(notes = "회원 닉네임", example = "카레", required = true)
     private String nickName;
 
     @Builder

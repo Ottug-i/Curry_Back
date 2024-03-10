@@ -3,7 +3,7 @@ package com.ottugi.curry.service.lately;
 import static com.ottugi.curry.domain.recipe.RecipeTest.GENRE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.mock;
@@ -52,9 +52,7 @@ class LatelyServiceTest {
     void testAddLately() {
         when(latelyRepository.save(any(Lately.class))).thenReturn(lately);
 
-        Boolean result = latelyService.addLately(lately.getUserId(), lately.getRecipeId());
-
-        assertTrue(result);
+        latelyService.addLately(lately.getUserId(), lately.getRecipeId());
 
         verify(latelyRepository, times(1)).save(any(Lately.class));
     }
@@ -68,6 +66,7 @@ class LatelyServiceTest {
         List<LatelyListResponseDto> result = latelyService.findLatelyListByUserId(lately.getUserId().getId());
 
         assertEquals(1, result.size());
+        assertLatelyListResponseDto(result.get(0));
 
         verify(userService, times(1)).findUserByUserId(anyLong());
     }
@@ -79,7 +78,7 @@ class LatelyServiceTest {
         when(latelyRepository.findTop1ByUserIdOrderByIdDesc(any(User.class))).thenReturn(lately);
         when(lately.getRecipeId().getGenre()).thenReturn(GENRE);
 
-        String result = latelyService.findLatelyGenreFor3DCharacter(lately.getUserId().getId());
+        String result = latelyService.findLatelyMainGenreCharacterFor3DCharacter(lately.getUserId().getId());
 
         assertEquals("vegetable", result);
 
@@ -93,10 +92,17 @@ class LatelyServiceTest {
         when(userService.findUserByUserId(anyLong())).thenReturn(lately.getUserId());
         when(latelyRepository.findTop1ByUserIdOrderByIdDesc(any(User.class))).thenReturn(null);
 
-        assertThatThrownBy(() -> latelyService.findLatelyGenreFor3DCharacter(lately.getUserId().getId()))
+        assertThatThrownBy(() -> latelyService.findLatelyMainGenreCharacterFor3DCharacter(lately.getUserId().getId()))
                 .isInstanceOf(NotFoundException.class);
 
         verify(userService, times(1)).findUserByUserId(anyLong());
         verify(latelyRepository, times(1)).findTop1ByUserIdOrderByIdDesc(any(User.class));
+    }
+
+    private void assertLatelyListResponseDto(LatelyListResponseDto resultDto) {
+        assertNotNull(resultDto);
+        assertEquals(lately.getRecipeId().getRecipeId(), resultDto.getRecipeId());
+        assertEquals(lately.getRecipeId().getName(), resultDto.getName());
+        assertEquals(lately.getRecipeId().getThumbnail(), resultDto.getThumbnail());
     }
 }

@@ -33,9 +33,9 @@ public class LatelyController {
     }
 
     @GetMapping("/character")
-    @ApiOperation(value = "최근 본 레시피에 따른 3D 모델 캐릭터 조회", notes = "최근 본 레시피의 메인 재료에 따른 3D 모델 캐릭터를 조회합니다.")
+    @ApiOperation(value = "최근 본 레시피에 따른 3D 모델 캐릭터 조회", notes = "3D 메타 캐릭터 선택 전환을 위해 회원 아이디에 따른 최근 본 레시피의 메인 장르의 3D 메타 모델 캐릭터 모델 종류를 조회합니다.")
     @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", readOnly = true)
-    public ResponseEntity<String> latelyGenreFor3DCharacter(@RequestParam @NotNull Long userId) {
-        return ResponseEntity.ok().body(latelyService.findLatelyGenreFor3DCharacter(userId));
+    public ResponseEntity<String> latelyMainGenreCharacterFor3DCharacter(@RequestParam @NotNull Long userId) {
+        return ResponseEntity.ok().body(latelyService.findLatelyMainGenreCharacterFor3DCharacter(userId));
     }
 }

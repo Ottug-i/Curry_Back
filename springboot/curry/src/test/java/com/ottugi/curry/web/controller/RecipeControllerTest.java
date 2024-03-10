@@ -94,8 +94,8 @@ public class RecipeControllerTest {
                         .param("size", String.valueOf(SIZE))
                         .param("name", recipe.getName())
                         .param("time", recipe.getTime().getTimeName())
-                        .param("difficulty", recipe.getDifficulty().getDifficulty())
-                        .param("composition", recipe.getComposition().getComposition())
+                        .param("difficulty", recipe.getDifficulty().getDifficultyName())
+                        .param("composition", recipe.getComposition().getCompositionName())
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(recipeListResponseDtoPage.getSize())));

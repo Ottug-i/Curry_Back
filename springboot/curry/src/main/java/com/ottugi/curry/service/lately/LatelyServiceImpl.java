@@ -23,11 +23,10 @@ public class LatelyServiceImpl implements LatelyService {
     private final UserService userService;
 
     @Override
-    public Boolean addLately(User user, Recipe recipe) {
+    public void addLately(User user, Recipe recipe) {
         removeDuplicatedLately(user, recipe);
         limitLatelySize(user);
         createLately(user, recipe);
-        return true;
     }
 
     @Override
@@ -40,11 +39,11 @@ public class LatelyServiceImpl implements LatelyService {
     }
 
     @Override
-    public String findLatelyGenreFor3DCharacter(Long userId) {
+    public String findLatelyMainGenreCharacterFor3DCharacter(Long userId) {
         User user = userService.findUserByUserId(userId);
-        Lately lately = latelyRepository.findTop1ByUserIdOrderByIdDesc(user);
+        Lately lately = findLatestLatelyByUser(user);
         if (lately != null) {
-            return Genre.findMainGenre(lately.getRecipeId());
+            return Genre.findMainGenreCharacter(lately.getRecipeId());
         }
         throw new NotFoundException(BaseCode.GENRE_NOT_FOUND);
     }
@@ -66,5 +65,9 @@ public class LatelyServiceImpl implements LatelyService {
         lately.setRecipe(recipe);
         latelyRepository.save(lately);
         user.addLatelyList(lately);
+    }
+
+    private Lately findLatestLatelyByUser(User user) {
+        return latelyRepository.findTop1ByUserIdOrderByIdDesc(user);
     }
 }

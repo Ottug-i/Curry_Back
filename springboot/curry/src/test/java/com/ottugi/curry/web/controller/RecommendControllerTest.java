@@ -28,19 +28,19 @@ import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.jwt.JwtAuthenticationFilter;
 import com.ottugi.curry.service.ratings.RatingsService;
 import com.ottugi.curry.service.recommend.RecommendService;
+import com.ottugi.curry.web.dto.ratings.RatingRandomRecipeListResponseDto;
+import com.ottugi.curry.web.dto.ratings.RatingRandomRecipeListResponseDtoTest;
 import com.ottugi.curry.web.dto.ratings.RatingRequestDto;
 import com.ottugi.curry.web.dto.ratings.RatingRequestDtoTest;
 import com.ottugi.curry.web.dto.ratings.RatingResponseDto;
 import com.ottugi.curry.web.dto.ratings.RatingResponseDtoTest;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDtoTest;
-import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
-import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDtoTest;
-import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDto;
-import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDtoTest;
-import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
-import com.ottugi.curry.web.dto.recommend.RecommendListResponseDtoTest;
-import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
+import com.ottugi.curry.web.dto.recommend.IngredientDetectionRecipeListResponseDto;
+import com.ottugi.curry.web.dto.recommend.IngredientDetectionRecipeListResponseDtoTest;
+import com.ottugi.curry.web.dto.recommend.IngredientDetectionRecipeRequestDto;
+import com.ottugi.curry.web.dto.recommend.IngredientDetectionRecipeRequestDtoTest;
+import com.ottugi.curry.web.dto.recommend.RecommendRecipeRequestDto;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,7 +86,7 @@ public class RecommendControllerTest {
     @Test
     @DisplayName("초기 평점을 위한 랜덤 레시피 목록 조회 테스트")
     void testRandomRecipeList() throws Exception {
-        List<RecommendListResponseDto> recommendListResponseDtoList = RecommendListResponseDtoTest.initRecommendListResponseDtoList(recipe);
+        List<RatingRandomRecipeListResponseDto> recommendListResponseDtoList = RatingRandomRecipeListResponseDtoTest.initRatingRandomRecipeListResponseDtoList(recipe);
         when(ratingsService.findRandomRecipeListForResearch()).thenReturn(recommendListResponseDtoList);
 
         mockMvc.perform(get("/api/recommend/initial")
@@ -149,18 +149,18 @@ public class RecommendControllerTest {
     @Test
     @DisplayName("재료 인식에 따른 추천 레시피 조회 테스트")
     void testRecipePageByIngredientsDetection() throws Exception {
-        Page<RecipeIngListResponseDto> recipeIngListResponseDtoPage = RecipeIngListResponseDtoTest.initRecipeIngListResponseDtoPage(recipe);
-        when(recommendService.findRecipePageByIngredientsDetection(any(RecipeIngRequestDto.class))).thenReturn(recipeIngListResponseDtoPage);
+        Page<IngredientDetectionRecipeListResponseDto> recipeIngListResponseDtoPage = IngredientDetectionRecipeListResponseDtoTest.initIngredientDetectionRecipeListResponseDtoPage(recipe);
+        when(recommendService.findRecipePageByIngredientsDetection(any(IngredientDetectionRecipeRequestDto.class))).thenReturn(recipeIngListResponseDtoPage);
 
-        RecipeIngRequestDto recipeIngRequestDto = RecipeIngRequestDtoTest.initRecipeIngRequestDto(user, recipe);
+        IngredientDetectionRecipeRequestDto ingredientDetectionRecipeRequestDto = IngredientDetectionRecipeRequestDtoTest.initIngredientDetectionRecipeRequestDto(user, recipe);
         mockMvc.perform(post("/api/recommend/ingredients/list")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(recipeIngRequestDto))
+                        .content(new ObjectMapper().writeValueAsString(ingredientDetectionRecipeRequestDto))
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(recipeIngListResponseDtoPage.getSize())));
 
-        verify(recommendService, times(1)).findRecipePageByIngredientsDetection(any(RecipeIngRequestDto.class));
+        verify(recommendService, times(1)).findRecipePageByIngredientsDetection(any(IngredientDetectionRecipeRequestDto.class));
     }
 
     @Test
@@ -168,7 +168,7 @@ public class RecommendControllerTest {
     void testRecipeListByBookmarkRecommend() throws Exception {
         List<RecipeListResponseDto> recipeListResponseDtoList = RecipeListResponseDtoTest.initRecipeListResponseDtoList(recipe);
         when(recommendService.findRecipeIdListByBookmarkRecommend(anyLong(), anyInt())).thenReturn(new ArrayList<>());
-        when(recommendService.findBookmarkOrRatingRecommendList(any(RecommendRequestDto.class))).thenReturn(recipeListResponseDtoList);
+        when(recommendService.findBookmarkOrRatingRecommendList(any(RecommendRecipeRequestDto.class))).thenReturn(recipeListResponseDtoList);
 
         mockMvc.perform(get("/api/recommend/bookmark/list")
                         .param("userId", String.valueOf(user.getId()))
@@ -179,7 +179,7 @@ public class RecommendControllerTest {
                 .andExpect(jsonPath("$", hasSize(recipeListResponseDtoList.size())));
 
         verify(recommendService, times(1)).findRecipeIdListByBookmarkRecommend(anyLong(), anyInt());
-        verify(recommendService, times(1)).findBookmarkOrRatingRecommendList(any(RecommendRequestDto.class));
+        verify(recommendService, times(1)).findBookmarkOrRatingRecommendList(any(RecommendRecipeRequestDto.class));
     }
 
     @Test
@@ -187,7 +187,7 @@ public class RecommendControllerTest {
     void testRecipeListByRatingRecommend() throws Exception {
         List<RecipeListResponseDto> recipeListResponseDtoList = RecipeListResponseDtoTest.initRecipeListResponseDtoList(recipe);
         when(recommendService.findRecipeIdListByRatingRecommend(anyLong(), anyInt(), any())).thenReturn(new ArrayList<>());
-        when(recommendService.findBookmarkOrRatingRecommendList(any(RecommendRequestDto.class))).thenReturn(recipeListResponseDtoList);
+        when(recommendService.findBookmarkOrRatingRecommendList(any(RecommendRecipeRequestDto.class))).thenReturn(recipeListResponseDtoList);
 
         mockMvc.perform(get("/api/recommend/rating/list")
                         .param("userId", String.valueOf(user.getId()))
@@ -197,6 +197,6 @@ public class RecommendControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(recipeListResponseDtoList.size())));
 
-        verify(recommendService, times(1)).findBookmarkOrRatingRecommendList(any(RecommendRequestDto.class));
+        verify(recommendService, times(1)).findBookmarkOrRatingRecommendList(any(RecommendRecipeRequestDto.class));
     }
 }

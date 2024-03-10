@@ -6,7 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 public class PageConverter {
-    public static <T> Page<T> convertToPage(List<T> dtoList, int page, int size) {
+    public static <T> Page<T> convertListToPage(List<T> dtoList, int page, int size) {
         int totalItems = dtoList.size();
         int fromIndex = Math.max(0, page - 1) * size;
         int toIndex = Math.min(totalItems, fromIndex + size);

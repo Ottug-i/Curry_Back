@@ -21,8 +21,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String path = request.getServletPath();
             if (path.startsWith("/auth")) {
@@ -35,7 +34,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
                 filterChain.doFilter(request, response);
             }
-
         } catch (ExpiredJwtException e) {
             response.setContentType("application/json; charset=UTF-8");
             ErrorResponse errorResponse = new ErrorResponse(BaseCode.JWT_ACCESS_TOKEN_EXPIRED);

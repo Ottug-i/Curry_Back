@@ -1,6 +1,7 @@
 package com.ottugi.curry.service.user;
 
 import static com.ottugi.curry.domain.user.UserTest.NEW_NICKNAME;
+import static com.ottugi.curry.domain.user.UserTest.NICKNAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,11 +47,7 @@ class UserServiceTest {
 
         User result = userService.findUserByUserId(user.getId());
 
-        assertNotNull(result);
-        assertEquals(user.getId(), result.getId());
-        assertEquals(user.getEmail(), result.getEmail());
-        assertEquals(user.getNickName(), result.getNickName());
-        assertEquals(user.getRole(), result.getRole());
+        assertUser(result);
 
         verify(userRepository, times(1)).findById(anyLong());
     }
@@ -62,11 +59,7 @@ class UserServiceTest {
 
         User result = userService.findUserByEmail(user.getEmail());
 
-        assertNotNull(result);
-        assertEquals(user.getId(), result.getId());
-        assertEquals(user.getEmail(), result.getEmail());
-        assertEquals(user.getNickName(), result.getNickName());
-        assertEquals(user.getRole(), result.getRole());
+        assertUser(result);
 
         verify(userRepository, times(1)).findByEmail(anyString());
     }
@@ -78,11 +71,7 @@ class UserServiceTest {
 
         UserResponseDto result = userService.findUserProfileByUserId(user.getId());
 
-        assertNotNull(result);
-        assertEquals(user.getId(), result.getId());
-        assertEquals(user.getEmail(), result.getEmail());
-        assertEquals(user.getNickName(), result.getNickName());
-        assertEquals(user.getRole().getRole(), result.getRole());
+        assertUserResponseDto(result, NICKNAME);
 
         verify(userRepository, times(1)).findById(anyLong());
     }
@@ -95,11 +84,7 @@ class UserServiceTest {
         UserUpdateRequestDto userUpdateRequestDto = UserUpdateRequestDtoTest.initUserUpdateRequestDto(user);
         UserResponseDto result = userService.modifyUserProfile(userUpdateRequestDto);
 
-        assertNotNull(result);
-        assertEquals(user.getId(), result.getId());
-        assertEquals(user.getEmail(), result.getEmail());
-        assertEquals(user.getNickName(), NEW_NICKNAME);
-        assertEquals(user.getRole().getRole(), result.getRole());
+        assertUserResponseDto(result, NEW_NICKNAME);
 
         verify(userRepository, times(1)).findById(anyLong());
     }
@@ -109,10 +94,26 @@ class UserServiceTest {
     void testWithdrawUserAccount() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
 
-        Boolean result = userService.withdrawUserAccount(user.getId());
+        boolean result = userService.withdrawUserAccount(user.getId());
 
         assertTrue(result);
 
         verify(userRepository, times(1)).findById(anyLong());
+    }
+
+    private void assertUser(User resultEntity) {
+        assertNotNull(resultEntity);
+        assertEquals(user.getId(), resultEntity.getId());
+        assertEquals(user.getEmail(), resultEntity.getEmail());
+        assertEquals(user.getNickName(), NICKNAME);
+        assertEquals(user.getRole(), resultEntity.getRole());
+    }
+
+    private void assertUserResponseDto(UserResponseDto resultDto, String nickName) {
+        assertNotNull(resultDto);
+        assertEquals(user.getId(), resultDto.getId());
+        assertEquals(user.getEmail(), resultDto.getEmail());
+        assertEquals(user.getNickName(), nickName);
+        assertEquals(user.getRole().getRole(), resultDto.getRole());
     }
 }

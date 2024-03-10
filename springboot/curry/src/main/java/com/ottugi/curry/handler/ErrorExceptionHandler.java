@@ -5,6 +5,7 @@ import static com.ottugi.curry.except.ValidationError.getParameterName;
 import com.ottugi.curry.except.BaseCode;
 import com.ottugi.curry.except.BaseException;
 import com.ottugi.curry.except.ErrorResponse;
+import com.ottugi.curry.except.InvalidException;
 import com.ottugi.curry.except.JwtAuthenticationException;
 import com.ottugi.curry.except.NotFoundException;
 import com.ottugi.curry.except.ValidationError;
@@ -38,6 +39,12 @@ public class ErrorExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleJwtAccessDeniedException(JwtAuthenticationException e) {
         log.error("exceptionHandler throw BaseException : {} {}", e.getBaseCode(), e.getBaseCode().getMessage());
         return ErrorResponse.toResponseEntity(e.getBaseCode());
+    }
+
+    @ExceptionHandler(InvalidException.class)
+    protected ResponseEntity<ErrorResponse> handleInvalidException(InvalidException e) {
+        log.error("exceptionHandler throw BaseException : {} {}", e.getBaseCode(), e.getBaseCode().getMessage());
+        return ErrorResponse.toResponseEntity(BaseCode.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

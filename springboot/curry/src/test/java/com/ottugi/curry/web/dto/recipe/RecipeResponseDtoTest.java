@@ -30,10 +30,10 @@ public class RecipeResponseDtoTest {
         assertEquals(recipe.getName(), recipeResponseDto.getName());
         assertEquals(recipe.getThumbnail(), recipeResponseDto.getThumbnail());
         assertEquals(recipe.getTime().getTimeName(), recipeResponseDto.getTime());
-        assertEquals(recipe.getDifficulty().getDifficulty(), recipeResponseDto.getDifficulty());
-        assertEquals(recipe.getComposition().getComposition(), recipeResponseDto.getComposition());
+        assertEquals(recipe.getDifficulty().getDifficultyName(), recipeResponseDto.getDifficulty());
+        assertEquals(recipe.getComposition().getCompositionName(), recipeResponseDto.getComposition());
         assertEquals(recipe.getIngredients(), recipeResponseDto.getIngredients());
-        assertEquals(recipe.getServings().getServings(), recipeResponseDto.getServings());
+        assertEquals(recipe.getServings().getServingName(), recipeResponseDto.getServings());
         assertEquals(recipe.getOrders(), recipeResponseDto.getOrders());
         assertEquals(recipe.getPhoto(), recipeResponseDto.getPhoto());
         assertEquals(IS_BOOKMARK, recipeResponseDto.getIsBookmark());

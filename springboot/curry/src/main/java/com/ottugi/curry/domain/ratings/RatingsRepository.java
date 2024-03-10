@@ -6,9 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface RatingsRepository extends JpaRepository<Ratings, Long> {
-    Ratings findByUserIdAndRecipeId(Long userId, Long recipeId);
-
     Boolean existsByUserIdAndRecipeId(Long userId, Long recipeId);
+
+    Ratings findByUserIdAndRecipeId(Long userId, Long recipeId);
 
     @Transactional
     void deleteByUserIdAndRecipeId(Long userId, Long recipeId);

@@ -1,22 +1,23 @@
 package com.ottugi.curry.domain.recipe;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserTest;
+import com.ottugi.curry.except.InvalidException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class GenreTest {
     @Test
     @DisplayName("올바른 레시피 장르 열거형 값 테스트")
-    void testOfValidGenre() {
-        String validGenreNumber = Genre.MEAT.getIngredientNumber().get(0);
+    void testFindByValidIngredientNumber() {
+        String validGenreNumber = Genre.MEAT.getIngredientNumbers().get(0);
 
-        Genre genre = Genre.ofGenre(validGenreNumber);
+        Genre genre = Genre.findByIngredientNumber(validGenreNumber);
 
         assertNotNull(genre);
         assertEquals(Genre.MEAT, genre);
@@ -24,20 +25,19 @@ class GenreTest {
 
     @Test
     @DisplayName("올바르지 않은 레시피 장르 열거형 값 테스트")
-    void testOfInvalidGenre() {
+    void testFindByInvalidIngredientNumber() {
         String invalidGenreNumber = "ing26";
 
-        Genre genre = Genre.ofGenre(invalidGenreNumber);
-
-        assertNull(genre);
+        assertThatThrownBy(() -> Genre.findByIngredientNumber(invalidGenreNumber))
+                .isInstanceOf(InvalidException.class);
     }
 
     @Test
     @DisplayName("레시피의 메인 장르 찾기 테스트")
-    void testFindMainGenre() {
+    void testFindMainGenreCharacter() {
         Recipe recipe = RecipeTest.initRecipe();
 
-        String mainGenre = Genre.findMainGenre(recipe);
+        String mainGenre = Genre.findMainGenreCharacter(recipe);
 
         assertEquals("vegetable", mainGenre);
     }

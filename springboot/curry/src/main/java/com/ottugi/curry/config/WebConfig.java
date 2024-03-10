@@ -13,12 +13,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
-    private String jwtHeader;
-
-    public WebConfig(GlobalConfig config) {
-        this.jwtHeader = config.getJwt_header();
-    }
-
     @Bean
     public BaseHandlerInterceptor baseHandlerInterceptor() {
         return new BaseHandlerInterceptor();
@@ -41,7 +35,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
                 .allowedOriginPatterns("*")
-                .exposedHeaders(jwtHeader)
+                .exposedHeaders(config().getJwtHeader())
                 .allowedMethods(
                         HttpMethod.GET.name(),
                         HttpMethod.HEAD.name(),

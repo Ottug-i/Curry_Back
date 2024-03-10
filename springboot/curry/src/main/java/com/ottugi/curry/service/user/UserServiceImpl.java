@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean withdrawUserAccount(Long userId) {
+    public boolean withdrawUserAccount(Long userId) {
         User user = findUserByUserId(userId);
         user.withdrawUser();
         return true;

@@ -37,8 +37,8 @@ public class BookmarkListResponseDto {
         this.name = recipe.getName();
         this.thumbnail = recipe.getThumbnail();
         this.time = recipe.getTime().getTimeName();
-        this.difficulty = recipe.getDifficulty().getDifficulty();
-        this.composition = recipe.getComposition().getComposition();
+        this.difficulty = recipe.getDifficulty().getDifficultyName();
+        this.composition = recipe.getComposition().getCompositionName();
         this.ingredients = recipe.getIngredients();
     }
 }

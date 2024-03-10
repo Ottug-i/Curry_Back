@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RecommendRequestDto {
+public class RecommendRecipeRequestDto {
     @NotNull
     @ApiModelProperty(notes = "회원 기본키", example = "1", required = true)
     private Long userId;
@@ -21,7 +21,7 @@ public class RecommendRequestDto {
     private List<Long> recipeId;
 
     @Builder
-    public RecommendRequestDto(Long userId, List<Long> recipeId) {
+    public RecommendRecipeRequestDto(Long userId, List<Long> recipeId) {
         this.userId = userId;
         this.recipeId = recipeId;
     }

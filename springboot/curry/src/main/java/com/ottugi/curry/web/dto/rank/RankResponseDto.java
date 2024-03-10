@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class RankResponseDto {
-    @ApiModelProperty(notes = "검색어", example = "달걀")
+    @ApiModelProperty(notes = "레시피 검색어 이름", example = "달걀")
     private final String name;
 
     @ApiModelProperty(notes = "검색 횟수", example = "1")

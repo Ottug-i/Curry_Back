@@ -1,6 +1,9 @@
 package com.ottugi.curry.domain.recipe;
 
-import java.util.Arrays;
+import com.ottugi.curry.except.BaseCode;
+import com.ottugi.curry.except.InvalidException;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -13,19 +16,28 @@ public enum Difficulty {
     ADVANCED("고급"),
     MASTER("마스터");
 
-    private String difficulty;
+    private final String difficultyName;
 
-    Difficulty(String difficulty) {
-        this.difficulty = difficulty;
+    private static final Map<String, Difficulty> DIFFICULTY_MAP = new HashMap<>();
+
+    static {
+        for (Difficulty difficulty : Difficulty.values()) {
+            DIFFICULTY_MAP.put(difficulty.getDifficultyName(), difficulty);
+        }
     }
 
-    public static Difficulty ofDifficulty(String difficulty) {
-        return Arrays.stream(Difficulty.values())
-                .filter(d -> d.getDifficulty().equals(difficulty))
-                .findAny().orElse(null);
+    public static Difficulty findByDifficultyName(String difficulty) {
+        Difficulty foundDifficulty = DIFFICULTY_MAP.get(difficulty);
+        if (foundDifficulty == null) {
+            throw new InvalidException(BaseCode.BAD_REQUEST);
+        }
+        return foundDifficulty;
     }
 
-    public static Boolean isDifficultyMatching(Recipe recipe, String difficulty) {
-        return recipe.getDifficulty().getDifficulty().contains(difficulty);
+    public static boolean matchesDifficulty(Recipe recipe, String difficulty) {
+        if (difficulty == null || difficulty.isBlank()) {
+            return true;
+        }
+        return recipe.getDifficulty().equals(findByDifficultyName(difficulty));
     }
 }

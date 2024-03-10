@@ -44,7 +44,7 @@ public class RecipeServiceImpl implements RecipeService {
         User user = userService.findUserByUserId(userId);
         List<RecipeListResponseDto> recipeListResponseDtoList = findRecipesBySearchBox(user, name, time, difficulty, composition);
         updateOrAddRank(recipeListResponseDtoList, name);
-        return PageConverter.convertToPage(recipeListResponseDtoList, page, size);
+        return PageConverter.convertListToPage(recipeListResponseDtoList, page, size);
     }
 
     @Override
@@ -68,22 +68,18 @@ public class RecipeServiceImpl implements RecipeService {
         if (time.isBlank() && difficulty.isBlank() && composition.isBlank()) {
             return recipe -> true;
         }
-        return recipe -> isRecipeMatchingCriteria(recipe, time, difficulty, composition);
+        return recipe -> isRecipeMatchedCriteria(recipe, time, difficulty, composition);
     }
 
     @Override
-    public Boolean isRecipeMatchingCriteria(Recipe recipe, String time, String difficulty, String composition) {
-        if (time == null || time.isEmpty()) {
-            return Difficulty.isDifficultyMatching(recipe, difficulty)
-                    && Composition.isCompositionMatching(recipe, composition);
-        }
-        return Time.isTimeMatching(recipe, time)
-                && Difficulty.isDifficultyMatching(recipe, difficulty)
-                && Composition.isCompositionMatching(recipe, composition);
+    public boolean isRecipeMatchedCriteria(Recipe recipe, String time, String difficulty, String composition) {
+        return Time.matchesTime(recipe, time)
+                && Difficulty.matchesDifficulty(recipe, difficulty)
+                && Composition.matchesComposition(recipe, composition);
     }
 
     @Override
-    public Boolean isRecipeBookmarked(User user, Recipe recipe) {
+    public boolean isRecipeBookmarked(User user, Recipe recipe) {
         return user.getBookmarkList()
                 .stream()
                 .anyMatch(bookmark -> bookmark.getRecipeId().equals(recipe));

@@ -1,5 +1,6 @@
 package com.ottugi.curry.service.recipe;
 
+import static com.ottugi.curry.domain.bookmark.BookmarkTest.IS_BOOKMARK;
 import static com.ottugi.curry.domain.recipe.RecipeTest.INGREDIENT;
 import static com.ottugi.curry.domain.recipe.RecipeTest.PAGE;
 import static com.ottugi.curry.domain.recipe.RecipeTest.SIZE;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.bookmark.BookmarkTest;
+import com.ottugi.curry.domain.recipe.Genre;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.domain.recipe.RecipeTest;
@@ -71,22 +73,11 @@ class RecipeServiceTest {
     void testFindRecipeByUserIdAndRecipeId() {
         when(userService.findUserByUserId(anyLong())).thenReturn(user);
         when(recipeRepository.findByRecipeId(anyLong())).thenReturn(Optional.ofNullable(recipe));
-        when(latelyService.addLately(any(User.class), any(Recipe.class))).thenReturn(true);
+        doNothing().when(latelyService).addLately(any(User.class), any(Recipe.class));
 
         RecipeResponseDto result = recipeService.findRecipeByUserIdAndRecipeId(user.getId(), recipe.getRecipeId());
 
-        assertNotNull(result);
-        assertEquals(recipe.getRecipeId(), result.getRecipeId());
-        assertEquals(recipe.getName(), result.getName());
-        assertEquals(recipe.getThumbnail(), result.getThumbnail());
-        assertEquals(recipe.getTime().getTimeName(), result.getTime());
-        assertEquals(recipe.getDifficulty().getDifficulty(), result.getDifficulty());
-        assertEquals(recipe.getComposition().getComposition(), result.getComposition());
-        assertEquals(recipe.getIngredients(), result.getIngredients());
-        assertEquals(recipe.getServings().getServings(), result.getServings());
-        assertEquals(recipe.getOrders(), result.getOrders());
-        assertEquals(recipe.getPhoto(), result.getPhoto());
-        assertEquals(true, result.getIsBookmark());
+        assertRecipeResponseDto(result);
 
         verify(userService, times(1)).findUserByUserId(anyLong());
         verify(recipeRepository, times(1)).findByRecipeId(anyLong());
@@ -101,9 +92,10 @@ class RecipeServiceTest {
         doNothing().when(rankService).updateOrAddRank(anyString());
 
         Page<RecipeListResponseDto> result = recipeService.findRecipePageBySearchBox(user.getId(), PAGE, SIZE,
-                recipe.getName(), recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficulty(), recipe.getComposition().getComposition());
+                recipe.getName(), recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficultyName(), recipe.getComposition().getCompositionName());
 
         assertEquals(1, result.getTotalElements());
+        assertRecipeListResponseDto(result.getContent().get(0));
 
         verify(userService, times(1)).findUserByUserId(anyLong());
         verify(recipeRepository, times(1)).findByNameContaining(anyString());
@@ -117,8 +109,7 @@ class RecipeServiceTest {
 
         Recipe result = recipeService.findRecipeByRecipeId(recipe.getRecipeId());
 
-        assertNotNull(result);
-        assertEquals(recipe, result);
+        assertRecipe(result);
 
         verify(recipeRepository, times(1)).findByRecipeId(anyLong());
     }
@@ -131,6 +122,7 @@ class RecipeServiceTest {
         List<Recipe> result = recipeService.findRecipeListByRecipeIdIn(Collections.singletonList(recipe.getRecipeId()));
 
         assertEquals(1, result.size());
+        assertRecipe(result.get(0));
 
         verify(recipeRepository, times(1)).findByRecipeIdIn(anyList());
     }
@@ -143,6 +135,7 @@ class RecipeServiceTest {
         List<Recipe> result = recipeService.findByRecipeListByIngredientsContaining(INGREDIENT);
 
         assertEquals(1, result.size());
+        assertRecipe(result.get(0));
         assertTrue(result.get(0).getIngredients().contains(INGREDIENT));
 
         verify(recipeRepository, times(1)).findByIngredientsContaining(anyString());
@@ -152,7 +145,7 @@ class RecipeServiceTest {
     @DisplayName("레시피 옵션에 따른 레시피 필터 설정 테스트")
     void testFilterPredicateForOptions() {
         Predicate<Recipe> result = recipeService.filterPredicateForOptions(
-                recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficulty(), recipe.getComposition().getComposition());
+                recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficultyName(), recipe.getComposition().getCompositionName());
 
         assertTrue(result.test(recipe));
     }
@@ -168,8 +161,8 @@ class RecipeServiceTest {
     @Test
     @DisplayName("레시피 옵션에 따른 레시피 매칭 설정 테스트")
     void testIsRecipeMatchingCriteria() {
-        Boolean result = recipeService.isRecipeMatchingCriteria(recipe,
-                recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficulty(), recipe.getComposition().getComposition());
+        boolean result = recipeService.isRecipeMatchedCriteria(recipe,
+                recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficultyName(), recipe.getComposition().getCompositionName());
 
         assertTrue(result);
     }
@@ -177,8 +170,8 @@ class RecipeServiceTest {
     @Test
     @DisplayName("레시피 옵션에 따른 레시피 매칭 설정 시 시간 옵션 제외 테스트")
     void testIsRecipeMatchingCriteriaWithTimeNull() {
-        Boolean result = recipeService.isRecipeMatchingCriteria(recipe,
-                null, recipe.getDifficulty().getDifficulty(), recipe.getComposition().getComposition());
+        boolean result = recipeService.isRecipeMatchedCriteria(recipe,
+                null, recipe.getDifficulty().getDifficultyName(), recipe.getComposition().getCompositionName());
 
         assertTrue(result);
     }
@@ -186,8 +179,49 @@ class RecipeServiceTest {
     @Test
     @DisplayName("회원과 레시피에 따른 레시피 북마크 여부 조회 테스트")
     void testIsRecipeBookmarked() {
-        Boolean result = recipeService.isRecipeBookmarked(user, recipe);
+        boolean result = recipeService.isRecipeBookmarked(user, recipe);
 
         assertTrue(result);
+    }
+
+    private void assertRecipe(Recipe resultEntity) {
+        assertNotNull(resultEntity);
+        assertEquals(recipe.getRecipeId(), resultEntity.getRecipeId());
+        assertEquals(recipe.getName(), resultEntity.getName());
+        assertEquals(recipe.getThumbnail(), resultEntity.getThumbnail());
+        assertEquals(recipe.getTime(), resultEntity.getTime());
+        assertEquals(recipe.getDifficulty(), resultEntity.getDifficulty());
+        assertEquals(recipe.getComposition(), resultEntity.getComposition());
+        assertEquals(recipe.getIngredients(), resultEntity.getIngredients());
+        assertEquals(recipe.getServings(), resultEntity.getServings());
+        assertEquals(recipe.getOrders(), resultEntity.getOrders());
+        assertEquals(recipe.getPhoto(), resultEntity.getPhoto());
+    }
+
+    private void assertRecipeResponseDto(RecipeResponseDto resultDto) {
+        assertNotNull(resultDto);
+        assertEquals(recipe.getRecipeId(), resultDto.getRecipeId());
+        assertEquals(recipe.getName(), resultDto.getName());
+        assertEquals(recipe.getThumbnail(), resultDto.getThumbnail());
+        assertEquals(recipe.getTime().getTimeName(), resultDto.getTime());
+        assertEquals(recipe.getDifficulty().getDifficultyName(), resultDto.getDifficulty());
+        assertEquals(recipe.getComposition().getCompositionName(), resultDto.getComposition());
+        assertEquals(recipe.getIngredients(), resultDto.getIngredients());
+        assertEquals(recipe.getServings().getServingName(), resultDto.getServings());
+        assertEquals(recipe.getOrders(), resultDto.getOrders());
+        assertEquals(recipe.getPhoto(), resultDto.getPhoto());
+    }
+
+    private void assertRecipeListResponseDto(RecipeListResponseDto resultDto) {
+        assertNotNull(resultDto);
+        assertEquals(recipe.getRecipeId(), resultDto.getRecipeId());
+        assertEquals(recipe.getName(), resultDto.getName());
+        assertEquals(recipe.getThumbnail(), resultDto.getThumbnail());
+        assertEquals(recipe.getTime().getTimeName(), resultDto.getTime());
+        assertEquals(recipe.getDifficulty().getDifficultyName(), resultDto.getDifficulty());
+        assertEquals(recipe.getComposition().getCompositionName(), resultDto.getComposition());
+        assertEquals(recipe.getIngredients(), resultDto.getIngredients());
+        assertEquals(IS_BOOKMARK, resultDto.getIsBookmark());
+        assertEquals(Genre.findMainGenreCharacter(recipe), resultDto.getMainGenre());
     }
 }

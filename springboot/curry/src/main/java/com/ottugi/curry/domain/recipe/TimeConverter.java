@@ -6,12 +6,12 @@ import javax.persistence.Converter;
 @Converter
 public class TimeConverter implements AttributeConverter<Time, Integer> {
     @Override
-    public Integer convertToDatabaseColumn(Time time) {
-        return time.getTime();
+    public Integer convertToDatabaseColumn(Time entityTime) {
+        return entityTime.getTimeInMinutes();
     }
 
     @Override
-    public Time convertToEntityAttribute(Integer dbData) {
-        return Time.ofTimeName(dbData);
+    public Time convertToEntityAttribute(Integer databaseTimeInMinutes) {
+        return Time.findByTimeInMinutes(databaseTimeInMinutes);
     }
 }

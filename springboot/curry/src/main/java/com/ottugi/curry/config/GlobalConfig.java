@@ -1,5 +1,6 @@
 package com.ottugi.curry.config;
 
+import java.io.IOException;
 import java.util.Properties;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
@@ -14,64 +15,73 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 @Slf4j
 @Getter
 public class GlobalConfig {
+    private static final String DEFAULT_ACTIVE_PROFILE = "local";
+
     @Autowired
-    private ApplicationContext context;
+    private ApplicationContext applicationContext;
     @Autowired
     private ResourceLoader resourceLoader;
 
-    private String jwt_key;
-    private String jwt_header;
-    private String jwt_prefix;
+    private String jwtKey;
+    private String jwtHeader;
+    private String jwtPrefix;
 
-    private String redis_host;
-    private int redis_port;
-    private String redis_password;
+    private String redisHost;
+    private int redisPort;
+    private String redisPassword;
 
-    private String flask_host;
-    private int flask_port;
+    private String flaskHost;
+    private int flaskPort;
 
-    private String file_Path;
-    private String file_delimiter;
-    private String[] field_Names;
+    private String csvFilePath;
+    private String csvFileDelimiter;
+    private String[] csvFieldColumns;
 
-    private boolean local;
-    private boolean dev;
-    private boolean prod;
+    private boolean isLocal;
+    private boolean isDev;
+    private boolean isProd;
 
     @PostConstruct
     public void init() {
-        String[] activeProfiles = context.getEnvironment().getActiveProfiles();
-        String activeProfile = "local";
+        String activeProfile = determineActiveProfile();
+        loadPropertiesByActiveProfile(activeProfile);
+    }
+
+    private String determineActiveProfile() {
+        String[] activeProfiles = applicationContext.getEnvironment().getActiveProfiles();
         if (ObjectUtils.isNotEmpty(activeProfiles)) {
-            activeProfile = activeProfiles[0];
+            return activeProfiles[0];
         }
+        return DEFAULT_ACTIVE_PROFILE;
+    }
+
+    private void loadPropertiesByActiveProfile(String activeProfile) {
         String resourcePath = String.format("classpath:application-%s.properties", activeProfile);
         try {
             Resource resource = resourceLoader.getResource(resourcePath);
             Properties properties = PropertiesLoaderUtils.loadProperties(resource);
 
-            jwt_key = properties.getProperty("jwt.security.key");
-            jwt_header = properties.getProperty("jwt.response.header");
-            jwt_prefix = properties.getProperty("jwt.token.prefix");
+            jwtKey = properties.getProperty("jwt.security.key");
+            jwtHeader = properties.getProperty("jwt.response.header");
+            jwtPrefix = properties.getProperty("jwt.token.prefix");
 
-            redis_host = properties.getProperty("spring.redis.host");
-            redis_port = Integer.parseInt(properties.getProperty("spring.redis.port"));
-            redis_password = properties.getProperty("spring.redis.password");
+            redisHost = properties.getProperty("spring.redis.host");
+            redisPort = Integer.parseInt(properties.getProperty("spring.redis.port"));
+            redisPassword = properties.getProperty("spring.redis.password");
 
-            flask_host = properties.getProperty("flask.host");
-            flask_port = Integer.parseInt(properties.getProperty("flask.port"));
+            flaskHost = properties.getProperty("flask.host");
+            flaskPort = Integer.parseInt(properties.getProperty("flask.port"));
 
-            file_Path = properties.getProperty("file.path");
-            file_delimiter = properties.getProperty("file.delimiter");
-            String fieldNamesString = properties.getProperty("file.field.names");
-            field_Names = fieldNamesString.split(",");
+            csvFilePath = properties.getProperty("file.path");
+            csvFileDelimiter = properties.getProperty("file.delimiter");
+            csvFieldColumns = properties.getProperty("file.field.columns").split(",");
 
-            this.local = activeProfile.equals("local");
-            this.dev = activeProfile.equals("dev");
-            this.prod = activeProfile.equals("prod");
+            isLocal = activeProfile.equals("local");
+            isDev = activeProfile.equals("dev");
+            isProd = activeProfile.equals("prod");
 
-        } catch (Exception e) {
-            log.info(e.getMessage());
+        } catch (IOException e) {
+            log.error(e.getMessage());
         }
     }
 }

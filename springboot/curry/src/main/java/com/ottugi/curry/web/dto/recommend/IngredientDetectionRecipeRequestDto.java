@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RecipeIngRequestDto {
+public class IngredientDetectionRecipeRequestDto {
     @NotNull
     @ApiModelProperty(notes = "회원 기본키", example = "1", required = true)
     private Long userId;
@@ -39,12 +39,12 @@ public class RecipeIngRequestDto {
     private int page;
 
     @Min(1)
-    @ApiModelProperty(notes = "페이지 사이즈", example = "10", required = true)
+    @ApiModelProperty(notes = "페이지 크기", example = "10", required = true)
     private int size;
 
     @Builder
-    public RecipeIngRequestDto(Long userId, List<String> ingredients, String time, String difficulty, String composition,
-                               int page, int size) {
+    public IngredientDetectionRecipeRequestDto(Long userId, List<String> ingredients, String time, String difficulty, String composition,
+                                               int page, int size) {
         this.userId = userId;
         this.ingredients = ingredients;
         this.time = time;

@@ -27,18 +27,18 @@ import org.springframework.util.StringUtils;
 @Slf4j
 @Component
 public class TokenProvider {
+    private static final long ACCESS_TOKEN_VALID_TIME = Duration.ofMinutes(30).toMillis();
+    private static final long REFRESH_TOKEN_VALID_TIME = Duration.ofDays(14).toMillis();
+
     private String secretKey;
     private final String jwtHeader;
     private final String jwtTokenPrefix;
 
     public TokenProvider(GlobalConfig config) {
-        this.secretKey = config.getJwt_key();
-        this.jwtHeader = config.getJwt_header();
-        this.jwtTokenPrefix = config.getJwt_prefix();
+        this.secretKey = config.getJwtKey();
+        this.jwtHeader = config.getJwtHeader();
+        this.jwtTokenPrefix = config.getJwtPrefix();
     }
-
-    private final long accessTokenValidTime = Duration.ofMinutes(30).toMillis();
-    private final long refreshTokenValidTime = Duration.ofDays(14).toMillis();
 
     @PostConstruct
     protected void init() {
@@ -46,11 +46,11 @@ public class TokenProvider {
     }
 
     public Token createAccessToken(User user) {
-        return createToken(user, accessTokenValidTime);
+        return createToken(user, ACCESS_TOKEN_VALID_TIME);
     }
 
     public Token createRefreshToken(User user) {
-        return createToken(user, refreshTokenValidTime);
+        return createToken(user, REFRESH_TOKEN_VALID_TIME);
     }
 
     public Token createToken(User user, long tokenValidTime) {

@@ -1,5 +1,6 @@
 package com.ottugi.curry.service.bookmark;
 
+import static com.ottugi.curry.domain.bookmark.BookmarkTest.IS_BOOKMARK;
 import static com.ottugi.curry.domain.recipe.RecipeTest.COMPOSITION;
 import static com.ottugi.curry.domain.recipe.RecipeTest.DIFFICULTY;
 import static com.ottugi.curry.domain.recipe.RecipeTest.PAGE;
@@ -7,6 +8,7 @@ import static com.ottugi.curry.domain.recipe.RecipeTest.SIZE;
 import static com.ottugi.curry.domain.recipe.RecipeTest.TIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
@@ -66,7 +68,7 @@ class BookmarkServiceTest {
         when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(bookmark);
 
         BookmarkRequestDto bookmarkRequestDto = BookmarkRequestDtoTest.initBookmarkRequestDto(bookmark);
-        Boolean result = bookmarkService.addOrRemoveBookmark(bookmarkRequestDto);
+        boolean result = bookmarkService.addOrRemoveBookmark(bookmarkRequestDto);
 
         assertTrue(result);
 
@@ -85,7 +87,7 @@ class BookmarkServiceTest {
         doNothing().when(bookmarkRepository).deleteByUserIdAndRecipeId(any(User.class), any(Recipe.class));
 
         BookmarkRequestDto bookmarkRequestDto = BookmarkRequestDtoTest.initBookmarkRequestDto(bookmark);
-        Boolean result = bookmarkService.addOrRemoveBookmark(bookmarkRequestDto);
+        boolean result = bookmarkService.addOrRemoveBookmark(bookmarkRequestDto);
 
         assertFalse(result);
 
@@ -107,6 +109,7 @@ class BookmarkServiceTest {
         Page<BookmarkListResponseDto> result = bookmarkService.findBookmarkPageByUserId(bookmark.getUserId().getId(), PAGE, SIZE);
 
         assertEquals(1, result.getTotalElements());
+        assertBookmarkListResponseDto(result.getContent().get(0));
 
         verify(userService, times(1)).findUserByUserId(anyLong());
     }
@@ -119,15 +122,28 @@ class BookmarkServiceTest {
         when(bookmark.getRecipeId().getDifficulty()).thenReturn(DIFFICULTY);
         when(bookmark.getRecipeId().getComposition()).thenReturn(COMPOSITION);
         when(bookmark.getUserId().getBookmarkList()).thenReturn(Collections.singletonList(bookmark));
-        when(recipeService.isRecipeMatchingCriteria(any(Recipe.class), anyString(), anyString(), anyString())).thenReturn(true);
+        when(recipeService.isRecipeMatchedCriteria(any(Recipe.class), anyString(), anyString(), anyString())).thenReturn(true);
 
         Page<BookmarkListResponseDto> result = bookmarkService.findBookmarkPageByOption(bookmark.getUserId().getId(), PAGE, SIZE,
                 bookmark.getRecipeId().getName(), bookmark.getRecipeId().getTime().getTimeName(),
-                bookmark.getRecipeId().getDifficulty().getDifficulty(), bookmark.getRecipeId().getComposition().getComposition());
+                bookmark.getRecipeId().getDifficulty().getDifficultyName(), bookmark.getRecipeId().getComposition().getCompositionName());
 
         assertEquals(1, result.getTotalElements());
+        assertBookmarkListResponseDto(result.getContent().get(0));
 
         verify(userService, times(1)).findUserByUserId(anyLong());
-        verify(recipeService, times(1)).isRecipeMatchingCriteria(any(Recipe.class), anyString(), anyString(), anyString());
+        verify(recipeService, times(1)).isRecipeMatchedCriteria(any(Recipe.class), anyString(), anyString(), anyString());
+    }
+
+    private void assertBookmarkListResponseDto(BookmarkListResponseDto resultDto) {
+        assertNotNull(resultDto);
+        assertEquals(bookmark.getRecipeId().getRecipeId(), resultDto.getRecipeId());
+        assertEquals(bookmark.getRecipeId().getName(), resultDto.getName());
+        assertEquals(bookmark.getRecipeId().getThumbnail(), resultDto.getThumbnail());
+        assertEquals(bookmark.getRecipeId().getTime().getTimeName(), resultDto.getTime());
+        assertEquals(bookmark.getRecipeId().getDifficulty().getDifficultyName(), resultDto.getDifficulty());
+        assertEquals(bookmark.getRecipeId().getComposition().getCompositionName(), resultDto.getComposition());
+        assertEquals(bookmark.getRecipeId().getIngredients(), resultDto.getIngredients());
+        assertEquals(IS_BOOKMARK, resultDto.getIsBookmark());
     }
 }

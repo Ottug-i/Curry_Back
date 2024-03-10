@@ -19,10 +19,10 @@ class RecipeSaveRequestDtoTest {
         return RecipeSaveRequestDto.builder()
                 .recipeId(recipe.getRecipeId())
                 .name(recipe.getName())
-                .composition(recipe.getComposition().getComposition())
+                .composition(recipe.getComposition().getCompositionName())
                 .ingredients(recipe.getIngredients())
-                .servings(recipe.getServings().getServings())
-                .difficulty(recipe.getDifficulty().getDifficulty())
+                .servings(recipe.getServings().getServingName())
+                .difficulty(recipe.getDifficulty().getDifficultyName())
                 .thumbnail(recipe.getThumbnail())
                 .time(recipe.getTime().getTimeName())
                 .orders(recipe.getOrders())
@@ -45,10 +45,10 @@ class RecipeSaveRequestDtoTest {
 
         assertEquals(recipe.getRecipeId(), recipeSaveRequestDto.getRecipeId());
         assertEquals(recipe.getName(), recipeSaveRequestDto.getName());
-        assertEquals(recipe.getComposition().getComposition(), recipeSaveRequestDto.getComposition());
+        assertEquals(recipe.getComposition().getCompositionName(), recipeSaveRequestDto.getComposition());
         assertEquals(recipe.getIngredients(), recipeSaveRequestDto.getIngredients());
-        assertEquals(recipe.getServings().getServings(), recipeSaveRequestDto.getServings());
-        assertEquals(recipe.getDifficulty().getDifficulty(), recipeSaveRequestDto.getDifficulty());
+        assertEquals(recipe.getServings().getServingName(), recipeSaveRequestDto.getServings());
+        assertEquals(recipe.getDifficulty().getDifficultyName(), recipeSaveRequestDto.getDifficulty());
         assertEquals(recipe.getThumbnail(), recipeSaveRequestDto.getThumbnail());
         assertEquals(recipe.getTime().getTimeName(), recipeSaveRequestDto.getTime());
         assertEquals(recipe.getOrders(), recipeSaveRequestDto.getOrders());
@@ -66,10 +66,10 @@ class RecipeSaveRequestDtoTest {
         assertNotNull(recipeEntity);
         assertEquals(recipeSaveRequestDto.getRecipeId(), recipeEntity.getRecipeId());
         assertEquals(recipeSaveRequestDto.getName(), recipeEntity.getName());
-        assertEquals(recipeSaveRequestDto.getComposition(), recipeEntity.getComposition().getComposition());
+        assertEquals(recipeSaveRequestDto.getComposition(), recipeEntity.getComposition().getCompositionName());
         assertEquals(recipeSaveRequestDto.getIngredients(), recipeEntity.getIngredients());
-        assertEquals(recipeSaveRequestDto.getServings(), recipeEntity.getServings().getServings());
-        assertEquals(recipeSaveRequestDto.getDifficulty(), recipeEntity.getDifficulty().getDifficulty());
+        assertEquals(recipeSaveRequestDto.getServings(), recipeEntity.getServings().getServingName());
+        assertEquals(recipeSaveRequestDto.getDifficulty(), recipeEntity.getDifficulty().getDifficultyName());
         assertEquals(recipeSaveRequestDto.getThumbnail(), recipeEntity.getThumbnail());
         assertEquals(recipeSaveRequestDto.getTime(), recipeEntity.getTime().getTimeName());
         assertEquals(recipeSaveRequestDto.getOrders(), recipeEntity.getOrders());
@@ -102,10 +102,10 @@ class RecipeSaveRequestDtoTest {
         RecipeSaveRequestDto recipeSaveRequestDto = RecipeSaveRequestDto.builder()
                 .recipeId(null)
                 .name(recipe.getName())
-                .composition(recipe.getComposition().getComposition())
+                .composition(recipe.getComposition().getCompositionName())
                 .ingredients(recipe.getIngredients())
-                .servings(recipe.getServings().getServings())
-                .difficulty(recipe.getDifficulty().getDifficulty())
+                .servings(recipe.getServings().getServingName())
+                .difficulty(recipe.getDifficulty().getDifficultyName())
                 .thumbnail(recipe.getThumbnail())
                 .time(recipe.getTime().getTimeName())
                 .orders(recipe.getOrders())
@@ -122,10 +122,10 @@ class RecipeSaveRequestDtoTest {
         RecipeSaveRequestDto recipeSaveRequestDto = RecipeSaveRequestDto.builder()
                 .recipeId(recipe.getRecipeId())
                 .name(INVALID_BLANK)
-                .composition(recipe.getComposition().getComposition())
+                .composition(recipe.getComposition().getCompositionName())
                 .ingredients(recipe.getIngredients())
-                .servings(recipe.getServings().getServings())
-                .difficulty(recipe.getDifficulty().getDifficulty())
+                .servings(recipe.getServings().getServingName())
+                .difficulty(recipe.getDifficulty().getDifficultyName())
                 .thumbnail(recipe.getThumbnail())
                 .time(recipe.getTime().getTimeName())
                 .orders(recipe.getOrders())
@@ -144,8 +144,8 @@ class RecipeSaveRequestDtoTest {
                 .name(recipe.getName())
                 .composition(INVALID_BLANK)
                 .ingredients(recipe.getIngredients())
-                .servings(recipe.getServings().getServings())
-                .difficulty(recipe.getDifficulty().getDifficulty())
+                .servings(recipe.getServings().getServingName())
+                .difficulty(recipe.getDifficulty().getDifficultyName())
                 .thumbnail(recipe.getThumbnail())
                 .time(recipe.getTime().getTimeName())
                 .orders(recipe.getOrders())
@@ -162,10 +162,10 @@ class RecipeSaveRequestDtoTest {
         RecipeSaveRequestDto recipeSaveRequestDto = RecipeSaveRequestDto.builder()
                 .recipeId(recipe.getRecipeId())
                 .name(recipe.getName())
-                .composition(recipe.getComposition().getComposition())
+                .composition(recipe.getComposition().getCompositionName())
                 .ingredients(INVALID_BLANK)
-                .servings(recipe.getServings().getServings())
-                .difficulty(recipe.getDifficulty().getDifficulty())
+                .servings(recipe.getServings().getServingName())
+                .difficulty(recipe.getDifficulty().getDifficultyName())
                 .thumbnail(recipe.getThumbnail())
                 .time(recipe.getTime().getTimeName())
                 .orders(recipe.getOrders())
@@ -182,10 +182,10 @@ class RecipeSaveRequestDtoTest {
         RecipeSaveRequestDto recipeSaveRequestDto = RecipeSaveRequestDto.builder()
                 .recipeId(recipe.getRecipeId())
                 .name(recipe.getName())
-                .composition(recipe.getComposition().getComposition())
+                .composition(recipe.getComposition().getCompositionName())
                 .ingredients(recipe.getIngredients())
                 .servings(INVALID_BLANK)
-                .difficulty(recipe.getDifficulty().getDifficulty())
+                .difficulty(recipe.getDifficulty().getDifficultyName())
                 .thumbnail(recipe.getThumbnail())
                 .time(recipe.getTime().getTimeName())
                 .orders(recipe.getOrders())
@@ -202,9 +202,9 @@ class RecipeSaveRequestDtoTest {
         RecipeSaveRequestDto recipeSaveRequestDto = RecipeSaveRequestDto.builder()
                 .recipeId(recipe.getRecipeId())
                 .name(recipe.getName())
-                .composition(recipe.getComposition().getComposition())
+                .composition(recipe.getComposition().getCompositionName())
                 .ingredients(recipe.getIngredients())
-                .servings(recipe.getServings().getServings())
+                .servings(recipe.getServings().getServingName())
                 .difficulty(INVALID_BLANK)
                 .thumbnail(recipe.getThumbnail())
                 .time(recipe.getTime().getTimeName())
@@ -222,10 +222,10 @@ class RecipeSaveRequestDtoTest {
         RecipeSaveRequestDto recipeSaveRequestDto = RecipeSaveRequestDto.builder()
                 .recipeId(recipe.getRecipeId())
                 .name(recipe.getName())
-                .composition(recipe.getComposition().getComposition())
+                .composition(recipe.getComposition().getCompositionName())
                 .ingredients(recipe.getIngredients())
-                .servings(recipe.getServings().getServings())
-                .difficulty(recipe.getDifficulty().getDifficulty())
+                .servings(recipe.getServings().getServingName())
+                .difficulty(recipe.getDifficulty().getDifficultyName())
                 .thumbnail(INVALID_BLANK)
                 .time(recipe.getTime().getTimeName())
                 .orders(recipe.getOrders())
@@ -242,10 +242,10 @@ class RecipeSaveRequestDtoTest {
         RecipeSaveRequestDto recipeSaveRequestDto = RecipeSaveRequestDto.builder()
                 .recipeId(recipe.getRecipeId())
                 .name(recipe.getName())
-                .composition(recipe.getComposition().getComposition())
+                .composition(recipe.getComposition().getCompositionName())
                 .ingredients(recipe.getIngredients())
-                .servings(recipe.getServings().getServings())
-                .difficulty(recipe.getDifficulty().getDifficulty())
+                .servings(recipe.getServings().getServingName())
+                .difficulty(recipe.getDifficulty().getDifficultyName())
                 .thumbnail(recipe.getThumbnail())
                 .time(INVALID_BLANK)
                 .orders(recipe.getOrders())
@@ -262,10 +262,10 @@ class RecipeSaveRequestDtoTest {
         RecipeSaveRequestDto recipeSaveRequestDto = RecipeSaveRequestDto.builder()
                 .recipeId(recipe.getRecipeId())
                 .name(recipe.getName())
-                .composition(recipe.getComposition().getComposition())
+                .composition(recipe.getComposition().getCompositionName())
                 .ingredients(recipe.getIngredients())
-                .servings(recipe.getServings().getServings())
-                .difficulty(recipe.getDifficulty().getDifficulty())
+                .servings(recipe.getServings().getServingName())
+                .difficulty(recipe.getDifficulty().getDifficultyName())
                 .thumbnail(recipe.getThumbnail())
                 .time(recipe.getTime().getTimeName())
                 .orders(INVALID_BLANK)

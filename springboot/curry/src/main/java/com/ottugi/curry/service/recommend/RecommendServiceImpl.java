@@ -10,9 +10,9 @@ import com.ottugi.curry.service.recipe.RecipeService;
 import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.util.PageConverter;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
-import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
-import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDto;
-import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
+import com.ottugi.curry.web.dto.recommend.IngredientDetectionRecipeListResponseDto;
+import com.ottugi.curry.web.dto.recommend.IngredientDetectionRecipeRequestDto;
+import com.ottugi.curry.web.dto.recommend.RecommendRecipeRequestDto;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,15 +37,15 @@ public class RecommendServiceImpl implements RecommendService {
 
     @PostConstruct
     private void setFlaskApiUrl() {
-        this.flaskApiUrl = String.format("http://%s:%d", globalConfig.getFlask_host(), globalConfig.getFlask_port());
+        this.flaskApiUrl = String.format("http://%s:%d", globalConfig.getFlaskHost(), globalConfig.getFlaskPort());
     }
 
     @Override
-    public Page<RecipeIngListResponseDto> findRecipePageByIngredientsDetection(RecipeIngRequestDto requestDto) {
+    public Page<IngredientDetectionRecipeListResponseDto> findRecipePageByIngredientsDetection(IngredientDetectionRecipeRequestDto requestDto) {
         User user = userService.findUserByUserId(requestDto.getUserId());
         List<Recipe> detectedRecipeList = findRecipeListContainingIngredients(requestDto);
-        List<RecipeIngListResponseDto> sortedRecipeList = sortRecipeListByPreference(user, requestDto, detectedRecipeList);
-        return PageConverter.convertToPage(sortedRecipeList, requestDto.getPage(), requestDto.getSize());
+        List<IngredientDetectionRecipeListResponseDto> sortedRecipeList = sortRecipeListByPreference(user, requestDto, detectedRecipeList);
+        return PageConverter.convertListToPage(sortedRecipeList, requestDto.getPage(), requestDto.getSize());
     }
 
     @Override
@@ -68,31 +68,32 @@ public class RecommendServiceImpl implements RecommendService {
     }
 
     @Override
-    public List<RecipeListResponseDto> findBookmarkOrRatingRecommendList(RecommendRequestDto requestDto) {
+    public List<RecipeListResponseDto> findBookmarkOrRatingRecommendList(RecommendRecipeRequestDto requestDto) {
         User user = userService.findUserByUserId(requestDto.getUserId());
-        return recipeService.findRecipeListByRecipeIdIn(requestDto.getRecipeId())
-                .stream()
+        List<Recipe> recommendedRecipes = recipeService.findRecipeListByRecipeIdIn(requestDto.getRecipeId());
+        return recommendedRecipes.stream()
                 .map(recipe -> new RecipeListResponseDto(recipe, recipeService.isRecipeBookmarked(user, recipe)))
                 .collect(Collectors.toList());
     }
 
-    private List<Recipe> findRecipeListContainingIngredients(RecipeIngRequestDto requestDto) {
+    private List<Recipe> findRecipeListContainingIngredients(IngredientDetectionRecipeRequestDto requestDto) {
         return recipeService.findByRecipeListByIngredientsContaining(requestDto.getIngredients().get(0))
                 .stream()
                 .filter(recipeService.filterPredicateForOptions(requestDto.getTime(), requestDto.getDifficulty(), requestDto.getComposition()))
                 .collect(Collectors.toList());
     }
 
-    private List<RecipeIngListResponseDto> sortRecipeListByPreference(User user, RecipeIngRequestDto requestDto, List<Recipe> recipeDetectionList) {
+    private List<IngredientDetectionRecipeListResponseDto> sortRecipeListByPreference(User user, IngredientDetectionRecipeRequestDto requestDto, List<Recipe> recipeDetectionList) {
         return recipeDetectionList.stream()
-                .filter(recipe -> isAllIngredientsIncluded(recipe, requestDto.getIngredients()))
-                .map(recipe -> new RecipeIngListResponseDto(requestDto.getIngredients(), recipe,
-                        Genre.containFavoriteGenre(recipe, user), recipeService.isRecipeBookmarked(user, recipe)))
-                .sorted(Comparator.comparing(RecipeIngListResponseDto::getIsFavoriteGenre, Comparator.reverseOrder()))
+                .filter(recipe -> containsAllIngredients(recipe, requestDto.getIngredients()))
+                .map(recipe -> new IngredientDetectionRecipeListResponseDto(requestDto.getIngredients(), recipe,
+                        Genre.containFavoriteGenre(recipe, user),
+                        recipeService.isRecipeBookmarked(user, recipe)))
+                .sorted(Comparator.comparing(IngredientDetectionRecipeListResponseDto::getIsFavoriteGenre, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
     }
 
-    private boolean isAllIngredientsIncluded(Recipe recipe, List<String> ingredients) {
+    private boolean containsAllIngredients(Recipe recipe, List<String> ingredients) {
         return ingredients.stream().skip(1).allMatch(recipe.getIngredients()::contains);
     }
 

@@ -4,9 +4,9 @@ import com.ottugi.curry.domain.ratings.Ratings;
 import com.ottugi.curry.domain.ratings.RatingsRepository;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeRepository;
+import com.ottugi.curry.web.dto.ratings.RatingRandomRecipeListResponseDto;
 import com.ottugi.curry.web.dto.ratings.RatingRequestDto;
 import com.ottugi.curry.web.dto.ratings.RatingResponseDto;
-import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -22,11 +22,11 @@ public class RatingsServiceImpl implements RatingsService {
     private final RecipeRepository recipeRepository;
 
     @Override
-    public List<RecommendListResponseDto> findRandomRecipeListForResearch() {
-        List<Recipe> recipeList = selectRandomRecipes();
+    public List<RatingRandomRecipeListResponseDto> findRandomRecipeListForResearch() {
+        List<Recipe> recipeList = selectRandomRecipeList();
         return recipeList
                 .stream()
-                .map(RecommendListResponseDto::new)
+                .map(RatingRandomRecipeListResponseDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -40,7 +40,7 @@ public class RatingsServiceImpl implements RatingsService {
     }
 
     @Override
-    public Boolean addOrUpdateUserRating(RatingRequestDto requestDto) {
+    public boolean addOrUpdateUserRating(RatingRequestDto requestDto) {
         requestDto.getNewUserRatingsDic().forEach((recipeId, rating) -> {
             if (existsByUserIdAndRecipeId(requestDto.getUserId(), recipeId)) {
                 updateUserRating(requestDto.getUserId(), recipeId, rating);
@@ -52,23 +52,27 @@ public class RatingsServiceImpl implements RatingsService {
     }
 
     @Override
-    public Boolean removeUserRating(Long userId, Long recipeId) {
+    public boolean removeUserRating(Long userId, Long recipeId) {
         ratingsRepository.deleteByUserIdAndRecipeId(userId, recipeId);
         return true;
     }
 
-    private List<Recipe> selectRandomRecipes() {
+    private List<Recipe> selectRandomRecipeList() {
+        List<Long> selectedRecipeIdList = selectRandomRecipeIdList();
+        return recipeRepository.findByIdIn(selectedRecipeIdList);
+    }
+
+    private List<Long> selectRandomRecipeIdList() {
         long recipeCount = recipeRepository.count();
-        List<Long> selectedIdList = ThreadLocalRandom.current()
+        return ThreadLocalRandom.current()
                 .longs(1, recipeCount + 1)
                 .distinct()
                 .limit(RANDOM_SIZE)
                 .boxed()
                 .collect(Collectors.toList());
-        return recipeRepository.findByIdIn(selectedIdList);
     }
 
-    private Boolean existsByUserIdAndRecipeId(Long userId, Long recipeId) {
+    private boolean existsByUserIdAndRecipeId(Long userId, Long recipeId) {
         return ratingsRepository.existsByUserIdAndRecipeId(userId, recipeId);
     }
 

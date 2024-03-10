@@ -18,9 +18,9 @@ public class RecipeCsvReader {
     private final String filePath;
 
     public RecipeCsvReader(GlobalConfig config) {
-        this.filePath = config.getFile_Path();
-        this.delimiter = config.getFile_delimiter();
-        this.fieldNames = config.getField_Names();
+        this.filePath = config.getCsvFilePath();
+        this.delimiter = config.getCsvFileDelimiter();
+        this.fieldNames = config.getCsvFieldColumns();
     }
 
     @Bean

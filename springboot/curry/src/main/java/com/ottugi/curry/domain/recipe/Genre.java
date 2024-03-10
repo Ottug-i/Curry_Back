@@ -1,8 +1,11 @@
 package com.ottugi.curry.domain.recipe;
 
 import com.ottugi.curry.domain.user.User;
-import java.util.Arrays;
+import com.ottugi.curry.except.BaseCode;
+import com.ottugi.curry.except.InvalidException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -19,20 +22,31 @@ public enum Genre {
     FRUIT(List.of("ing19", "ing20", "ing21", "ing22", "ing23", "ing24"), "vegetable"),
     MILK(List.of("ing25"), "egg");
 
-    private final List<String> ingredientNumber;
-    private final String genre;
+    private final List<String> ingredientNumbers;
+    private final String genreCharacter;
 
-    public static Genre ofGenre(String number) {
-        return Arrays.stream(Genre.values())
-                .filter(g -> g.getIngredientNumber().contains(number))
-                .findAny().orElse(null);
+    private static final Map<String, Genre> GENRE_MAP = new HashMap<>();
+
+    static {
+        for (Genre genre : Genre.values()) {
+            for (String ingredientNumber : genre.getIngredientNumbers()) {
+                GENRE_MAP.put(ingredientNumber, genre);
+            }
+        }
     }
 
-    public static String findMainGenre(Recipe recipe) {
+    public static Genre findByIngredientNumber(String ingredientNumber) {
+        Genre foundGenre = GENRE_MAP.get(ingredientNumber);
+        if (foundGenre == null) {
+            throw new InvalidException(BaseCode.BAD_REQUEST);
+        }
+        return foundGenre;
+    }
+
+    public static String findMainGenreCharacter(Recipe recipe) {
         String[] genres = convertToGenreArray(recipe);
         if (genres.length > 0) {
-            String mainGenre = genres[0];
-            return ofGenre(mainGenre).getGenre();
+            return findByIngredientNumber(genres[0]).getGenreCharacter();
         }
         return null;
     }
@@ -40,21 +54,10 @@ public enum Genre {
     public static Boolean containFavoriteGenre(Recipe recipe, User user) {
         String favoriteGenre = user.getFavoriteGenre();
         String[] genres = convertToGenreArray(recipe);
-        if (favoriteGenre != null) {
-            for (String genre : genres) {
-                if (favoriteGenre.equals(genre)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return favoriteGenre != null && List.of(genres).contains(favoriteGenre);
     }
 
     private static String[] convertToGenreArray(Recipe recipe) {
-        final String SPLIT_VALUE = "\\|";
-        if (recipe.getGenre().contains("|")) {
-            return recipe.getGenre().split(SPLIT_VALUE);
-        }
-        return new String[]{recipe.getGenre()};
+        return recipe.getGenre().split("\\|");
     }
 }

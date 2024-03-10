@@ -14,11 +14,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class RecommendRequestDtoTest {
-    private final ValidatorUtil<RecommendRequestDto> validatorUtil = new ValidatorUtil<>();
+public class RecommendRecipeRequestDtoTest {
+    private final ValidatorUtil<RecommendRecipeRequestDto> validatorUtil = new ValidatorUtil<>();
 
-    public static RecommendRequestDto initRecommendRequestDto(User user, Recipe recipe) {
-        return RecommendRequestDto.builder()
+    public static RecommendRecipeRequestDto initRecommendRecipeRequestDto(User user, Recipe recipe) {
+        return RecommendRecipeRequestDto.builder()
                 .userId(user.getId())
                 .recipeId(Collections.singletonList(recipe.getId()))
                 .build();
@@ -34,43 +34,43 @@ public class RecommendRequestDtoTest {
     }
 
     @Test
-    @DisplayName("RecommendRequestDto 생성 테스트")
-    void testRecommendRequestDto() {
-        RecommendRequestDto recommendRequestDto = initRecommendRequestDto(user, recipe);
+    @DisplayName("RecommendRecipeRequestDto 생성 테스트")
+    void testRecommendRecipeRequestDto() {
+        RecommendRecipeRequestDto recommendRecipeRequestDto = initRecommendRecipeRequestDto(user, recipe);
 
-        assertEquals(user.getId(), recommendRequestDto.getUserId());
-        assertEquals(recipe.getId(), recommendRequestDto.getRecipeId().get(0));
+        assertEquals(user.getId(), recommendRecipeRequestDto.getUserId());
+        assertEquals(recipe.getId(), recommendRecipeRequestDto.getRecipeId().get(0));
     }
 
     @Test
     @DisplayName("protected 기본 생성자 테스트")
     void testProtectedNoArgsConstructor() {
-        RecommendRequestDto recommendRequestDto = new RecommendRequestDto();
+        RecommendRecipeRequestDto recommendRecipeRequestDto = new RecommendRecipeRequestDto();
 
-        assertNotNull(recommendRequestDto);
-        assertNull(recommendRequestDto.getUserId());
-        assertNull(recommendRequestDto.getRecipeId());
+        assertNotNull(recommendRecipeRequestDto);
+        assertNull(recommendRecipeRequestDto.getUserId());
+        assertNull(recommendRecipeRequestDto.getRecipeId());
     }
 
     @Test
     @DisplayName("회원 아이디 유효성 검증 테스트")
     void userId_validation() {
-        RecommendRequestDto recommendRequestDto = RecommendRequestDto.builder()
+        RecommendRecipeRequestDto recommendRecipeRequestDto = RecommendRecipeRequestDto.builder()
                 .userId(null)
                 .recipeId(Collections.singletonList(recipe.getId()))
                 .build();
 
-        validatorUtil.validate(recommendRequestDto);
+        validatorUtil.validate(recommendRecipeRequestDto);
     }
 
     @Test
     @DisplayName("인식된 재료 유효성 검증 테스트")
     void ingredients_validation() {
-        RecommendRequestDto recommendRequestDto = RecommendRequestDto.builder()
+        RecommendRecipeRequestDto recommendRecipeRequestDto = RecommendRecipeRequestDto.builder()
                 .userId(user.getId())
                 .recipeId(Collections.emptyList())
                 .build();
 
-        validatorUtil.validate(recommendRequestDto);
+        validatorUtil.validate(recommendRecipeRequestDto);
     }
 }

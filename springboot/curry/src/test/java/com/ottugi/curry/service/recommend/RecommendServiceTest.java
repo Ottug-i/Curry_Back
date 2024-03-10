@@ -1,6 +1,8 @@
 package com.ottugi.curry.service.recommend;
 
 import static com.ottugi.curry.domain.bookmark.BookmarkTest.BOOKMARK_ID;
+import static com.ottugi.curry.domain.bookmark.BookmarkTest.IS_BOOKMARK;
+import static com.ottugi.curry.domain.recipe.RecipeTest.IS_FAVORITE_GENRE;
 import static com.ottugi.curry.domain.recipe.RecipeTest.PAGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ottugi.curry.config.GlobalConfig;
 import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.bookmark.BookmarkTest;
+import com.ottugi.curry.domain.recipe.Genre;
 import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.recipe.RecipeTest;
 import com.ottugi.curry.domain.user.User;
@@ -24,11 +27,11 @@ import com.ottugi.curry.domain.user.UserTest;
 import com.ottugi.curry.service.recipe.RecipeService;
 import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.recipe.RecipeListResponseDto;
-import com.ottugi.curry.web.dto.recommend.RecipeIngListResponseDto;
-import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDto;
-import com.ottugi.curry.web.dto.recommend.RecipeIngRequestDtoTest;
-import com.ottugi.curry.web.dto.recommend.RecommendRequestDto;
-import com.ottugi.curry.web.dto.recommend.RecommendRequestDtoTest;
+import com.ottugi.curry.web.dto.recommend.IngredientDetectionRecipeListResponseDto;
+import com.ottugi.curry.web.dto.recommend.IngredientDetectionRecipeRequestDto;
+import com.ottugi.curry.web.dto.recommend.IngredientDetectionRecipeRequestDtoTest;
+import com.ottugi.curry.web.dto.recommend.RecommendRecipeRequestDto;
+import com.ottugi.curry.web.dto.recommend.RecommendRecipeRequestDtoTest;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,11 +77,12 @@ class RecommendServiceTest {
         when(recipeService.filterPredicateForOptions(anyString(), anyString(), anyString())).thenReturn(recipe -> true);
         when(recipeService.isRecipeBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
 
-        RecipeIngRequestDto recipeIngRequestDto = RecipeIngRequestDtoTest.initRecipeIngRequestDto(user, recipe);
-        Page<RecipeIngListResponseDto> result = recommendService.findRecipePageByIngredientsDetection(recipeIngRequestDto);
+        IngredientDetectionRecipeRequestDto ingredientDetectionRecipeRequestDto = IngredientDetectionRecipeRequestDtoTest.initIngredientDetectionRecipeRequestDto(user, recipe);
+        Page<IngredientDetectionRecipeListResponseDto> result = recommendService.findRecipePageByIngredientsDetection(ingredientDetectionRecipeRequestDto);
 
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
+        assertIngredientDetectionRecipeListResponseDto(result.getContent().get(0));
 
         verify(userService, times(1)).findUserByUserId(anyLong());
         verify(recipeService, times(1)).findByRecipeListByIngredientsContaining(anyString());
@@ -149,14 +153,41 @@ class RecommendServiceTest {
         when(recipeService.findRecipeListByRecipeIdIn(anyList())).thenReturn(Collections.singletonList(recipe));
         when(recipeService.isRecipeBookmarked(any(User.class), any(Recipe.class))).thenReturn(true);
 
-        RecommendRequestDto recommendRequestDto = RecommendRequestDtoTest.initRecommendRequestDto(user, recipe);
-        List<RecipeListResponseDto> result = recommendService.findBookmarkOrRatingRecommendList(recommendRequestDto);
+        RecommendRecipeRequestDto recommendRecipeRequestDto = RecommendRecipeRequestDtoTest.initRecommendRecipeRequestDto(user, recipe);
+        List<RecipeListResponseDto> result = recommendService.findBookmarkOrRatingRecommendList(recommendRecipeRequestDto);
 
         assertNotNull(result);
         assertEquals(1, result.size());
+        assertRecipeListResponseDto(result.get(0));
 
         verify(userService, times(1)).findUserByUserId(anyLong());
         verify(recipeService, times(1)).findRecipeListByRecipeIdIn(anyList());
         verify(recipeService, times(1)).isRecipeBookmarked(any(User.class), any(Recipe.class));
+    }
+
+    private void assertIngredientDetectionRecipeListResponseDto(IngredientDetectionRecipeListResponseDto resultDto) {
+        assertNotNull(resultDto);
+        assertEquals(recipe.getRecipeId(), resultDto.getRecipeId());
+        assertEquals(recipe.getName(), resultDto.getName());
+        assertEquals(recipe.getThumbnail(), resultDto.getThumbnail());
+        assertEquals(recipe.getTime().getTimeName(), resultDto.getTime());
+        assertEquals(recipe.getDifficulty().getDifficultyName(), resultDto.getDifficulty());
+        assertEquals(recipe.getComposition().getCompositionName(), resultDto.getComposition());
+        assertEquals(recipe.getIngredients(), resultDto.getIngredients());
+        assertEquals(!IS_FAVORITE_GENRE, resultDto.getIsFavoriteGenre());
+        assertEquals(IS_BOOKMARK, resultDto.getIsBookmark());
+    }
+
+    private void assertRecipeListResponseDto(RecipeListResponseDto resultDto) {
+        assertNotNull(resultDto);
+        assertEquals(recipe.getRecipeId(), resultDto.getRecipeId());
+        assertEquals(recipe.getName(), resultDto.getName());
+        assertEquals(recipe.getThumbnail(), resultDto.getThumbnail());
+        assertEquals(recipe.getTime().getTimeName(), resultDto.getTime());
+        assertEquals(recipe.getDifficulty().getDifficultyName(), resultDto.getDifficulty());
+        assertEquals(recipe.getComposition().getCompositionName(), resultDto.getComposition());
+        assertEquals(recipe.getIngredients(), resultDto.getIngredients());
+        assertEquals(IS_BOOKMARK, resultDto.getIsBookmark());
+        assertEquals(Genre.findMainGenreCharacter(recipe), resultDto.getMainGenre());
     }
 }

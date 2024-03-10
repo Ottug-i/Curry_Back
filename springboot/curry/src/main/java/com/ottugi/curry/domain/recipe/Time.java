@@ -1,6 +1,9 @@
 package com.ottugi.curry.domain.recipe;
 
-import java.util.Arrays;
+import com.ottugi.curry.except.BaseCode;
+import com.ottugi.curry.except.InvalidException;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -17,30 +20,42 @@ public enum Time {
     ONE_HUNDRED_TWENTY_MINUTES("120분 이내", 120),
     TWO_HOURS("2시간 이상", 121);
 
-    private String timeName;
-    private Integer time;
+    private final String timeName;
+    private final int timeInMinutes;
 
-    Time(String timeName, Integer time) {
-        this.timeName = timeName;
-        this.time = time;
-    }
+    private static final Map<String, Time> TIME_NAME_MAP = new HashMap<>();
+    private static final Map<Integer, Time> TIME_MINUTES_MAP = new HashMap<>();
 
-    public static Time ofTimeName(Integer time) {
-        return Arrays.stream(Time.values())
-                .filter(t -> t.getTime().equals(time))
-                .findAny().orElse(null);
-    }
-
-    public static Time ofTime(String timeName) {
-        return Arrays.stream(Time.values())
-                .filter(t -> t.getTimeName().equals(timeName))
-                .findAny().orElse(null);
-    }
-
-    public static Boolean isTimeMatching(Recipe recipe, String timeName) {
-        if (timeName.equals(TWO_HOURS.getTimeName())) {
-            return recipe.getTime().getTimeName().contains(TWO_HOURS.getTimeName());
+    static {
+        for (Time time : Time.values()) {
+            TIME_NAME_MAP.put(time.getTimeName(), time);
+            TIME_MINUTES_MAP.put(time.getTimeInMinutes(), time);
         }
-        return recipe.getTime().getTime() <= ofTime(timeName).getTime();
+    }
+
+    public static Time findByTimeName(String timeName) {
+        Time foundTime = TIME_NAME_MAP.get(timeName);
+        if (foundTime == null) {
+            throw new InvalidException(BaseCode.BAD_REQUEST);
+        }
+        return foundTime;
+    }
+
+    public static Time findByTimeInMinutes(int timeInMinutes) {
+        Time foundTime = TIME_MINUTES_MAP.get(timeInMinutes);
+        if (foundTime == null) {
+            throw new InvalidException(BaseCode.BAD_REQUEST);
+        }
+        return foundTime;
+    }
+
+    public static Boolean matchesTime(Recipe recipe, String timeName) {
+        if (timeName == null || timeName.isBlank()) {
+            return true;
+        }
+        if (timeName.equals(TWO_HOURS.getTimeName())) {
+            return recipe.getTime().equals(TWO_HOURS);
+        }
+        return recipe.getTime().getTimeInMinutes() <= findByTimeName(timeName).getTimeInMinutes();
     }
 }

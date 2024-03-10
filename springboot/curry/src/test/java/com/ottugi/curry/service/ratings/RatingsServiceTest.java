@@ -20,10 +20,10 @@ import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.domain.recipe.RecipeTest;
 import com.ottugi.curry.domain.user.User;
 import com.ottugi.curry.domain.user.UserTest;
+import com.ottugi.curry.web.dto.ratings.RatingRandomRecipeListResponseDto;
 import com.ottugi.curry.web.dto.ratings.RatingRequestDto;
 import com.ottugi.curry.web.dto.ratings.RatingRequestDtoTest;
 import com.ottugi.curry.web.dto.ratings.RatingResponseDto;
-import com.ottugi.curry.web.dto.recommend.RecommendListResponseDto;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,10 +59,10 @@ class RatingsServiceTest {
         when(recipeRepository.count()).thenReturn(10L);
         when(recipeRepository.findByIdIn(anyList())).thenReturn(Collections.singletonList(recipe));
 
-        List<RecommendListResponseDto> result = ratingsService.findRandomRecipeListForResearch();
+        List<RatingRandomRecipeListResponseDto> result = ratingsService.findRandomRecipeListForResearch();
 
-        assertNotNull(result);
         assertEquals(1, result.size());
+        assertRatingRandomRecipeListResponseDto(result.get(0));
 
         verify(recipeRepository, times(1)).count();
         verify(recipeRepository, times(1)).findByIdIn(anyList());
@@ -76,9 +76,7 @@ class RatingsServiceTest {
 
         RatingResponseDto result = ratingsService.findUserRating(ratings.getUserId(), ratings.getRecipeId());
 
-        assertNotNull(result);
-        assertEquals(ratings.getUserId(), result.getUserId());
-        assertEquals(ratings.getRecipeId(), result.getRecipeId());
+        assertRatingResponseDto(result);
 
         verify(ratingsRepository, times(1)).existsByUserIdAndRecipeId(anyLong(), anyLong());
         verify(ratingsRepository, times(1)).findByUserIdAndRecipeId(anyLong(), anyLong());
@@ -103,7 +101,7 @@ class RatingsServiceTest {
         when(ratingsRepository.save(any(Ratings.class))).thenReturn(ratings);
 
         RatingRequestDto ratingRequestDto = RatingRequestDtoTest.initRatingRequestDto(ratings);
-        Boolean result = ratingsService.addOrUpdateUserRating(ratingRequestDto);
+        boolean result = ratingsService.addOrUpdateUserRating(ratingRequestDto);
 
         assertTrue(result);
 
@@ -118,7 +116,7 @@ class RatingsServiceTest {
         when(ratingsRepository.findByUserIdAndRecipeId(anyLong(), anyLong())).thenReturn(ratings);
 
         RatingRequestDto ratingRequestDto = RatingRequestDtoTest.initRatingRequestDto(ratings);
-        Boolean result = ratingsService.addOrUpdateUserRating(ratingRequestDto);
+        boolean result = ratingsService.addOrUpdateUserRating(ratingRequestDto);
 
         assertTrue(result);
 
@@ -131,10 +129,28 @@ class RatingsServiceTest {
     void testRemoveUserRating() {
         doNothing().when(ratingsRepository).deleteByUserIdAndRecipeId(anyLong(), anyLong());
 
-        Boolean result = ratingsService.removeUserRating(ratings.getUserId(), recipe.getRecipeId());
+        boolean result = ratingsService.removeUserRating(ratings.getUserId(), recipe.getRecipeId());
 
         assertTrue(result);
 
         verify(ratingsRepository, times(1)).deleteByUserIdAndRecipeId(anyLong(), anyLong());
+    }
+
+    private void assertRatingRandomRecipeListResponseDto(RatingRandomRecipeListResponseDto resultDto) {
+        assertNotNull(resultDto);
+        assertEquals(recipe.getRecipeId(), resultDto.getRecipeId());
+        assertEquals(recipe.getName(), resultDto.getName());
+        assertEquals(recipe.getThumbnail(), resultDto.getThumbnail());
+        assertEquals(recipe.getTime().getTimeName(), resultDto.getTime());
+        assertEquals(recipe.getDifficulty().getDifficultyName(), resultDto.getDifficulty());
+        assertEquals(recipe.getComposition().getCompositionName(), resultDto.getComposition());
+        assertEquals(recipe.getIngredients(), resultDto.getIngredients());
+    }
+
+    private void assertRatingResponseDto(RatingResponseDto resultDto) {
+        assertNotNull(resultDto);
+        assertEquals(ratings.getRecipeId(), resultDto.getRecipeId());
+        assertEquals(ratings.getUserId(), resultDto.getUserId());
+        assertEquals(ratings.getRating(), resultDto.getRating());
     }
 }
