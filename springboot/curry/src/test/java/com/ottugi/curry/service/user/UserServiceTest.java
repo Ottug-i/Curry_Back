@@ -114,6 +114,6 @@ class UserServiceTest {
         assertEquals(user.getId(), resultDto.getId());
         assertEquals(user.getEmail(), resultDto.getEmail());
         assertEquals(user.getNickName(), nickName);
-        assertEquals(user.getRole().getRole(), resultDto.getRole());
+        assertEquals(user.getRole().getRoleName(), resultDto.getRole());
     }
 }

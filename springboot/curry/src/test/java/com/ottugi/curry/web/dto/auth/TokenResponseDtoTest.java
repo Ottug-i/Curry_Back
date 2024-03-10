@@ -30,7 +30,7 @@ public class TokenResponseDtoTest {
         assertEquals(user.getId(), tokenResponseDto.getId());
         assertEquals(user.getEmail(), tokenResponseDto.getEmail());
         assertEquals(user.getNickName(), tokenResponseDto.getNickName());
-        assertEquals(user.getRole().getRole(), tokenResponseDto.getRole());
+        assertEquals(user.getRole().getRoleName(), tokenResponseDto.getRole());
         assertEquals(VALUE, tokenResponseDto.getToken());
         assertEquals(IS_NEW, tokenResponseDto.getIsNew());
     }

@@ -7,6 +7,7 @@ import com.ottugi.curry.domain.user.UserRepository;
 import com.ottugi.curry.except.BaseCode;
 import com.ottugi.curry.except.JwtAuthenticationException;
 import com.ottugi.curry.jwt.TokenProvider;
+import com.ottugi.curry.jwt.TokenValidator;
 import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.auth.TokenResponseDto;
 import com.ottugi.curry.web.dto.auth.UserSaveRequestDto;
@@ -22,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
     private final TokenRepository tokenRepository;
     private final UserService userService;
     private final TokenProvider tokenProvider;
+    private final TokenValidator tokenValidator;
 
     @Override
     public TokenResponseDto signUpOrSignInAndIssueToken(UserSaveRequestDto requestDto, HttpServletResponse response) {
@@ -51,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private void validateRefreshToken(Token refreshToken, HttpServletRequest request) {
-        if (!tokenProvider.validateToken(refreshToken.getValue(), request)) {
+        if (!tokenValidator.validateToken(refreshToken.getValue(), request)) {
             throw new JwtAuthenticationException(BaseCode.JWT_REFRESH_TOKEN_EXPIRED);
         }
     }

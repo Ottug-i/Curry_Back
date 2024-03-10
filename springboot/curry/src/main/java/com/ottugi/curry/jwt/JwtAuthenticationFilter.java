@@ -8,17 +8,16 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
-
-    public JwtAuthenticationFilter(TokenProvider provider) {
-        tokenProvider = provider;
-    }
+    private final TokenValidator tokenValidator;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -28,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
             } else {
                 String accessToken = tokenProvider.resolveAccessToken(request);
-                boolean isTokenValid = tokenProvider.validateToken(accessToken, request);
+                boolean isTokenValid = tokenValidator.validateToken(accessToken, request);
                 if (StringUtils.hasText(accessToken) && isTokenValid) {
                     this.setAuthentication(accessToken);
                 }

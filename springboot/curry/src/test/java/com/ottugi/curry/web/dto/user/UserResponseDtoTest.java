@@ -28,6 +28,6 @@ public class UserResponseDtoTest {
         assertEquals(user.getId(), userResponseDto.getId());
         assertEquals(user.getEmail(), userResponseDto.getEmail());
         assertEquals(user.getNickName(), userResponseDto.getNickName());
-        assertEquals(user.getRole().getRole(), userResponseDto.getRole());
+        assertEquals(user.getRole().getRoleName(), userResponseDto.getRole());
     }
 }
