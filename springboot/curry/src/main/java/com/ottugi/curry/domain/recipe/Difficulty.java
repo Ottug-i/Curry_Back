@@ -1,30 +1,43 @@
 package com.ottugi.curry.domain.recipe;
 
+import com.ottugi.curry.except.BaseCode;
+import com.ottugi.curry.except.InvalidException;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Arrays;
 
 @Getter
 @RequiredArgsConstructor
 public enum Difficulty {
+    ANYONE("아무나"),
+    BEGINNER("초급"),
+    MIDDLE("중급"),
+    ADVANCED("고급"),
+    MASTER("마스터");
 
-    anyone("아무나"),
-    beginner("초급"),
-    middle("중급"),
-    advanced("고급"),
-    master("마스터");
+    private final String difficultyName;
 
-    private String difficulty;
+    private static final Map<String, Difficulty> DIFFICULTY_MAP = new HashMap<>();
 
-    Difficulty(String difficulty) {
-        this.difficulty = difficulty;
+    static {
+        for (Difficulty difficulty : Difficulty.values()) {
+            DIFFICULTY_MAP.put(difficulty.getDifficultyName(), difficulty);
+        }
     }
 
-    public static Difficulty ofDifficulty(String difficulty) {
-        return Arrays.stream(Difficulty.values())
-                .filter(d -> d.getDifficulty().equals(difficulty))
-                .findAny().orElse(null);
+    public static Difficulty findByDifficultyName(String difficulty) {
+        Difficulty foundDifficulty = DIFFICULTY_MAP.get(difficulty);
+        if (foundDifficulty == null) {
+            throw new InvalidException(BaseCode.BAD_REQUEST);
+        }
+        return foundDifficulty;
     }
 
+    public static boolean matchesDifficulty(Recipe recipe, String difficulty) {
+        if (difficulty == null || difficulty.isBlank()) {
+            return true;
+        }
+        return recipe.getDifficulty().equals(findByDifficultyName(difficulty));
+    }
 }

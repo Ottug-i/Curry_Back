@@ -1,29 +1,37 @@
 package com.ottugi.curry.web.dto.ratings;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.ottugi.curry.domain.ratings.Ratings;
+import com.ottugi.curry.domain.ratings.RatingsTest;
+import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.RecipeTest;
+import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-class RatingResponseDtoTest {
+public class RatingResponseDtoTest {
+    public static RatingResponseDto initRatingResponseDto(Ratings ratings) {
+        return new RatingResponseDto(ratings);
+    }
 
     private Ratings ratings;
 
+    @BeforeEach
+    public void setUp() {
+        User user = UserTest.initUser();
+        Recipe recipe = RecipeTest.initRecipe();
+
+        ratings = RatingsTest.initRatings(user, recipe);
+    }
+
     @Test
-    void 평점_응답_Dto_롬복() {
-        // given
-        ratings = Ratings.builder()
-                .id(RATING_ID)
-                .userId(USER_ID)
-                .recipeId(RECIPE_ID)
-                .rating(RATING)
-                .build();
+    @DisplayName("RatingResponseDto 생성 테스트")
+    void testRatingResponseDto() {
+        RatingResponseDto ratingResponseDto = initRatingResponseDto(ratings);
 
-        // when
-        RatingResponseDto ratingResponseDto = new RatingResponseDto(ratings);
-
-        // then
         assertEquals(ratings.getUserId(), ratingResponseDto.getUserId());
         assertEquals(ratings.getRecipeId(), ratingResponseDto.getRecipeId());
         assertEquals(ratings.getRating(), ratingResponseDto.getRating());

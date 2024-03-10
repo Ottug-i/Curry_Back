@@ -1,7 +1,7 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '2.7.1'
-	id 'io.spring.dependency-management' version '1.1.0'
+    id 'java'
+    id 'org.springframework.boot' version '2.7.1'
+    id 'io.spring.dependency-management' version '1.1.0'
 }
 
 group = 'com.ottug-i'
@@ -9,53 +9,57 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
+    // spring boot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	// spring boot
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // db
+    runtimeOnly 'com.h2database:h2'
+    implementation 'mysql:mysql-connector-java'
 
-	// db
-	runtimeOnly 'com.h2database:h2'
-	implementation 'mysql:mysql-connector-java'
+    // lombok
+    annotationProcessor 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.projectlombok:lombok'
 
-	// lombok
-	annotationProcessor'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
-	implementation 'org.projectlombok:lombok'
+    // spring data jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-	// spring data jpa
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // spring security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
 
-	// spring security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	testImplementation 'org.springframework.security:spring-security-test'
+    // swagger
+    implementation 'io.springfox:springfox-swagger2:3.0.0'
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 
-	// swagger
-	implementation 'io.springfox:springfox-swagger2:3.0.0'
-	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
-	// jwt
-	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    // batch
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
 
-	// batch
-	implementation 'org.springframework.boot:spring-boot-starter-batch'
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'io.lettuce:lettuce-core:6.1.5.RELEASE'
+    implementation 'it.ozimov:embedded-redis:0.7.1'
+    implementation 'redis.clients:jedis:3.7.0'
 
-	// redis
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'io.lettuce:lettuce-core:6.1.5.RELEASE'
+    // common
+    implementation 'org.apache.commons:commons-lang3'
 
-	// common
-	implementation 'org.apache.commons:commons-lang3'
+    // validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 jar {
-	enabled = false
+    enabled = false
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

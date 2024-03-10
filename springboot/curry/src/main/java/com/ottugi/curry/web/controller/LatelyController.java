@@ -5,32 +5,37 @@ import com.ottugi.curry.web.dto.lately.LatelyListResponseDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
+import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-@Api(tags={"Lately API (최근 본 레시피 API)"})
+@Api(tags = {"Lately API (최근 본 레시피 API)"})
 @RestController
+@Validated
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/lately")
 public class LatelyController {
-
     private final LatelyService latelyService;
 
     @GetMapping("/list")
     @ApiOperation(value = "최근 본 레시피 조회", notes = "최근 본 레시피를 조회하여 리턴합니다.")
     @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", required = true)
-    public ResponseEntity<List<LatelyListResponseDto>> getLatelyAll(@RequestParam Long userId) {
-        return ResponseEntity.ok().body(latelyService.getLatelyAll(userId));
+    public ResponseEntity<List<LatelyListResponseDto>> latelyList(@RequestParam @NotNull Long userId) {
+        return ResponseEntity.ok().body(latelyService.findLatelyListByUserId(userId));
     }
 
     @GetMapping("/character")
-    @ApiOperation(value = "최근 본 레시피에 따른 3D 모델 캐릭터 조회", notes = "최근 본 레시피의 메인 재료에 따른 3D 모델 캐릭터를 조회합니다.")
+    @ApiOperation(value = "최근 본 레시피에 따른 3D 모델 캐릭터 조회", notes = "3D 메타 캐릭터 선택 전환을 위해 회원 아이디에 따른 최근 본 레시피의 메인 장르의 3D 메타 모델 캐릭터 모델 종류를 조회합니다.")
     @ApiImplicitParam(name = "userId", value = "회원 기본키", example = "1", readOnly = true)
-    public ResponseEntity<String> getLatelyCharacter(@RequestParam Long userId) {
-        return ResponseEntity.ok().body(latelyService.getLatelyCharacter(userId));
+    public ResponseEntity<String> latelyMainGenreCharacterFor3DCharacter(@RequestParam @NotNull Long userId) {
+        return ResponseEntity.ok().body(latelyService.findLatelyMainGenreCharacterFor3DCharacter(userId));
     }
 }

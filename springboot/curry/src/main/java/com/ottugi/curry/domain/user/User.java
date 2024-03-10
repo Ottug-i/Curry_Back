@@ -3,19 +3,25 @@ package com.ottugi.curry.domain.user;
 import com.ottugi.curry.domain.BaseTime;
 import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.lately.Lately;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @Entity(name = "users")
 public class User extends BaseTime {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "User_Id")
@@ -34,11 +40,17 @@ public class User extends BaseTime {
     @Column(nullable = false)
     private Role role;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Bookmark> bookmarkList = new ArrayList<>();
+    @Column(nullable = false)
+    private Boolean isNew;
+
+    @Column(nullable = false)
+    private Boolean withdraw;
 
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Lately> latelyList = new ArrayList<>();
+    private final List<Bookmark> bookmarkList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<Lately> latelyList = new ArrayList<>();
 
     @Builder
     public User(Long id, String email, String nickName, String favoriteGenre, Role role) {
@@ -47,27 +59,35 @@ public class User extends BaseTime {
         this.nickName = nickName;
         this.favoriteGenre = favoriteGenre;
         this.role = role;
+        this.isNew = true;
+        this.withdraw = false;
     }
 
-    public User updateProfile(String nickName) {
+    public void updateProfile(String nickName) {
         this.nickName = nickName;
-        return this;
     }
 
-    public User updateGenre(String favoriteGenre) {
+    public void updateGenre(String favoriteGenre) {
         this.favoriteGenre = favoriteGenre;
-        return this;
     }
 
-    public User updateRole(Role role) {
+    public void updateRole(Role role) {
         this.role = role;
-        return this;
+    }
+
+    public void markAsExistingUser() {
+        this.isNew = false;
+    }
+
+    public void withdrawUser() {
+        this.withdraw = true;
+        this.nickName = "탈퇴한 회원";
     }
 
     public void addBookmarkList(Bookmark bookmark) {
         this.bookmarkList.add(bookmark);
 
-        if(bookmark.getUserId() != this) {
+        if (bookmark.getUserId() != this) {
             bookmark.setUser(this);
         }
     }
@@ -75,7 +95,7 @@ public class User extends BaseTime {
     public void addLatelyList(Lately lately) {
         this.latelyList.add(lately);
 
-        if(lately.getUserId() != this) {
+        if (lately.getUserId() != this) {
             lately.setUser(this);
         }
     }

@@ -1,45 +1,51 @@
 package com.ottugi.curry.web.dto.recipe;
 
-import com.ottugi.curry.domain.recipe.*;
+import static com.ottugi.curry.domain.bookmark.BookmarkTest.IS_BOOKMARK;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.RecipeTest;
+import java.util.Collections;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
+public class RecipeListResponseDtoTest {
+    private static RecipeListResponseDto initRecipeListResponseDto(Recipe recipe) {
+        return new RecipeListResponseDto(recipe, IS_BOOKMARK);
+    }
 
-class RecipeListResponseDtoTest {
+    public static List<RecipeListResponseDto> initRecipeListResponseDtoList(Recipe recipe) {
+        return Collections.singletonList(initRecipeListResponseDto(recipe));
+    }
 
-    private Boolean isBookmark = true;
+    public static Page<RecipeListResponseDto> initRecipeListResponseDtoPage(Recipe recipe) {
+        return new PageImpl<>(initRecipeListResponseDtoList(recipe));
+    }
+
+    private Recipe recipe;
+
+    @BeforeEach
+    public void setUp() {
+        recipe = RecipeTest.initRecipe();
+    }
 
     @Test
-    void 레시피_목록_응답_Dto_롬복() {
-        // given
-        Recipe recipe = Recipe.builder()
-                .id(ID)
-                .recipeId(RECIPE_ID)
-                .name(NAME)
-                .thumbnail(THUMBNAIL)
-                .time(TIME)
-                .difficulty(DIFFICULTY)
-                .composition(COMPOSITION)
-                .ingredients(INGREDIENTS)
-                .servings(SERVINGS)
-                .orders(ORDERS)
-                .photo(PHOTO)
-                .genre(GENRE)
-                .build();
+    @DisplayName("RecipeListResponseDto 생성 테스트")
+    void testRecipeListResponseDto() {
+        RecipeListResponseDto recipeListResponseDto = initRecipeListResponseDto(recipe);
 
-        // when
-        RecipeListResponseDto recipeListResponseDto = new RecipeListResponseDto(recipe, isBookmark);
-
-        // then
         assertEquals(recipe.getRecipeId(), recipeListResponseDto.getRecipeId());
         assertEquals(recipe.getName(), recipeListResponseDto.getName());
         assertEquals(recipe.getThumbnail(), recipeListResponseDto.getThumbnail());
         assertEquals(recipe.getTime().getTimeName(), recipeListResponseDto.getTime());
-        assertEquals(recipe.getDifficulty().getDifficulty(), recipeListResponseDto.getDifficulty());
-        assertEquals(recipe.getComposition().getComposition(), recipeListResponseDto.getComposition());
+        assertEquals(recipe.getDifficulty().getDifficultyName(), recipeListResponseDto.getDifficulty());
+        assertEquals(recipe.getComposition().getCompositionName(), recipeListResponseDto.getComposition());
         assertEquals(recipe.getIngredients(), recipeListResponseDto.getIngredients());
         assertEquals("vegetable", recipeListResponseDto.getMainGenre());
-        assertEquals(isBookmark, recipeListResponseDto.getIsBookmark());
+        assertEquals(IS_BOOKMARK, recipeListResponseDto.getIsBookmark());
     }
 }

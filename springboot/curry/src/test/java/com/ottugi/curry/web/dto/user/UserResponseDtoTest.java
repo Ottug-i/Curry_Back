@@ -1,29 +1,30 @@
 package com.ottugi.curry.web.dto.user;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-class UserResponseDtoTest {
+public class UserResponseDtoTest {
+    public static UserResponseDto initUserResponseDto(User user) {
+        return new UserResponseDto(user);
+    }
 
     private User user;
 
-    @Test
-    void 회원_응답_Dto_롬복() {
-        // given
-        user = User.builder()
-                .id(USER_ID)
-                .email(EMAIL)
-                .nickName(NICKNAME)
-                .favoriteGenre(FAVORITE_GENRE)
-                .role(ROLE)
-                .build();
-        // when
-        UserResponseDto userResponseDto = new UserResponseDto(user);
+    @BeforeEach
+    public void setUp() {
+        user = UserTest.initUser();
+    }
 
-        // then
+    @Test
+    @DisplayName("UserResponseDto 생성 테스트")
+    void testUserResponseDto() {
+        UserResponseDto userResponseDto = initUserResponseDto(user);
+
         assertEquals(user.getId(), userResponseDto.getId());
         assertEquals(user.getEmail(), userResponseDto.getEmail());
         assertEquals(user.getNickName(), userResponseDto.getNickName());

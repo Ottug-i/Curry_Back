@@ -11,11 +11,10 @@ import org.springframework.data.redis.core.index.Indexed;
 @NoArgsConstructor
 @RedisHash(value = "rank")
 public class Rank {
-
     @Id
     @Indexed
     private String name;
-    
+
     private int score;
 
     @Builder
@@ -24,8 +23,7 @@ public class Rank {
         this.score = 1;
     }
 
-    public Rank incrementScore(int score) {
-        this.score += score;
-        return this;
+    public void incrementScore() {
+        this.score += 1;
     }
 }

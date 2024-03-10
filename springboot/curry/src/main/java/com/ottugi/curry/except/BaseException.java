@@ -1,11 +1,10 @@
 package com.ottugi.curry.except;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BaseException extends RuntimeException {
-
     private final BaseCode baseCode;
 }

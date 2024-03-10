@@ -1,39 +1,42 @@
 package com.ottugi.curry.web.dto.lately;
 
-import com.ottugi.curry.domain.recipe.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.ottugi.curry.domain.lately.Lately;
+import com.ottugi.curry.domain.lately.LatelyTest;
+import com.ottugi.curry.domain.recipe.RecipeTest;
+import com.ottugi.curry.domain.user.UserTest;
+import java.util.Collections;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
+public class LatelyListResponseDtoTest {
+    public static LatelyListResponseDto initLatelyListResponseDto(Lately lately) {
+        return new LatelyListResponseDto(lately);
+    }
 
-class LatelyListResponseDtoTest {
+    public static List<LatelyListResponseDto> initLatelyListResponseDtoList(Lately lately) {
+        return Collections.singletonList(initLatelyListResponseDto(lately));
+    }
 
-    private Recipe recipe;
+    private Lately lately;
+
+    @BeforeEach
+    public void setUp() {
+        lately = LatelyTest.initLately();
+        lately.setUser(UserTest.initUser());
+        lately.setRecipe(RecipeTest.initRecipe());
+    }
 
     @Test
-    void 최근_본_레시피_응답_Dto_롬복() {
-        // given
-        recipe = Recipe.builder()
-                .id(ID)
-                .recipeId(RECIPE_ID)
-                .name(NAME)
-                .thumbnail(THUMBNAIL)
-                .time(TIME)
-                .difficulty(DIFFICULTY)
-                .composition(COMPOSITION)
-                .ingredients(INGREDIENTS)
-                .servings(SERVINGS)
-                .orders(ORDERS)
-                .photo(PHOTO)
-                .genre(GENRE)
-                .build();
+    @DisplayName("LatelyListResponseDto 생성 테스트")
+    void testLatelyListResponseDto() {
+        LatelyListResponseDto latelyListResponseDto = initLatelyListResponseDto(lately);
 
-        // when
-        LatelyListResponseDto latelyListResponseDto = new LatelyListResponseDto(recipe);
-
-        // then
-        assertEquals(recipe.getRecipeId(), latelyListResponseDto.getRecipeId());
-        assertEquals(recipe.getName(), latelyListResponseDto.getName());
-        assertEquals(recipe.getThumbnail(), latelyListResponseDto.getThumbnail());
+        assertEquals(lately.getRecipeId().getRecipeId(), latelyListResponseDto.getRecipeId());
+        assertEquals(lately.getRecipeId().getName(), latelyListResponseDto.getName());
+        assertEquals(lately.getRecipeId().getThumbnail(), latelyListResponseDto.getThumbnail());
     }
 }

@@ -1,36 +1,42 @@
 package com.ottugi.curry.domain.rank;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
+public class RankTest {
+    public static final String KEYWORD = "망고";
+    public static final int SCORE = 1;
 
-@SpringBootTest
-class RankTest {
+    public static Rank initRank() {
+        return Rank.builder()
+                .name(KEYWORD)
+                .build();
+    }
 
     private Rank rank;
 
     @BeforeEach
     public void setUp() {
-        // given
-        rank = new Rank(KEYWORD);
+        rank = initRank();
     }
 
     @Test
-    void 검색어_추가() {
-        // when, then
+    @DisplayName("랭킹 검색어 추가 테스트")
+    void testRank() {
+        assertNotNull(rank);
         assertEquals(KEYWORD, rank.getName());
         assertEquals(SCORE, rank.getScore());
     }
 
     @Test
-    void 검색어_횟수_증가() {
-        // when
-        rank.incrementScore(SCORE);
+    @DisplayName("검색어 횟수 증가 테스트")
+    void testIncrementScore() {
+        rank.incrementScore();
 
-        // then
         assertEquals(KEYWORD, rank.getName());
         assertEquals(SCORE + 1, rank.getScore());
     }

@@ -1,13 +1,12 @@
 package com.ottugi.curry.except;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BaseResponse<T> {
-
     private String message;
     private T data;
 

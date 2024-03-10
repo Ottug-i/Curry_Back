@@ -1,5 +1,6 @@
 package com.ottugi.curry.config;
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -10,36 +11,43 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
+@EnableCaching
 @EnableRedisRepositories
 public class RedisConfig {
-
-    private String host;
-    private int port;
-    private String password;
-    private String jwtHeader;
+    private final String host;
+    private final int port;
+    private final String password;
 
     public RedisConfig(GlobalConfig config) {
-        this.host = config.getRedis_host();
-        this.port = config.getRedis_port();
-        this.password = config.getRedis_password();
-        this.jwtHeader = config.getHeader();
+        this.host = config.getRedisHost();
+        this.port = config.getRedisPort();
+        this.password = config.getRedisPassword();
     }
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setHostName(host);
-        redisStandaloneConfiguration.setPort(port);
-        redisStandaloneConfiguration.setPassword(password);
-        return new LettuceConnectionFactory(redisStandaloneConfiguration);
+        RedisStandaloneConfiguration configuration = createStandaloneConfiguration();
+        return new LettuceConnectionFactory(configuration);
     }
 
     @Bean
     public RedisTemplate<String, String> redisTemplate() {
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        setRedisTemplateSerializers(redisTemplate);
         return redisTemplate;
+    }
+
+    private RedisStandaloneConfiguration createStandaloneConfiguration() {
+        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+        redisStandaloneConfiguration.setHostName(host);
+        redisStandaloneConfiguration.setPort(port);
+        redisStandaloneConfiguration.setPassword(password);
+        return redisStandaloneConfiguration;
+    }
+
+    private void setRedisTemplateSerializers(RedisTemplate<String, String> template) {
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
     }
 }

@@ -1,30 +1,32 @@
 package com.ottugi.curry.web.dto.auth;
 
+import static com.ottugi.curry.domain.token.TokenTest.VALUE;
+import static com.ottugi.curry.domain.user.UserTest.IS_NEW;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-class TokenResponseDtoTest {
+public class TokenResponseDtoTest {
+    public static TokenResponseDto initTokenResponseDto(User user) {
+        return new TokenResponseDto(user, VALUE);
+    }
 
     private User user;
 
+    @BeforeEach
+    public void setUp() {
+        user = UserTest.initUser();
+    }
+
     @Test
-    void 토큰_응답_Dto_롬복() {
-        // given
-        user = User.builder()
-                .id(USER_ID)
-                .email(EMAIL)
-                .nickName(NICKNAME)
-                .favoriteGenre(FAVORITE_GENRE)
-                .role(ROLE)
-                .build();
+    @DisplayName("TokenResponseDto 생성 테스트")
+    void testTokenResponseDto() {
+        TokenResponseDto tokenResponseDto = initTokenResponseDto(user);
 
-        // when
-        TokenResponseDto tokenResponseDto = new TokenResponseDto(user, VALUE, IS_NEW);
-
-        // then
         assertEquals(user.getId(), tokenResponseDto.getId());
         assertEquals(user.getEmail(), tokenResponseDto.getEmail());
         assertEquals(user.getNickName(), tokenResponseDto.getNickName());

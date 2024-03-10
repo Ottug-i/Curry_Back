@@ -1,79 +1,82 @@
 package com.ottugi.curry.web.controller;
 
-import com.ottugi.curry.domain.lately.Lately;
-import com.ottugi.curry.domain.recipe.Recipe;
-import com.ottugi.curry.domain.user.User;
-import com.ottugi.curry.service.lately.LatelyService;
-import com.ottugi.curry.web.dto.lately.LatelyListResponseDto;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static com.ottugi.curry.TestConstants.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.ottugi.curry.config.SecurityConfig;
+import com.ottugi.curry.domain.lately.Lately;
+import com.ottugi.curry.domain.lately.LatelyTest;
+import com.ottugi.curry.domain.recipe.RecipeTest;
+import com.ottugi.curry.domain.user.UserTest;
+import com.ottugi.curry.jwt.JwtAuthenticationFilter;
+import com.ottugi.curry.service.lately.LatelyService;
+import com.ottugi.curry.web.dto.lately.LatelyListResponseDto;
+import com.ottugi.curry.web.dto.lately.LatelyListResponseDtoTest;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class LatelyControllerTest {
-
-    private User user;
-    private Recipe recipe;
+@WebMvcTest(controllers = LatelyController.class, excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class),
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
+@WithMockUser
+public class LatelyControllerTest {
     private Lately lately;
 
+    @Autowired
     private MockMvc mockMvc;
-
-    @Mock
+    @MockBean
     private LatelyService latelyService;
-
-    @InjectMocks
-    private LatelyController latelyController;
 
     @BeforeEach
     public void setUp() {
-        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        lately = new Lately();
-        lately.setUser(user);
-        lately.setRecipe(recipe);
-        mockMvc = MockMvcBuilders.standaloneSetup(latelyController).build();
+        lately = LatelyTest.initLately();
+        lately.setUser(UserTest.initUser());
+        lately.setRecipe(RecipeTest.initRecipe());
     }
 
     @Test
-    void 최근_본_레시피_목록_조회() throws Exception {
-        // given
-        List<LatelyListResponseDto> latelyListResponseDtoList = new ArrayList<>();
-        latelyListResponseDtoList.add(new LatelyListResponseDto(lately.getRecipeId()));
-        when(latelyService.getLatelyAll(anyLong())).thenReturn(latelyListResponseDtoList);
+    @DisplayName("최근 본 레시피 목록 조회 테스트")
+    void testLatelyList() throws Exception {
+        List<LatelyListResponseDto> latelyListResponseDtoList = LatelyListResponseDtoTest.initLatelyListResponseDtoList(lately);
+        when(latelyService.findLatelyListByUserId(anyLong())).thenReturn(latelyListResponseDtoList);
 
-        // when, then
         mockMvc.perform(get("/api/lately/list")
-                        .param("userId", String.valueOf(user.getId())))
+                        .param("userId", String.valueOf(lately.getUserId().getId()))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(latelyListResponseDtoList.size())));
+
+        verify(latelyService, times(1)).findLatelyListByUserId(anyLong());
     }
 
     @Test
-    void 최근_본_레시피에_따른_3D_모델_캐릭터_조회() throws Exception {
-        // given
-        when(latelyService.getLatelyCharacter(anyLong())).thenReturn("vegetable");
+    @DisplayName("최근 본 레시피에 따른 3D 모델 캐릭터 조회 테스트")
+    void testLatelyMainGenreCharacterFor3DCharacter() throws Exception {
+        when(latelyService.findLatelyMainGenreCharacterFor3DCharacter(anyLong())).thenReturn("vegetable");
 
-        // when, then
         mockMvc.perform(get("/api/lately/character")
-                    .param("userId", String.valueOf(user.getId())))
-            .andExpect(status().isOk())
-            .andExpect(content().string("vegetable"));
+                        .param("userId", String.valueOf(lately.getUserId().getId()))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().string("vegetable"));
+
+        verify(latelyService, times(1)).findLatelyMainGenreCharacterFor3DCharacter(anyLong());
     }
 }

@@ -1,58 +1,54 @@
 package com.ottugi.curry.domain.rank;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.ottugi.curry.RedisMockConfig;
+import java.io.IOException;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.context.annotation.Import;
 
 @SpringBootTest
+@Import(RedisMockConfig.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RankRepositoryTest {
-
     private Rank rank;
 
+    @Autowired
     private RankRepository rankRepository;
 
-    private Rank testRank;
-
-    @Autowired
-    RankRepositoryTest(RankRepository rankRepository) {
-        this.rankRepository = rankRepository;
-    }
-
     @BeforeEach
-    public void setUp() {
-        // given
-        rank = new Rank(KEYWORD);
+    public void setUp() throws IOException {
+        rank = RankTest.initRank();
         rank = rankRepository.save(rank);
     }
 
     @AfterEach
     public void clean() {
-        // clean
         rankRepository.deleteAll();
     }
 
     @Test
-    void 이름으로_검색어_조회() {
-        // when
-        testRank = rankRepository.findByName(rank.getName());
+    @DisplayName("이름으로 검색어 조회")
+    void testFindByName() {
+        Rank foundRank = rankRepository.findByName(rank.getName());
 
-        // then
-        assertEquals(rank.getName(), testRank.getName());
+        assertEquals(rank.getName(), foundRank.getName());
+        assertEquals(rank.getScore(), foundRank.getScore());
     }
 
     @Test
-    void 검색어_순위_내림차순_조회() {
-        // when
-        List<Rank> rankList = rankRepository.findAllByOrderByScoreDesc();
+    @DisplayName("검색어 순위 목록 내림차순 조회")
+    void testFindAllByOrderByScoreDesc() {
+        List<Rank> foundRankList = rankRepository.findAllByOrderByScoreDesc();
 
-        // then
-        assertNotNull(rankList);
+        assertNotNull(foundRankList);
     }
 }

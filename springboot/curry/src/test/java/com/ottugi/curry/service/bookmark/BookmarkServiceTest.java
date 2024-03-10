@@ -1,142 +1,149 @@
 package com.ottugi.curry.service.bookmark;
 
+import static com.ottugi.curry.domain.bookmark.BookmarkTest.IS_BOOKMARK;
+import static com.ottugi.curry.domain.recipe.RecipeTest.COMPOSITION;
+import static com.ottugi.curry.domain.recipe.RecipeTest.DIFFICULTY;
+import static com.ottugi.curry.domain.recipe.RecipeTest.PAGE;
+import static com.ottugi.curry.domain.recipe.RecipeTest.SIZE;
+import static com.ottugi.curry.domain.recipe.RecipeTest.TIME;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.ottugi.curry.domain.bookmark.Bookmark;
 import com.ottugi.curry.domain.bookmark.BookmarkRepository;
-import com.ottugi.curry.domain.recipe.*;
+import com.ottugi.curry.domain.bookmark.BookmarkTest;
+import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
-import com.ottugi.curry.domain.user.UserRepository;
-import com.ottugi.curry.service.CommonService;
+import com.ottugi.curry.service.recipe.RecipeService;
+import com.ottugi.curry.service.user.UserService;
 import com.ottugi.curry.web.dto.bookmark.BookmarkListResponseDto;
 import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDto;
-import org.junit.jupiter.api.AfterEach;
+import com.ottugi.curry.web.dto.bookmark.BookmarkRequestDtoTest;
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class BookmarkServiceTest {
-
-    private User user;
-    private Recipe recipe;
     private Bookmark bookmark;
 
-    private List<Bookmark> bookmarkList = new ArrayList<>();
-    private List<BookmarkListResponseDto> bookmarkListResponseDtoList = new ArrayList<>();
-    private Page<BookmarkListResponseDto> bookmarkListResponseDtoListPage;
-
     @Mock
-    private CommonService commonService;
-
+    private UserService userService;
+    @Mock
+    private RecipeService recipeService;
     @Mock
     private BookmarkRepository bookmarkRepository;
-
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private RecipeRepository recipeRepository;
-
     @InjectMocks
     private BookmarkServiceImpl bookmarkService;
 
     @BeforeEach
     public void setUp() {
-        // given
-        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        when(userRepository.save(any(User.class))).thenReturn(user);
-        when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe);
-
-        bookmark = new Bookmark();
-        bookmark.setUser(user);
-        bookmark.setRecipe(recipe);
-
-        bookmarkList.add(bookmark);
-        bookmarkListResponseDtoList.add(new BookmarkListResponseDto(recipe, true));
-        bookmarkListResponseDtoListPage = new PageImpl<>(bookmarkListResponseDtoList, PageRequest.of(PAGE - 1, SIZE), bookmarkListResponseDtoList.size());
-    }
-
-    @AfterEach
-    public void clean() {
-        // clean
-        bookmarkRepository.deleteAll();
-        recipeRepository.deleteAll();
-        userRepository.deleteAll();
+        bookmark = BookmarkTest.initBookmark();
+        bookmark.setUser(mock(User.class));
+        bookmark.setRecipe(mock(Recipe.class));
     }
 
     @Test
-    void 북마크_추가() {
-        // given
-        when(commonService.findByUserId(anyLong())).thenReturn(user);
-        when(commonService.findByRecipeId(anyLong())).thenReturn(recipe);
-        when(commonService.isBookmarked(any(User.class), any(Recipe.class))).thenReturn(false);
+    @DisplayName("북마크 추가 테스트")
+    void testAddBookmark() {
+        when(userService.findUserByUserId(anyLong())).thenReturn(bookmark.getUserId());
+        when(recipeService.findRecipeByRecipeId(anyLong())).thenReturn(bookmark.getRecipeId());
+        when(bookmarkRepository.existsByUserIdAndRecipeId(any(User.class), any(Recipe.class))).thenReturn(false);
         when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(bookmark);
 
-        // when
-        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(user.getId(),recipe.getRecipeId());
-        Boolean testResponse = bookmarkService.addOrRemoveBookmark(bookmarkRequestDto);
+        BookmarkRequestDto bookmarkRequestDto = BookmarkRequestDtoTest.initBookmarkRequestDto(bookmark);
+        boolean result = bookmarkService.addOrRemoveBookmark(bookmarkRequestDto);
 
-        // then
-        assertTrue(testResponse);
+        assertTrue(result);
+
+        verify(userService, times(1)).findUserByUserId(anyLong());
+        verify(recipeService, times(1)).findRecipeByRecipeId(anyLong());
+        verify(bookmarkRepository, times(1)).existsByUserIdAndRecipeId(any(User.class), any(Recipe.class));
+        verify(bookmarkRepository, times(1)).save(any(Bookmark.class));
     }
 
     @Test
-    void 북마크_삭제() {
-        // given
-        when(commonService.findByUserId(anyLong())).thenReturn(user);
-        when(commonService.findByRecipeId(anyLong())).thenReturn(recipe);
-        when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(bookmark);
-        when(commonService.isBookmarked(any(User.class), any(Recipe.class))).thenReturn(false);
-        doNothing().when(bookmarkRepository).delete(bookmark);
+    @DisplayName("북마크 삭제 테스트")
+    void testRemoveBookmark() {
+        when(userService.findUserByUserId(anyLong())).thenReturn(bookmark.getUserId());
+        when(recipeService.findRecipeByRecipeId(anyLong())).thenReturn(bookmark.getRecipeId());
+        when(bookmarkRepository.existsByUserIdAndRecipeId(any(User.class), any(Recipe.class))).thenReturn(true);
+        doNothing().when(bookmarkRepository).deleteByUserIdAndRecipeId(any(User.class), any(Recipe.class));
 
-        // when
-        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto(user.getId(), recipe.getRecipeId());
-        Boolean testResponse = bookmarkService.addOrRemoveBookmark(bookmarkRequestDto);
+        BookmarkRequestDto bookmarkRequestDto = BookmarkRequestDtoTest.initBookmarkRequestDto(bookmark);
+        boolean result = bookmarkService.addOrRemoveBookmark(bookmarkRequestDto);
 
-        // then
-        assertTrue(testResponse);
+        assertFalse(result);
+
+        verify(userService, times(1)).findUserByUserId(anyLong());
+        verify(recipeService, times(1)).findRecipeByRecipeId(anyLong());
+        verify(bookmarkRepository, times(1)).existsByUserIdAndRecipeId(any(User.class), any(Recipe.class));
+        verify(bookmarkRepository, times(1)).deleteByUserIdAndRecipeId(any(User.class), any(Recipe.class));
     }
 
     @Test
-    void 북마크_목록_조회() {
-        // given
-        when(commonService.findByUserId(anyLong())).thenReturn(user);
-        when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(bookmark);
-        when(commonService.findBookmarkByUser(any(User.class))).thenReturn(bookmarkList);
-        doReturn(bookmarkListResponseDtoListPage).when(commonService).getPage(anyList(), anyInt(), anyInt());
+    @DisplayName("회원 아이디에 따른 북마크 목록 페이지 조회 테스트")
+    void testFindBookmarkPageByUserId() {
+        when(userService.findUserByUserId(anyLong())).thenReturn(bookmark.getUserId());
+        when(bookmark.getRecipeId().getTime()).thenReturn(TIME);
+        when(bookmark.getRecipeId().getDifficulty()).thenReturn(DIFFICULTY);
+        when(bookmark.getRecipeId().getComposition()).thenReturn(COMPOSITION);
+        when(bookmark.getUserId().getBookmarkList()).thenReturn(Collections.singletonList(bookmark));
 
-        // when
-        Page<BookmarkListResponseDto> testBookmarkListPageResponseDto = bookmarkService.getBookmarkAll(user.getId(), PAGE, SIZE);
+        Page<BookmarkListResponseDto> result = bookmarkService.findBookmarkPageByUserId(bookmark.getUserId().getId(), PAGE, SIZE);
 
-        // then
-        assertEquals(bookmarkListResponseDtoListPage.getTotalElements(), testBookmarkListPageResponseDto.getTotalElements());
+        assertEquals(1, result.getTotalElements());
+        assertBookmarkListResponseDto(result.getContent().get(0));
+
+        verify(userService, times(1)).findUserByUserId(anyLong());
     }
 
     @Test
-    void 북마크_레시피_검색() {
-        // given
-        when(commonService.findByUserId(anyLong())).thenReturn(user);
-        when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(bookmark);
-        when(commonService.findBookmarkByUser(any(User.class))).thenReturn(bookmarkList);
-        when(commonService.isRecipeMatching(any(Recipe.class), anyString(), anyString(), anyString())).thenReturn(true);
-        doReturn(bookmarkListResponseDtoListPage).when(commonService).getPage(anyList(), anyInt(), anyInt());
+    @DisplayName("옵션에 따른 북마크 레시피 목록 페이지 조회 테스트")
+    void testFindBookmarkPageByOption() {
+        when(userService.findUserByUserId(anyLong())).thenReturn(bookmark.getUserId());
+        when(bookmark.getRecipeId().getTime()).thenReturn(TIME);
+        when(bookmark.getRecipeId().getDifficulty()).thenReturn(DIFFICULTY);
+        when(bookmark.getRecipeId().getComposition()).thenReturn(COMPOSITION);
+        when(bookmark.getUserId().getBookmarkList()).thenReturn(Collections.singletonList(bookmark));
+        when(recipeService.isRecipeMatchedCriteria(any(Recipe.class), anyString(), anyString(), anyString())).thenReturn(true);
 
-        // when
-        Page<BookmarkListResponseDto> testBookmarkListPageResponseDto = bookmarkService.searchBookmark(eq(user.getId()), PAGE, SIZE, recipe.getName(), recipe.getTime().getTimeName(), recipe.getDifficulty().getDifficulty(), recipe.getComposition().getComposition());
+        Page<BookmarkListResponseDto> result = bookmarkService.findBookmarkPageByOption(bookmark.getUserId().getId(), PAGE, SIZE,
+                bookmark.getRecipeId().getName(), bookmark.getRecipeId().getTime().getTimeName(),
+                bookmark.getRecipeId().getDifficulty().getDifficultyName(), bookmark.getRecipeId().getComposition().getCompositionName());
 
-        // then
-        assertEquals(bookmarkListResponseDtoListPage.getTotalElements(), testBookmarkListPageResponseDto.getTotalElements());
+        assertEquals(1, result.getTotalElements());
+        assertBookmarkListResponseDto(result.getContent().get(0));
+
+        verify(userService, times(1)).findUserByUserId(anyLong());
+        verify(recipeService, times(1)).isRecipeMatchedCriteria(any(Recipe.class), anyString(), anyString(), anyString());
+    }
+
+    private void assertBookmarkListResponseDto(BookmarkListResponseDto resultDto) {
+        assertNotNull(resultDto);
+        assertEquals(bookmark.getRecipeId().getRecipeId(), resultDto.getRecipeId());
+        assertEquals(bookmark.getRecipeId().getName(), resultDto.getName());
+        assertEquals(bookmark.getRecipeId().getThumbnail(), resultDto.getThumbnail());
+        assertEquals(bookmark.getRecipeId().getTime().getTimeName(), resultDto.getTime());
+        assertEquals(bookmark.getRecipeId().getDifficulty().getDifficultyName(), resultDto.getDifficulty());
+        assertEquals(bookmark.getRecipeId().getComposition().getCompositionName(), resultDto.getComposition());
+        assertEquals(bookmark.getRecipeId().getIngredients(), resultDto.getIngredients());
+        assertEquals(IS_BOOKMARK, resultDto.getIsBookmark());
     }
 }

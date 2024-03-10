@@ -1,89 +1,50 @@
 package com.ottugi.curry.domain.lately;
 
-import com.ottugi.curry.domain.recipe.*;
-import com.ottugi.curry.domain.user.User;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.ottugi.curry.domain.recipe.RecipeRepository;
+import com.ottugi.curry.domain.recipe.RecipeTest;
 import com.ottugi.curry.domain.user.UserRepository;
+import com.ottugi.curry.domain.user.UserTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
-
-import static com.ottugi.curry.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 class LatelyRepositoryTest {
-
-    private User user;
-    private Recipe recipe;
     private Lately lately;
 
-    private LatelyRepository latelyRepository;
-    private UserRepository userRepository;
-    private RecipeRepository recipeRepository;
-
-    private Lately testLately;
-
     @Autowired
-    LatelyRepositoryTest(LatelyRepository latelyRepository, UserRepository userRepository, RecipeRepository recipeRepository) {
-        this.latelyRepository = latelyRepository;
-        this.userRepository = userRepository;
-        this.recipeRepository = recipeRepository;
-    }
+    private LatelyRepository latelyRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RecipeRepository recipeRepository;
 
     @BeforeEach
     public void setUp() {
-        // given
-        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        user = userRepository.save(user);
-
-        recipe = new Recipe(ID, RECIPE_ID, NAME, THUMBNAIL, TIME, DIFFICULTY, COMPOSITION, INGREDIENTS, SERVINGS, ORDERS, PHOTO, GENRE);
-        recipe = recipeRepository.save(recipe);
-
-        lately = new Lately();
-        lately.setUser(user);
-        lately.setRecipe(recipe);
+        lately = LatelyTest.initLately();
+        lately.setUser(userRepository.save(UserTest.initUser()));
+        lately.setRecipe(recipeRepository.save(RecipeTest.initRecipe()));
         lately = latelyRepository.save(lately);
     }
 
     @AfterEach
     public void clean() {
-        // clean
         latelyRepository.deleteAll();
         recipeRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @Test
-    void 유저와_레시피로_최근_본_레시피_조회() {
-        // when
-        testLately = latelyRepository.findByUserIdAndRecipeId(user, recipe);
+    @DisplayName("회원 아이디에 따라 가장 최근 본 레시피 확인")
+    void testFindTop1ByUserIdOrderByIdDesc() {
+        Lately foundLately = latelyRepository.findTop1ByUserIdOrderByIdDesc(lately.getUserId());
 
-        // then
-        assertEquals(user.getId(), testLately.getUserId().getId());
-        assertEquals(recipe.getId(), testLately.getRecipeId().getId());
-    }
-
-    @Test
-    void 유저로_최근_본_레시피_목록_정렬_조회() {
-        // when
-        List<Lately> latelyList = latelyRepository.findByUserIdOrderByIdDesc(user);
-
-        // then
-        testLately = latelyList.get(0);
-        assertEquals(user.getId(), testLately.getUserId().getId());
-        assertEquals(recipe.getId(), testLately.getRecipeId().getId());
-    }
-
-    @Test
-    void 유저로_최근_본_레시피_횟수_조회() {
-        // when
-        int userIdCount = latelyRepository.countByUserId(user);
-
-        // then
-        assertEquals(1, userIdCount);
+        assertEquals(lately.getUserId().getId(), foundLately.getUserId().getId());
+        assertEquals(lately.getRecipeId().getId(), foundLately.getRecipeId().getId());
     }
 }

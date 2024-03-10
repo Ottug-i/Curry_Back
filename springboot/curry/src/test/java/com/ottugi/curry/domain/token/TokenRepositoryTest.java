@@ -1,48 +1,49 @@
 package com.ottugi.curry.domain.token;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import static com.ottugi.curry.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
-public class TokenRepositoryTest {
+import com.ottugi.curry.RedisMockConfig;
+import com.ottugi.curry.domain.user.UserRepository;
+import com.ottugi.curry.domain.user.UserTest;
+import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 
+@SpringBootTest
+@Import(RedisMockConfig.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class TokenRepositoryTest {
     private Token token;
 
-    private TokenRepository tokenRepository;
-
-    private Token testToken;
-
     @Autowired
-    public TokenRepositoryTest(TokenRepository tokenRepository) {
-        this.tokenRepository = tokenRepository;
-    }
+    private TokenRepository tokenRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     public void setUp() {
-        // given
-        token = new Token(EMAIL, VALUE, EXPIRED_TIME);
+        token = TokenTest.initToken(userRepository.save(UserTest.initUser()));
         token = tokenRepository.save(token);
     }
 
     @AfterEach
     public void clean() {
-        // clean
         tokenRepository.deleteAll();
     }
 
     @Test
-    void 키로_토큰_조회() {
-        // when
-        testToken = tokenRepository.findByKey(token.getKey()).get();
+    @DisplayName("아이디(키)인 이메일로 토큰 조회 테스트")
+    void testFindById() {
+        Optional<Token> foundToken = tokenRepository.findById(token.getKey());
 
-        // then
-        assertEquals(token.getKey(), testToken.getKey());
-        assertEquals(token.getValue(), testToken.getValue());
+        assertEquals(token.getKey(), foundToken.get().getKey());
+        assertEquals(token.getValue(), foundToken.get().getValue());
+        assertEquals(token.getExpiredTime(), foundToken.get().getExpiredTime());
     }
 }

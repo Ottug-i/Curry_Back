@@ -1,45 +1,38 @@
 package com.ottugi.curry.service.recipe;
 
-import com.ottugi.curry.domain.recipe.*;
+import com.ottugi.curry.domain.recipe.Recipe;
+import com.ottugi.curry.domain.recipe.RecipeRepository;
 import com.ottugi.curry.web.dto.recipe.RecipeSaveRequestDto;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class RecipeCsvWriter implements ItemWriter<RecipeSaveRequestDto> {
+    private static final int BATCH_SIZE = 1000;
 
     private final RecipeRepository recipeRepository;
 
     @Override
-    public void write(List<? extends RecipeSaveRequestDto> list) throws Exception {
+    public void write(List<? extends RecipeSaveRequestDto> dtoList) {
+        List<Recipe> recipeList = dtoListToRecipeList(dtoList);
+        saveRecipeListInBatch(recipeList);
+    }
 
-        List<Recipe> recipeList = new ArrayList<>();
+    private List<Recipe> dtoListToRecipeList(List<? extends RecipeSaveRequestDto> dtoList) {
+        return dtoList.stream()
+                .map(RecipeSaveRequestDto::toEntity)
+                .collect(Collectors.toList());
+    }
 
-        list.forEach(getRecipe -> {
-
-            Recipe recipe = new Recipe();
-            recipe.setRecipeId(getRecipe.getRecipeId());
-            recipe.setName(getRecipe.getName());
-            recipe.setComposition(Composition.ofComposition(getRecipe.getComposition()));
-            recipe.setIngredients(getRecipe.getIngredients());
-            recipe.setServings(Servings.ofServings(getRecipe.getServings()));
-            recipe.setDifficulty(Difficulty.ofDifficulty(getRecipe.getDifficulty()));
-            recipe.setThumbnail(getRecipe.getThumbnail());
-            recipe.setTime(Time.ofTime(getRecipe.getTime()));
-            recipe.setOrders(getRecipe.getOrders());
-            recipe.setPhoto(getRecipe.getPhoto());
-            recipe.setGenre(getRecipe.getGenre());
-
-            recipeList.add(recipe);
-        });
-
-        recipeRepository.saveAll(recipeList);
+    private void saveRecipeListInBatch(List<Recipe> recipeList) {
+        for (int i = 0; i < recipeList.size(); i += BATCH_SIZE) {
+            int endIndex = Math.min(i + BATCH_SIZE, recipeList.size());
+            List<Recipe> batch = recipeList.subList(i, endIndex);
+            recipeRepository.saveAll(batch);
+        }
     }
 }

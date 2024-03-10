@@ -4,11 +4,12 @@ import com.ottugi.curry.domain.recipe.Recipe;
 import com.ottugi.curry.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
-    Bookmark findByUserIdAndRecipeId(User user, Recipe recipe);
-    List<Bookmark> findByUserId(User user);
+    Boolean existsByUserIdAndRecipeId(User user, Recipe recipe);
+
+    @Transactional
+    void deleteByUserIdAndRecipeId(User user, Recipe recipe);
 }

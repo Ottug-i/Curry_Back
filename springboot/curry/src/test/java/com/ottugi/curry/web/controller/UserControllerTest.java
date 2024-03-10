@@ -1,92 +1,106 @@
 package com.ottugi.curry.web.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ottugi.curry.domain.user.User;
-import com.ottugi.curry.service.user.UserService;
-import com.ottugi.curry.web.dto.user.UserResponseDto;
-import com.ottugi.curry.web.dto.user.UserUpdateRequestDto;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.*;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static com.ottugi.curry.TestConstants.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ottugi.curry.config.SecurityConfig;
+import com.ottugi.curry.domain.user.User;
+import com.ottugi.curry.domain.user.UserTest;
+import com.ottugi.curry.jwt.JwtAuthenticationFilter;
+import com.ottugi.curry.service.user.UserService;
+import com.ottugi.curry.web.dto.user.UserResponseDto;
+import com.ottugi.curry.web.dto.user.UserResponseDtoTest;
+import com.ottugi.curry.web.dto.user.UserUpdateRequestDto;
+import com.ottugi.curry.web.dto.user.UserUpdateRequestDtoTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(controllers = UserController.class, excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class),
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
+@WithMockUser
 public class UserControllerTest {
-
     private User user;
 
+    @Autowired
     private MockMvc mockMvc;
-
-    @Mock
+    @MockBean
     private UserService userService;
-
-    @InjectMocks
-    private UserController userController;
 
     @BeforeEach
     public void setUp() {
-        user = new User(USER_ID, EMAIL, NICKNAME, FAVORITE_GENRE, ROLE);
-        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
+        user = UserTest.initUser();
     }
 
     @Test
-    void 회원_조회() throws Exception {
-        // given
-        UserResponseDto userResponseDto = new UserResponseDto(user);
-        when(userService.getProfile(anyLong())).thenReturn(userResponseDto);
+    @DisplayName("회원 정보 조회 테스트")
+    void testUserProfileDetails() throws Exception {
+        UserResponseDto userResponseDto = UserResponseDtoTest.initUserResponseDto(user);
+        when(userService.findUserProfileByUserId(anyLong())).thenReturn(userResponseDto);
 
-        // when, then
         mockMvc.perform(get("/api/user")
-                        .param("id", String.valueOf(user.getId())))
+                        .param("id", String.valueOf(user.getId()))
+                        .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(user.getId()))
-                .andExpect(jsonPath("$.email").value(user.getEmail()))
-                .andExpect(jsonPath("$.nickName").value(user.getNickName()))
-                .andExpect(jsonPath("$.role").value(user.getRole().getRole()));
+                .andExpect(jsonPath("$.id").value(userResponseDto.getId()))
+                .andExpect(jsonPath("$.email").value(userResponseDto.getEmail()))
+                .andExpect(jsonPath("$.nickName").value(userResponseDto.getNickName()))
+                .andExpect(jsonPath("$.role").value(userResponseDto.getRole()));
+
+        verify(userService, times(1)).findUserProfileByUserId(anyLong());
     }
 
     @Test
-    void 회원_수정() throws Exception {
-        // given
-        user.updateProfile(NEW_NICKNAME);
-        UserResponseDto userResponseDto = new UserResponseDto(user);
-        when(userService.updateProfile(any(UserUpdateRequestDto.class))).thenReturn(userResponseDto);
+    @DisplayName("회원 정보 수정 테스트")
+    void testUserProfileModify() throws Exception {
+        UserResponseDto userResponseDto = UserResponseDtoTest.initUserResponseDto(user);
+        when(userService.modifyUserProfile(any(UserUpdateRequestDto.class))).thenReturn(userResponseDto);
 
-        // when, then
-        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(user.getId(), NEW_NICKNAME);
+        UserUpdateRequestDto userUpdateRequestDto = UserUpdateRequestDtoTest.initUserUpdateRequestDto(user);
         mockMvc.perform(put("/api/user")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(userUpdateRequestDto)))
+                        .content(new ObjectMapper().writeValueAsString(userUpdateRequestDto))
+                        .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(user.getId()))
-                .andExpect(jsonPath("$.email").value(user.getEmail()))
-                .andExpect(jsonPath("$.nickName").value(user.getNickName()))
-                .andExpect(jsonPath("$.role").value(user.getRole().getRole()));
+                .andExpect(jsonPath("$.id").value(userResponseDto.getId()))
+                .andExpect(jsonPath("$.email").value(userResponseDto.getEmail()))
+                .andExpect(jsonPath("$.nickName").value(userResponseDto.getNickName()))
+                .andExpect(jsonPath("$.role").value(userResponseDto.getRole()));
+
+        verify(userService, times(1)).modifyUserProfile(any(UserUpdateRequestDto.class));
     }
 
     @Test
-    void 회원_탈퇴() throws Exception {
-        // given
-        when(userService.setWithdraw(anyLong())).thenReturn(true);
+    @DisplayName("회원 탈퇴 테스트")
+    void testUserWithdraw() throws Exception {
+        when(userService.withdrawUserAccount(anyLong())).thenReturn(true);
 
-        // when, then
         mockMvc.perform(delete("/api/user/withdraw")
-                        .param("id", String.valueOf(user.getId())))
+                        .param("id", String.valueOf(user.getId()))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
+
+        verify(userService, times(1)).withdrawUserAccount(anyLong());
     }
 }
